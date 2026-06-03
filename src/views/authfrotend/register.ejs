@@ -26,6 +26,9 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
+        .border-error {
+            border-color: #ba1a1a !important;
+        }
     </style>
     <script id="tailwind-config">
         tailwind.config = {
@@ -187,7 +190,7 @@
                         <div class="relative">
                             <input
                                 class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:ring-0 focus:border-primary transition-all text-body-md font-body-md outline-none"
-                                id="firstName" name="firstName" placeholder="Alexander" required="" type="text" />
+                                id="firstName" name="firstName" placeholder="Alexander" type="text" />
                         </div>
                     </div>
                     <div class="space-y-1.5">
@@ -196,7 +199,7 @@
                         <div class="relative">
                             <input
                                 class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:ring-0 focus:border-primary transition-all text-body-md font-body-md outline-none"
-                                id="lastName" name="lastName" placeholder="Vanderbilt" required="" type="text" />
+                                id="lastName" name="lastName" placeholder="Vanderbilt" type="text" />
                         </div>
                     </div>
                 </div>
@@ -207,7 +210,7 @@
                     <div class="relative">
                         <input
                             class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:ring-0 focus:border-primary transition-all text-body-md font-body-md outline-none"
-                            id="email" name="email" placeholder="a.vanderbilt@domain.com" required="" type="email" />
+                            id="email" name="email" placeholder="a.vanderbilt@domain.com" type="email" />
                     </div>
                 </div>
                 <!-- Phone -->
@@ -217,7 +220,7 @@
                     <div class="relative">
                         <input
                             class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:ring-0 focus:border-primary transition-all text-body-md font-body-md outline-none"
-                            id="phone" name="phone" placeholder="+1 (555) 000-0000" required="" type="tel" />
+                            id="phone" name="phone" placeholder="+1 (555) 000-0000" type="tel" />
                     </div>
                 </div>
                 <!-- Password Row -->
@@ -228,7 +231,7 @@
                         <div class="relative">
                             <input
                                 class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:ring-0 focus:border-primary transition-all text-body-md font-body-md outline-none pr-10"
-                                id="password" name="password" placeholder="••••••••" required="" type="password" />
+                                id="password" name="password" placeholder="••••••••" type="password" />
                             <span
                                 class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer text-xl hover:text-primary"
                                 onclick="togglePassword('password')">visibility</span>
@@ -240,7 +243,7 @@
                         <div class="relative">
                             <input
                                 class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:ring-0 focus:border-primary transition-all text-body-md font-body-md outline-none pr-10"
-                                id="confirmPassword" name="confirmPassword" placeholder="••••••••" required=""
+                                id="confirmPassword" name="confirmPassword" placeholder="••••••••" 
                                 type="password" />
                             <span
                                 class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer text-xl hover:text-primary"
@@ -251,7 +254,7 @@
                 <!-- Terms -->
                 <div class="flex items-start gap-3 py-2">
                     <input class="mt-1 w-4 h-4 text-primary border-outline-variant rounded focus:ring-0 cursor-pointer"
-                        id="terms" required="" type="checkbox" />
+                        id="terms" type="checkbox" />
                     <label class="font-body-sm text-body-sm text-on-surface-variant leading-tight" for="terms">
                         I agree to the <a class="text-secondary hover:underline underline-offset-4" href="#">Privacy
                             Policy</a> and <a class="text-secondary hover:underline underline-offset-4" href="#">Terms
@@ -259,12 +262,12 @@
                     </label>
                 </div>
                 <!-- Submit Action -->
-                <button
+                <input
                     class="w-full py-4 bg-secondary text-on-secondary font-label-caps text-label-caps uppercase tracking-widest rounded-lg hover:bg-secondary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4"
                     type="submit">
                     Create Account
                     <span class="material-symbols-outlined text-xl">arrow_forward</span>
-                </button>
+                </input>
             </form>
             <!-- Login Link -->
             <div class="mt-8 text-center border-t border-outline-variant pt-6">
@@ -276,58 +279,14 @@
         </section>
     </main>
     <!-- Micro-interaction JS -->
-    <script>
-        function togglePassword(id) {
-            const input = document.getElementById(id);
-            const icon = input.nextElementSibling;
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.innerText = 'visibility_off';
-            } else {
-                input.type = 'password';
-                icon.innerText = 'visibility';
-            }
-        }
-
-        // Form Submission visual feedback
-        document.getElementById('registrationForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const btn = this.querySelector('button[type="submit"]');
-            const originalContent = btn.innerHTML;
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Processing...';
-
-            setTimeout(() => {
-                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Welcome to LuxeStay';
-                btn.classList.replace('bg-secondary', 'bg-status-available');
-
-                // Reset for demo purposes after 2 seconds
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalContent;
-                    btn.classList.replace('bg-status-available', 'bg-secondary');
-                }, 2000);
-            }, 1500);
-        });
-
-        // Add subtle focus animation to inputs
-        const inputs = document.querySelectorAll('input:not([type="checkbox"])');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                input.parentElement.classList.add('scale-[1.01]');
-            });
-            input.addEventListener('blur', () => {
-                input.parentElement.classList.remove('scale-[1.01]');
-            });
-        });
-    </script>
     <!-- Footer -->
     <footer class="absolute bottom-4 w-full text-center z-10 px-4">
         <p class="font-body-sm text-body-sm text-on-surface-variant opacity-60">
-            © 2024 LuxeStay Hospitality Group. All rights reserved.
+            © 2026 LuxeStay Hospitality Group. All rights reserved.
         </p>
     </footer>
+
+    <script src="JS/auth/register.js" ></script>
 </body>
 
 </html>
