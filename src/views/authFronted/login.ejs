@@ -9,6 +9,8 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
@@ -247,7 +249,8 @@
                     <!-- Footer Links -->
                     <div class="mt-8 pt-6 border-t border-outline-variant flex flex-col items-center gap-4">
                         <p class="font-body-sm text-body-sm text-on-surface-variant text-center">
-                            Don't have an account? <a class="text-primary font-bold hover:underline" href="#">Register
+                            Don't have an account? <a class="text-primary font-bold hover:underline"
+                                href="/register">Register
                                 Property</a>
                         </p>
                         <div class="flex gap-6">
@@ -335,6 +338,13 @@
             el.addEventListener('mouseleave', () => el.style.transform = 'scale(1)');
         });
     </script>
+        <script src="JS/toastmessage.js"></script>
+    <% if (successMessage) { %>
+        <script>
+            console.log("here");
+            showToast("<%= successMessage %>");
+        </script>
+        <% } %>
 </body>
 
 </html>
