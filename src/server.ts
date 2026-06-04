@@ -1,14 +1,10 @@
-import express,{Request,Response} from "express";
-import dotenv from "dotenv"
-const app = express();
+import dotenv from "dotenv";
 dotenv.config();
 
-const portnu = process.env.PORTNU || 7777
+import app from "./app";
 
-app.get("/",(req:Request,res:Response)=>{
-    res.send("Started server");
-})
+const PORT = process.env.PORTNU || 7777;
 
-app.listen(portnu,()=>{
-    console.log("Server started at ",portnu);
-})
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+});
