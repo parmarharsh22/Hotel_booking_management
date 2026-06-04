@@ -10,8 +10,6 @@ export const checkEmail = async (email: string) => {
 //register the user
 export const registerUser = async (body: any, file: any) => {
     const { firstName, lastName, email, phone, state, city, password } = body;
-    console.log(body);
-    console.log(file);
     const hashedPass = await bcrypt.hash(password,10);
     const filename = file;
     await authModel.insertUser(firstName, lastName, email, phone, state, city, hashedPass,filename);

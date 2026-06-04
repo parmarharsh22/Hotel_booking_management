@@ -6,8 +6,14 @@ export const showMainPage = (req: Request, res: Response) => {
 }
 
 export const showLoginPage = (req: Request, res: Response) => {
-    res.render("authFronted/login");
-}
+    const successMessage = (req.session as any).successMessage;
+
+    delete (req.session as any).successMessage;
+
+    res.render("authFronted/login", {
+        successMessage
+    });
+};
 
 export const showRegistrationPage = (req: Request, res: Response) => {
     res.render("authFronted/register");
@@ -16,6 +22,7 @@ export const showRegistrationPage = (req: Request, res: Response) => {
 export const registerUser = async (req: Request, res: Response) => {
     try{
         await authServices.registerUser(req.body,req.file?.filename);
+        (req.session as any).successMessage = "Registration successful";
         res.redirect("/login");
     }catch(err: any){
         console.log("error",err);
