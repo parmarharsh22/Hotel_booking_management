@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import authRouter from "./modules/auth/routes/authroute";
 import { sessionMiddleware } from "./config/sessionMiddleware";
+import superadminRoutes from "./modules/superAdmin/superadmin.routes";
 const app = express();
 
 //session
@@ -16,8 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
+app.use("/superadmin", superadminRoutes);
 
 //All the unproctedRoutes
 app.use("/",authRouter);
+
 
 export default app;
