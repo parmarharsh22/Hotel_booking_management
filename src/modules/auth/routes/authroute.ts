@@ -1,6 +1,7 @@
 import express, { Request,Response } from "express";
 import * as authController from "../controller/authController";
 import { uploadProfilePhoto } from "../../../common/middlewares/multer";
+import { verifyCaptchaMiddleware } from "../../../common/middlewares/verifyCaptcha";
 const authRouter = express.Router();
 
 //Render the mainPage or indexPage
@@ -13,9 +14,12 @@ authRouter.get("/login",authController.showLoginPage);
 authRouter.get("/register",authController.showRegistrationPage);
 
 //Register New GUEST
-authRouter.post("/register",uploadProfilePhoto.single("photo"),authController.registerUser);
+authRouter.post("/register",verifyCaptchaMiddleware("/register"),uploadProfilePhoto.single("photo"),authController.registerUser);
 
 //check for EmailUniqueness
 authRouter.post("/checkEmail",authController.checkEmailUniq)
+
+//login a user
+authRouter.post("/loginUser",verifyCaptchaMiddleware("/login"),authController.loginUser);
 
 export default authRouter;
