@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import authRouter from "./modules/auth/routes/authroute";
 import { sessionMiddleware } from "./config/sessionMiddleware";
+import roomRouter from "./modules/room/routes/roomRoute";
 const app = express();
 
 //session
@@ -19,5 +20,6 @@ app.use(express.json());
 
 //All the unproctedRoutes
 app.use("/",authRouter);
+app.use('/rooms',roomRouter);
 
 export default app;
