@@ -74,8 +74,14 @@ form.addEventListener("submit",async (e) => {
         console.log("Success! Processing form structure transmission values.");
 
         const formData = new FormData(form);
-        const plainObject=Object.fromEntries(formData.entries())
-
+        const plainObject = {
+            location: formData.get('location'),
+            check_in: formData.get('check_in'),
+            check_out: formData.get('check_out'),
+            rooms: Number(formData.get('rooms')),   
+            guests: Number(formData.get('guests'))  
+        };
+        
         console.log(plainObject);
         try {
             const response=await fetch('/rooms/searchHotels',{
