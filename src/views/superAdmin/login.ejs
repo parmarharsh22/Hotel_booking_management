@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="bg-white h-20 w-full fixed flex items-center px-5 ">
+        <div class="h-16 w-16 bg-slate-900 rounded-full flex items-center justify-center">
+<h1 class="text-4xl text-white"><</h1>
+        </div>
+
+    </div>
+
+    <div class="h-screen w-full bg-[#e6e8eb] flex justify-center items-center px-4">
+
+        <div class="bg-white w-full max-w-md rounded-xl overflow-hidden shadow-2xl">
+
+            <!-- Header -->
+            <div class="bg-slate-900 h-24 flex items-center justify-center">
+                <h1 class="text-white text-3xl font-bold">
+                    Welcome Back Super Admin
+                </h1>
+            </div>
+
+            <!-- Form -->
+            <div class="p-8">
+
+                <form
+                    id="loginForm"
+                    action="/superAdmin/login"
+                    method="POST"
+                    class="space-y-5"
+                >
+
+                    <!-- Email -->
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-700">
+                            Email Address
+                        </label>
+
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="john@example.com"
+                            class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+
+                        <p
+                            id="emailError"
+                            class="text-red-500 text-sm mt-1 hidden"
+                        >
+                            Please enter a valid email address
+                        </p>
+                    </div>
+
+                    <!-- Password -->
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium text-gray-700">
+                            Password
+                        </label>
+
+                        <div class="relative">
+
+                            <input
+                                id="password"
+                                name="password_hash"
+                                type="password"
+                                placeholder="Enter password"
+                                class="w-full border border-gray-300 rounded-lg p-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-blue-600"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                        <p
+                            id="passwordError"
+                            class="text-red-500 text-sm mt-1 hidden"
+                        >
+                            Password must be at least 8 characters
+                        </p>
+                    </div>
+
+                    <!-- Remember Me -->
+
+                    <div class="flex justify-between items-center">
+
+                        <label class="flex items-center gap-2 text-sm">
+
+                            <input
+                                type="checkbox"
+                                class="rounded"
+                            >
+
+                            Remember Me
+
+                        </label>
+
+                        <a
+                            href="/forgot-password"
+                            class="text-blue-500 text-sm hover:underline"
+                        >
+                            Forgot Password?
+                        </a>
+
+                    </div>
+
+                    <!-- Submit -->
+
+                    <button
+                        type="submit"
+                        class="w-full bg-slate-900 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition"
+                    >
+                        Login
+                    </button>
+
+                </form>
+
+                <!-- Footer -->
+
+                <p class="text-center text-sm text-gray-600 mt-6">
+                    Don't have an account?
+                    <a
+                        href="/register"
+                        class="text-blue-500 font-semibold hover:underline"
+                    >
+                        Register
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<script>
+
+const form = document.getElementById("loginForm");
+
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+
+const emailError = document.getElementById("emailError");
+const passwordError = document.getElementById("passwordError");
+
+form.addEventListener("submit", (e) => {
+
+    let isValid = true;
+
+    const emailRegex =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email.value.trim())) {
+
+        emailError.classList.remove("hidden");
+        isValid = false;
+
+    } else {
+
+        emailError.classList.add("hidden");
+
+    }
+
+    if (password.value.length < 8) {
+
+        passwordError.classList.remove("hidden");
+        isValid = false;
+
+    } else {
+
+        passwordError.classList.add("hidden");
+
+    }
+
+    if (!isValid) {
+        e.preventDefault();
+    }
+
+});
+
+document
+    .getElementById("togglePassword")
+    .addEventListener("click", function () {
+
+        if (password.type === "password") {
+
+            password.type = "text";
+            this.innerText = "Hide";
+
+        } else {
+
+            password.type = "password";
+            this.innerText = "Show";
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

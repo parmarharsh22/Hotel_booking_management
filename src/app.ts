@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import authRouter from "./modules/auth/routes/authroute";
 import { sessionMiddleware } from "./config/sessionMiddleware";
+import superadminRoutes from "./modules/superAdmin/superadmin.routes";
 import { attachUser } from "./common/middlewares/globalMiddleware/optinalAuth";
 import cookie from "cookie-parser";
 import roomRouter from "./modules/room/routes/roomRoute";
@@ -25,9 +26,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
+app.use("/superadmin", superadminRoutes);
 
 //All the unproctedRoutes
 app.use("/",authRouter);
 app.use('/rooms',roomRouter);
+
 
 export default app;
