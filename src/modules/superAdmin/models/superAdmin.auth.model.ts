@@ -16,6 +16,10 @@ export interface SuperAdminInterface {
   updated_at?: Date;
 }
 
+export interface UserInterface {
+
+}
+
 export class SuperAdminModel {
 
   static async findByEmail(email: string): Promise<SuperAdminInterface> {
@@ -54,7 +58,15 @@ export class SuperAdminModel {
     }
     }
 
-
+    static async getAllUserData():Promise<SuperAdminInterface>{
+      try{
+        const [data]: any = await db.query(`select * from users`);
+        return data;
+      }
+      catch(err: any){
+        throw err;
+      }
+    }
 
 
 }

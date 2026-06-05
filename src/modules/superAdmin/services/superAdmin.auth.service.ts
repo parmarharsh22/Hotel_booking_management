@@ -16,5 +16,9 @@ export class SuperAdminService{
         }
     }
 
+    async getAllUserData():Promise<SuperAdminInterface>{
+        const data = await SuperAdminModel.getAllUserData();
+        return data as SuperAdminInterface;
+    }
 
 }

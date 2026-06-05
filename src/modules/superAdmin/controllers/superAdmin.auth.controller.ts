@@ -15,19 +15,15 @@ export class SuperAdminController {
     async login(req: Request, res: Response) {
         try {
             const data = req.body;
-            console.log(data);
             const email = data.email;
             const plainPass = data.password_hash;
 
             const superAdminData: any = await superAdminSerive.findByEmail(email);
-            console.log(superAdminData);
 
             // const hash = await hashedPassword(plainPass);
             // console.log(hash);
-            console.log("comparing now")
             const compare = await comparePassword(superAdminData.password_hash, plainPass);
             const token = await assignJWT(email, superAdminData.user_id);
-            console.log(token);
             if (compare) {
                 return res.status(200).json({
                     message: "success",
@@ -41,6 +37,21 @@ export class SuperAdminController {
             res.status(400).json(err.message);
         }
     }
+
+    async getAllUserData(req: Request, res: Response) {
+        try {
+            const user = (req as any).user;
+            const data = await superAdminSerive.getAllUserData();
+            if (!data) {
+                res.status(400).json("Data not found");
+            }
+            res.json(data);
+        }
+        catch (err) {
+            res.status(400).json(err);
+        }
+    }
+
 
 
 
