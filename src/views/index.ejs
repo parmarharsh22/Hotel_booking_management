@@ -118,6 +118,7 @@
             }
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body class="bg-background text-on-surface font-body-md overflow-x-hidden">
@@ -150,6 +151,49 @@
             </div>
 
             <div class="flex items-center gap-3 lg:gap-6">
+
+                <% if(user) { %>
+
+                    <div class="flex items-center gap-2 lg:gap-4">
+
+                        <a href="/notifications" class="material-symbols-outlined text-primary cursor-pointer">
+                            notifications
+                        </a>
+
+                        <a href="/profile" class="material-symbols-outlined text-primary cursor-pointer">
+                            account_circle
+                        </a>
+
+                    </div>
+
+                    <a href="/my-bookings"
+                        class="hidden md:block text-on-surface-variant font-body-md hover:text-secondary transition-colors">
+                        My Bookings
+                    </a>
+
+                    <a href="/logout"
+                        class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                        Logout
+                    </a>
+
+                    <% } else { %>
+
+                        <a href="/login"
+                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                            Sign In
+                        </a>
+                        <a href="/register"
+                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                            Register
+                        </a>
+
+                        <% } %>
+
+                            <button class="md:hidden flex items-center">
+                                <a href="#" class="material-symbols-outlined text-primary">
+                                    menu
+                                </a>
+                            </button>
                 <div class="flex items-center gap-2 lg:gap-4">
                     <a href="#" class="material-symbols-outlined text-primary cursor-pointer" data-icon="notifications">
                         notifications
@@ -165,9 +209,6 @@
                     Sign In
                 </a>
 
-                <button class="md:hidden flex items-center">
-                    <a href="#" class="material-symbols-outlined text-primary" data-icon="menu">menu</a>
-                </button>
             </div>
 
         </div>
@@ -589,6 +630,12 @@
             });
         });
     </script>
+    <script src="JS/toastmessage.js"></script>
+    <% if(welcome) { %>
+        <script>
+            alert("Welcome again!")
+        </script>
+        <% } %>
 </body>
 
 </html>
