@@ -4,6 +4,7 @@ import authRouter from "./modules/auth/routes/authroute";
 import { sessionMiddleware } from "./config/sessionMiddleware";
 import { attachUser } from "./common/middlewares/globalMiddleware/optinalAuth";
 import cookie from "cookie-parser";
+import roomRouter from "./modules/room/routes/roomRoute";
 const app = express();
 
 //cookie
@@ -27,5 +28,6 @@ app.use(express.json());
 
 //All the unproctedRoutes
 app.use("/",authRouter);
+app.use('/rooms',roomRouter);
 
 export default app;
