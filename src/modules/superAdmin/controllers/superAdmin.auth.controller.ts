@@ -1,125 +1,58 @@
-import { db } from "../../../config/db";
+import { Request, Response } from "express";
+import { comparePassword, hashedPassword } from "../../../common/utils/hashPassword";
+import { assignJWT } from "../../../common/utils/jsonSign";
+import bcrypt from "bcrypt";
+import { SuperAdminService } from "../services/superAdmin.auth.service";
 
-/**
- * Get all hotels
- */
-export const getAllHotels = async () => {
-    const [rows] = await db.query(`
-        SELECT 
-            h.*,
-            ts.status_name AS status_name
-        FROM hotels h
-        JOIN tenant_statuses ts 
-            ON h.tenant_status_id = ts.tenant_status_id
-        ORDER BY h.created_at DESC
-    `);
+const superAdminSerive = new SuperAdminService();
 
-    return rows;
-};
+export class SuperAdminController {
 
-/**
- * Insert hotel
- */
-export const insertHotel = async (data: any) => {
-    const {
-        name,
-        slug,
-        address,
-        city,
-        state,
-        country,
-        phone,
-        email,
-        logo_url,
-        cover_url,
-        tenant_status_id = 1
-    } = data;
+    async loginPage(req:Request, res:Response){
+        res.render("superAdmin/login");
+    }
 
-    const [result]: any = await db.query(
-        `INSERT INTO hotels 
-        (tenant_status_id, name, slug, address, city, state, country, phone, email, logo_url, cover_url)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-            tenant_status_id,
-            name,
-            slug,
-            address,
-            city,
-            state,
-            country,
-            phone,
-            email,
-            logo_url,
-            cover_url
-        ]
-    );
+    async login(req: Request, res: Response) {
+        try {
+            const data = req.body;
+            const email = data.email;
+            const plainPass = data.password_hash;
 
-    return result.insertId;
-};
+            const superAdminData: any = await superAdminSerive.findByEmail(email);
 
-/**
- * Get hotel by ID
- */
-export const getHotelById = async (hotelId: number) => {
-    const [rows]: any = await db.query(
-        `SELECT * FROM hotels WHERE hotel_id = ?`,
-        [hotelId]
-    );
+            // const hash = await hashedPassword(plainPass);
+            // console.log(hash);
+            const compare = await comparePassword(superAdminData.password_hash, plainPass);
+            const token = await assignJWT(email, superAdminData.user_id);
+            if (compare) {
+                return res.status(200).json({
+                    message: "success",
+                    token: token
+                });
+            }
 
-    return rows.length ? rows[0] : null;
-};
+            res.status(400).json("Password is Incorrect");
+        }
+        catch (err: any) {
+            res.status(400).json(err.message);
+        }
+    }
 
-/**
- * Update hotel
- */
-export const updateHotel = async (hotelId: number, data: any) => {
-    const {
-        name,
-        address,
-        city,
-        state,
-        country,
-        phone,
-        email,
-        logo_url,
-        cover_url
-    } = data;
+    async getAllUserData(req: Request, res: Response) {
+        try {
+            const user = (req as any).user;
+            const data = await superAdminSerive.getAllUserData();
+            if (!data) {
+                res.status(400).json("Data not found");
+            }
+            res.json(data);
+        }
+        catch (err) {
+            res.status(400).json(err);
+        }
+    }
 
-    await db.query(
-        `UPDATE hotels 
-        SET name=?, address=?, city=?, state=?, country=?, phone=?, email=?, logo_url=?, cover_url=?
-        WHERE hotel_id=?`,
-        [
-            name,
-            address,
-            city,
-            state,
-            country,
-            phone,
-            email,
-            logo_url,
-            cover_url,
-            hotelId
-        ]
-    );
-};
 
-/**
- * Update status
- */
-export const updateHotelStatus = async (hotelId: number, statusId: number) => {
-    await db.query(
-        `UPDATE hotels SET tenant_status_id=? WHERE hotel_id=?`,
-        [statusId, hotelId]
-    );
-};
 
-/**
- * Soft delete hotel
- */
-export const deleteHotel = async (hotelId: number) => {
-    await db.query(
-        `UPDATE hotels SET tenant_status_id=3 WHERE hotel_id=?`, // assuming 3 = SUSPENDED
-        [hotelId]
-    );
-};
+
+}

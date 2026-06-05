@@ -1,4 +1,4 @@
-import { db } from "../../../config/db.js";
+import { db } from "../../../config/db";
 
 export interface SuperAdminInterface {
   user_id?: number;
@@ -10,9 +10,15 @@ export interface SuperAdminInterface {
   phone?: string;
   password_hash?: string;
   photo_url?: string;
-  is_active?: number;
+  state ?: string;
+  city ?: string;
   created_at?: Date;
   updated_at?: Date;
+}
+
+
+export interface UserInterface {
+
 }
 
 export class SuperAdminModel {
@@ -30,7 +36,8 @@ export class SuperAdminModel {
           u.phone,
           u.password_hash,
           u.photo_url,
-          u.is_active,
+          u.state,
+          u.city,
           ur.role_name
         FROM users u
         INNER JOIN user_roles ur ON u.user_role_id = ur.user_role_id
@@ -51,4 +58,16 @@ export class SuperAdminModel {
       throw err;
     }
     }
+
+    static async getAllUserData():Promise<SuperAdminInterface>{
+      try{
+        const [data]: any = await db.query(`select * from users`);
+        return data;
+      }
+      catch(err: any){
+        throw err;
+      }
+    }
+
+
 }
