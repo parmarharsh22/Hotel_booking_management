@@ -1,17 +1,25 @@
+import { RowDataPacket } from "mysql2";
 import { db } from "../../../config/db";
 
-export const searchHotels=async( location:string,            
-            check_in:string,          
-            check_out:string,         
-            guests:number,
-            rooms:number )=>{
-    const [rows]=await db.query(`SELECT
+export const searchHotels = async (
+  location: string,
+  check_in: string,
+  check_out: string,
+  guests: number,
+  rooms: number,
+) => {
+  const guestsPerRoom = Math.ceil(guests / rooms);
+
+  const [rows] = await db.query<RowDataPacket[]>(
+    `
+SELECT
     h.hotel_id,
     h.name,
     h.city,
     h.state,
     h.country,
-    MIN(rt.base_price) AS starting_price
+    MIN(rt.base_price) AS starting_price,
+    COUNT(DISTINCT r.room_id) AS available_rooms
 
 FROM hotels h
 
@@ -43,18 +51,36 @@ WHERE
 AND rt.max_occupancy >= ?
 
 GROUP BY
-    h.hotel_id
+    h.hotel_id,
+    h.name,
+    h.city,
+    h.state,
+    h.country
 
 HAVING
-    COUNT(DISTINCT r.room_id) >= ?`,[
-            location,          
-            guests,            
-            check_in,          
-            check_out,         
-            check_out,         
-            check_in,          
-            rooms              
-        ]);
+    COUNT(DISTINCT r.room_id) >= ?
 
-    console.log(rows);
-}
+ORDER BY
+    starting_price ASC
+`,
+    [
+      check_in, 
+      check_out, 
+
+      check_out, 
+      check_in,
+
+      location, 
+      location, 
+      location, 
+
+      guestsPerRoom, 
+      
+      rooms, 
+    ],
+  );
+
+  console.log(rows);
+
+  return rows;
+};
