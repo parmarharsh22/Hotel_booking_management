@@ -118,6 +118,7 @@
             }
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body class="bg-background text-on-surface font-body-md overflow-x-hidden">
@@ -150,24 +151,50 @@
             </div>
 
             <div class="flex items-center gap-3 lg:gap-6">
-                <div class="flex items-center gap-2 lg:gap-4">
-                    <a href="#" class="material-symbols-outlined text-primary cursor-pointer" data-icon="notifications">
-                        notifications
-                    </a>
-                    <a href="#" class="material-symbols-outlined text-primary cursor-pointer"
-                        data-icon="account_circle">
-                        account_circle
-                    </a>
-                </div>
 
-                <a href="/login"
-                    class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
-                    Sign In
-                </a>
+                <% if(user) { %>
 
-                <button class="md:hidden flex items-center">
-                    <a href="#" class="material-symbols-outlined text-primary" data-icon="menu">menu</a>
-                </button>
+                    <div class="flex items-center gap-2 lg:gap-4">
+
+                        <a href="/notifications" class="material-symbols-outlined text-primary cursor-pointer">
+                            notifications
+                        </a>
+
+                        <a href="/authen/updateProfile" class="material-symbols-outlined text-primary cursor-pointer">
+                            account_circle
+                        </a>
+
+                    </div>
+
+                    <a href="/my-bookings"
+                        class="hidden md:block text-on-surface-variant font-body-md hover:text-secondary transition-colors">
+                        My Bookings
+                    </a>
+
+                    <a href="/logout"
+                        class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                        Logout
+                    </a>
+
+                    <% } else { %>
+
+                        <a href="/login"
+                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                            Sign In
+                        </a>
+                        <a href="/register"
+                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                            Register
+                        </a>
+
+                        <% } %>
+
+                            <button class="md:hidden flex items-center">
+                                <a href="#" class="material-symbols-outlined text-primary">
+                                    menu
+                                </a>
+                            </button>
+
             </div>
 
         </div>
@@ -191,19 +218,38 @@
                 <div
                     class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2">
                     <!-- Form Tag Wraps the Entire Component -->
-                    <form id="search-form"  
-                        class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2">
-
+                    <form id="search-form"
+                        class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2"
+                        method="post" action="/rooms/searchHotels">
                         <!-- LOCATION -->
                         <div
-                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
-                            <label class="font-label-caps text-on-surface-variant block mb-1">LOCATION</label>
+                            class="flex-1 group px-4 py-1 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
+
+                            <label class="font-label-caps text-on-surface-variant block mb-1">
+                                LOCATION
+                            </label>
+
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary"
-                                    data-icon="location_on">location_on</span>
-                                <input name="location" id="location-input"
-                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
-                                    placeholder="Where are you going?" type="text" />
+
+                                <span class="material-symbols-outlined text-primary shrink-0">
+                                    location_on
+                                </span>
+
+                                <div class="relative flex-1">
+                                    <select name="location" id="location-input"
+                                        class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-title-sm pr-10 appearance-none cursor-pointer">
+
+                                        <option value="" selected disabled>
+                                            Select Location
+                                        </option>
+                                    </select>
+
+                                    <span
+                                        class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">
+                                        expand_more
+                                    </span>
+                                </div>
+
                             </div>
                         </div>
 
@@ -214,7 +260,7 @@
                             <div class="flex items-center gap-2">
                                 <!-- <span class="material-symbols-outlined text-primary"
                                     data-icon="calendar_today">calendar_today</span> -->
-                                <input name="check_in"  id="checkin-input"
+                                <input name="check_in" id="checkin-input"
                                     class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
                                     type="date" />
                             </div>
@@ -227,7 +273,7 @@
                             <div class="flex items-center gap-2">
                                 <!-- <span class="material-symbols-outlined text-primary"
                                     data-icon="calendar_today">calendar_today</span> -->
-                                <input name="check_out"  id="checkout-input"
+                                <input name="check_out" id="checkout-input"
                                     class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
                                     type="date" />
                             </div>
@@ -579,6 +625,7 @@
         </div>
     </footer>
     <script src="JS/home/index.js"></script>
+    <script src="JS/toastmessage.js"></script>
     <script>
         document.querySelectorAll('input, select').forEach(element => {
             element.addEventListener('focus', () => {
@@ -589,6 +636,11 @@
             });
         });
     </script>
+    <% if(welcome) { %>
+        <script>
+            alert("Welcome again!")
+        </script>
+        <% } %>
 </body>
 
 </html>

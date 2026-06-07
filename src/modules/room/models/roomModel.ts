@@ -80,7 +80,5 @@ ORDER BY
     ],
   );
 
-  console.log(rows);
-
   return rows;
 };

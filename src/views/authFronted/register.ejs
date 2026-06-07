@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
@@ -127,6 +128,7 @@
             },
         }
     </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body
@@ -148,22 +150,19 @@
                 <p class="font-body-md text-body-md text-primary-fixed-dim opacity-80">Experience the gold standard of
                     hospitality management.</p>
             </div>
-            <div class="z-10 space-y-6 md:space-y-8 mb-8 md:mb-0">
-                <div class="flex items-start gap-4">
-                    <span class="material-symbols-outlined text-secondary text-2xl md:text-3xl">verified_user</span>
-                    <div>
-                        <h3 class="font-title-sm text-title-sm text-white">Seamless Security</h3>
-                        <p class="font-body-sm text-body-sm text-primary-fixed-dim">Industry-leading encryption
-                            protecting your personal and folio data.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <span class="material-symbols-outlined text-secondary text-2xl md:text-3xl">loyalty</span>
-                    <div>
-                        <h3 class="font-title-sm text-title-sm text-white">Elite Rewards</h3>
-                        <p class="font-body-sm text-body-sm text-primary-fixed-dim">Join our global network for
-                            exclusive room rates and priority upgrades.</p>
-                    </div>
+            <div
+                class="hidden lg:block lg:col-span-5 xl:col-span-6 h-[600px] xl:h-[700px] relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
+                <img alt="Luxury Hotel Ambience"
+                    class="w-full h-full object-cover grayscale-[0.2] contrast-[1.1] transition-transform duration-700 group-hover:scale-105"
+                    data-alt="A cinematic, wide-angle interior photograph of a luxury hotel lobby during the blue hour. The space is defined by polished dark marble floors reflecting warm, amber-toned ambient lighting. Minimalist furniture in navy blue velvet and gold accents creates a sophisticated hospitality atmosphere. The mood is tranquil and exclusive, with a focus on high-end textures and architectural precision."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAn3DlULXk718lahlzez1e4S9jCbQ3fI-Zghxf_ZfEmKOSLUvYyRssDV8Rzirx9hHIRm2JUDQuwPxzo9ncIGzHsLlZN5PiCTlhmFD_t5j-rWWc9QIOF5mlaYfGOLjcNHnW1yNcQoFG2bfttSHTjKDUKA6Ev12R_0e4jRAmvfsbdTfKxiClJoxHhUUZIpxhPyAa9zodbao6AgxeQYe0swX-yoyjNsoZaGdn4H8N6eXbScscKV3zIox_dTfpH6g-bUv73mkvwfk3HqyL" />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent flex flex-col justify-end p-8 xl:p-12">
+                    <p class="font-label-caps text-label-caps text-secondary-fixed mb-2 tracking-[0.2em]">THE LUXE
+                        EXPERIENCE</p>
+                    <p class="font-display-lg text-white text-2xl xl:text-3xl mb-4 italic leading-relaxed">"Precision at
+                        every touchpoint of the guest journey."</p>
+                    <div class="w-12 h-0.5 bg-secondary-fixed opacity-50"></div>
                 </div>
             </div>
             <div class="z-10 hidden md:block">
@@ -373,6 +372,10 @@
 
                     </div>
 
+                </div>
+
+                <!-- Human Verification -->
+                <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>">
                 </div>
 
                 <!-- Terms -->
@@ -614,6 +617,7 @@
     </footer>
 
     <script src="JS/auth/register.js"></script>
+    <script src="JS/toastmessage.js"></script>
 </body>
 
 </html>
