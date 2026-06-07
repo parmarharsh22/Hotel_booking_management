@@ -25,6 +25,7 @@ export const logon = async (email: string) => {
     return rows.length > 0 ? rows[0] : null
 }
 
+
 //get locations
 export const getAllLocations = async()=>{
     const [rows]: any = await db.query("SELECT distinct(city) from hotels");
