@@ -1,0 +1,28 @@
+import express from "express";
+import * as authController from "../controller/authController";
+import { uploadProfilePhoto } from "../../../common/middlewares/multer";
+import { verifyCaptchaMiddleware } from "../../../common/middlewares/verifyCaptcha";
+const authRouter = express.Router();
+
+//Render the mainPage or indexPage
+authRouter.get("/",authController.showMainPage);
+
+//Render the loginPage
+authRouter.get("/login",authController.showLoginPage);
+
+//Render the registrationPage
+authRouter.get("/register",authController.showRegistrationPage);
+
+//Register New GUEST
+authRouter.post("/register",verifyCaptchaMiddleware("/register"),uploadProfilePhoto.single("photo"),authController.registerUser);
+
+//check for EmailUniqueness
+authRouter.post("/checkEmail",authController.checkEmailUniq)
+
+//login a user
+authRouter.post("/loginUser",verifyCaptchaMiddleware("/login"),authController.loginUser);
+
+//getAlltheLocations
+authRouter.get("/getLocations",authController.getAllLocations)
+
+export default authRouter;

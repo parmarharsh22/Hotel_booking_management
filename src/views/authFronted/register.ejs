@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Guest Registration | LuxeStay</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .border-error {
+            border-color: #ba1a1a !important;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b6c7eb",
+                        "tertiary": "#211400",
+                        "surface-container-high": "#e6e8eb",
+                        "status-available": "#2D8A56",
+                        "outline": "#75777e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef1",
+                        "on-primary-fixed": "#081b38",
+                        "status-dirty": "#64748B",
+                        "on-tertiary-fixed-variant": "#5b4217",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#3c2700",
+                        "tertiary-fixed-dim": "#e5c18a",
+                        "on-secondary-fixed-variant": "#5d4201",
+                        "status-maintenance": "#D97706",
+                        "inverse-primary": "#b6c7eb",
+                        "surface-white": "#FFFFFF",
+                        "primary": "#031632",
+                        "inverse-on-surface": "#eff1f4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ad8d5b",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "primary-container": "#1a2b48",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#e9c176",
+                        "surface-dim": "#d8dadd",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-container": "#fed488",
+                        "tertiary-fixed": "#ffdead",
+                        "on-primary-container": "#8293b5",
+                        "secondary-fixed": "#ffdea5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-fixed": "#281900",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface-container-low": "#f2f4f7",
+                        "outline-variant": "#c5c6ce",
+                        "on-surface-variant": "#44474d",
+                        "surface-bright": "#f7f9fc",
+                        "on-primary-fixed-variant": "#374765",
+                        "on-secondary-fixed": "#261900",
+                        "on-secondary-container": "#785a1a",
+                        "on-error": "#ffffff",
+                        "status-booked": "#1A2B48",
+                        "background": "#f7f9fc",
+                        "secondary": "#775a19",
+                        "surface-tint": "#4e5f7e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "container-margin-desktop": "32px",
+                        "container-margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body
+    class="bg-surface text-on-surface min-h-screen flex items-center justify-center relative overflow-x-hidden p-4 md:p-8">
+    <!-- Decorative Background -->
+    <div class="absolute inset-0 z-0">
+        <img class="w-full h-full object-cover opacity-20 filter grayscale"
+            data-alt="A cinematic, wide-angle shot of a luxurious hotel lobby with polished marble floors reflecting warm ambient light from grand crystal chandeliers. The scene is characterized by a sophisticated navy and gold color palette, featuring plush velvet seating and minimalist architectural lines. High-key lighting creates a serene, premium atmosphere that feels both modern and authoritative, perfectly capturing the essence of a world-class hospitality experience."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhtpHNICXO5lYNAJZRvcAXMy-GHWvIJOwFcRjkDfTYjv4mlhME-LRX3LY9EytEi0Tho67lutxgSWDU-_MC6K91MC6c0A7cKDJWhnbBI0xV9j85nQJ0ItuOiQ0V6sefKHlPcxKcwgvCW7HPi72qee5n5gJWAnjdbYijMeW2_8nDAGYC1PJThEzz1JXvLJh2dh6GmLfy4APxDvJpTi4KS1AKBkaTAnHwOXVCWyGwFjpTJFFqT6f3zHcs0WyXk8AYO229UwKOOG6BtkZx" />
+        <div class="absolute inset-0 bg-gradient-to-br from-surface via-surface/90 to-primary-container/20"></div>
+    </div>
+    <!-- Auth Container -->
+    <main
+        class="relative z-10 w-full max-w-[1100px] flex flex-col md:flex-row bg-white shadow-xl overflow-hidden rounded-lg min-h-fit md:min-h-[700px]">
+        <!-- Left Side: Branding & Experience -->
+        <section class="flex flex-col justify-between p-8 md:p-12 w-full md:w-1/2 bg-primary text-on-primary relative">
+            <div class="z-10 mb-8 md:mb-0">
+                <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg tracking-tight mb-2">LuxeStay</h1>
+                <p class="font-body-md text-body-md text-primary-fixed-dim opacity-80">Experience the gold standard of
+                    hospitality management.</p>
+            </div>
+            <div
+                class="hidden lg:block lg:col-span-5 xl:col-span-6 h-[600px] xl:h-[700px] relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
+                <img alt="Luxury Hotel Ambience"
+                    class="w-full h-full object-cover grayscale-[0.2] contrast-[1.1] transition-transform duration-700 group-hover:scale-105"
+                    data-alt="A cinematic, wide-angle interior photograph of a luxury hotel lobby during the blue hour. The space is defined by polished dark marble floors reflecting warm, amber-toned ambient lighting. Minimalist furniture in navy blue velvet and gold accents creates a sophisticated hospitality atmosphere. The mood is tranquil and exclusive, with a focus on high-end textures and architectural precision."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAn3DlULXk718lahlzez1e4S9jCbQ3fI-Zghxf_ZfEmKOSLUvYyRssDV8Rzirx9hHIRm2JUDQuwPxzo9ncIGzHsLlZN5PiCTlhmFD_t5j-rWWc9QIOF5mlaYfGOLjcNHnW1yNcQoFG2bfttSHTjKDUKA6Ev12R_0e4jRAmvfsbdTfKxiClJoxHhUUZIpxhPyAa9zodbao6AgxeQYe0swX-yoyjNsoZaGdn4H8N6eXbScscKV3zIox_dTfpH6g-bUv73mkvwfk3HqyL" />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent flex flex-col justify-end p-8 xl:p-12">
+                    <p class="font-label-caps text-label-caps text-secondary-fixed mb-2 tracking-[0.2em]">THE LUXE
+                        EXPERIENCE</p>
+                    <p class="font-display-lg text-white text-2xl xl:text-3xl mb-4 italic leading-relaxed">"Precision at
+                        every touchpoint of the guest journey."</p>
+                    <div class="w-12 h-0.5 bg-secondary-fixed opacity-50"></div>
+                </div>
+            </div>
+            <div class="z-10 hidden md:block">
+                <p class="font-label-caps text-label-caps text-primary-fixed-dim uppercase tracking-widest opacity-60">
+                    Hospitality Reimagined</p>
+            </div>
+            <!-- Subtle pattern overlay -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none"
+                style="background-image: radial-gradient(circle at 2px 2px, #ffffff 1px, transparent 0); background-size: 40px 40px;">
+            </div>
+        </section>
+        <!-- Right Side: Registration Form -->
+        <section class="w-full md:w-1/2 p-8 md:p-12 bg-white flex flex-col">
+            <div class="mb-8">
+                <h2 class="font-headline-md text-headline-md text-primary mb-2">Guest Registration</h2>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">Complete your profile to unlock premium
+                    stays.</p>
+            </div>
+            <form id="registrationForm" class="space-y-5 flex-grow" method="post" action="/register"
+                enctype="multipart/form-data"> <!-- Name Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    <div class="space-y-1.5">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="first_name">
+                            First Name
+                        </label>
+
+                        <input id="first_name" name="firstName" type="text" maxlength="100" placeholder="John"
+                            class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="last_name">
+                            Last Name
+                        </label>
+
+                        <input id="last_name" name="lastName" type="text" maxlength="100" placeholder="Doe"
+                            class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+                    </div>
+
+                </div>
+
+                <!-- Email -->
+
+                <div class="space-y-1.5">
+
+                    <label class="font-label-caps text-label-caps text-on-surface-variant" for="email">
+                        Email Address
+                    </label>
+
+                    <input id="email" name="email" type="email" maxlength="150" placeholder="john@example.com"
+                        class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+
+                </div>
+
+                <!-- Phone -->
+
+                <div class="space-y-1.5">
+
+                    <label class="font-label-caps text-label-caps text-on-surface-variant" for="phone">
+                        Phone Number
+                    </label>
+
+                    <input id="phone" name="phone" type="tel" maxlength="20" placeholder="+91 9876543210"
+                        class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+
+                </div>
+
+                <!-- State and City -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    <!-- State -->
+
+                    <div class="space-y-1.5">
+
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="state">
+
+                            State
+
+                        </label>
+
+                        <select id="state" name="state"
+                            class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+
+                            <option value="">
+                                Select State
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- City -->
+
+                    <div class="space-y-1.5">
+
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="city">
+
+                            City
+
+                        </label>
+
+                        <select id="city" name="city" disabled
+                            class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none disabled:opacity-60">
+
+                            <option value="">
+                                Select City
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+                <!-- Profile Photo -->
+
+                <div class="space-y-2">
+
+                    <label class="font-label-caps text-label-caps text-on-surface-variant" for="photo">
+                        Profile Photo (Optional)
+                    </label>
+
+                    <label for="photo"
+                        class="flex flex-col items-center justify-center w-full min-h-[140px] px-6 py-8 border-2 border-dashed border-outline-variant rounded-xl cursor-pointer bg-surface-bright hover:border-primary hover:bg-primary/5 transition-all duration-300">
+
+                        <span class="material-symbols-outlined text-primary text-5xl mb-3">
+                            cloud_upload
+                        </span>
+
+                        <span class="font-title-sm text-primary mb-1">
+                            Upload Profile Photo
+                        </span>
+
+                        <span class="text-body-sm text-on-surface-variant text-center">
+                            Drag & drop your image here or click to browse
+                        </span>
+
+                        <span class="text-xs text-on-surface-variant mt-2">
+                            JPG, PNG, WEBP • Maximum 5 MB
+                        </span>
+
+                        <input id="photo" name="photo" type="file" accept=".jpg,.jpeg,.png,.webp" class="hidden">
+
+                    </label>
+
+                    <div id="photoPreviewContainer"
+                        class="hidden mt-3 flex items-center gap-4 p-3 rounded-lg bg-surface-container-low">
+
+                        <img id="photoPreview" src="" alt="Preview"
+                            class="w-16 h-16 rounded-full object-cover border border-outline-variant">
+
+                        <div>
+                            <p id="fileName" class="font-body-sm text-primary font-medium">
+                            </p>
+
+                            <p class="text-xs text-on-surface-variant">
+                                Ready to upload
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Password Row -->
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    <div class="space-y-1.5">
+
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="password">
+                            Password
+                        </label>
+
+                        <div class="relative">
+
+                            <input id="password" name="password" type="password" minlength="8" maxlength="64"
+                                placeholder="••••••••"
+                                class="w-full px-4 py-3 pr-10 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                                onclick="togglePassword('password', this)">
+                                visibility
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="space-y-1.5">
+
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="confirm_password">
+                            Confirm Password
+                        </label>
+
+                        <div class="relative">
+
+                            <input id="confirm_password" name="confirmPassword" type="password" minlength="8"
+                                maxlength="64" placeholder="••••••••"
+                                class="w-full px-4 py-3 pr-10 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                                onclick="togglePassword('confirm_password', this)">
+                                visibility
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Human Verification -->
+                <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>">
+                </div>
+
+                <!-- Terms -->
+
+                <div class="flex items-start gap-3 py-2">
+
+                    <input id="terms" name="terms" type="checkbox" class="mt-1 w-4 h-4">
+
+                    <label for="terms" class="font-body-sm text-body-sm text-on-surface-variant">
+
+                        I agree to the
+                        <a href="#" class="text-secondary hover:underline">
+                            Privacy Policy
+                        </a>
+                        and
+                        <a href="#" onclick="openTermsModal(); return false;" class="text-secondary hover:underline">
+                            Terms of Service
+                        </a>
+                        <!-- Terms of Service Modal -->
+                        <div id="termsModal"
+                            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+
+                            <div
+                                class="bg-surface-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+
+                                <!-- Header -->
+                                <div
+                                    class="bg-primary text-white px-6 py-5 flex items-center justify-between border-b border-primary-container">
+
+                                    <div>
+                                        <h2 class="text-2xl font-semibold">
+                                            Terms of Service
+                                        </h2>
+                                        <p class="text-primary-fixed-dim text-sm mt-1">
+                                            LuxeStay Hospitality Group
+                                        </p>
+                                    </div>
+
+                                    <button type="button" onclick="closeTermsModal()"
+                                        class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition">
+
+                                        <span class="material-symbols-outlined">
+                                            close
+                                        </span>
+
+                                    </button>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="overflow-y-auto px-6 py-6 text-on-surface space-y-6 bg-surface">
+
+                                    <div>
+                                        <p class="text-sm text-on-surface-variant">
+                                            Last Updated: June 2026
+                                        </p>
+                                    </div>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            1. Acceptance of Terms
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            By registering an account, booking accommodations, or using
+                                            any services provided through LuxeStay, you agree to be bound
+                                            by these Terms of Service.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            2. Eligibility
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            You must be at least 18 years old and capable of entering
+                                            legally binding agreements.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            3. Account Registration
+                                        </h3>
+
+                                        <ul class="list-disc ml-6 text-body-sm text-on-surface-variant space-y-2">
+                                            <li>Provide accurate information.</li>
+                                            <li>Maintain password confidentiality.</li>
+                                            <li>Keep contact information updated.</li>
+                                            <li>Accept responsibility for account activities.</li>
+                                        </ul>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            4. Reservations
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            Reservations are subject to room availability, payment
+                                            verification, and hotel operational policies.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            5. Check-In Requirements
+                                        </h3>
+
+                                        <ul class="list-disc ml-6 text-body-sm text-on-surface-variant space-y-2">
+                                            <li>Valid government-issued identification.</li>
+                                            <li>Reservation confirmation details.</li>
+                                            <li>Compliance with hotel policies.</li>
+                                        </ul>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            6. Payments
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            Guests agree to pay all room charges, taxes, fees, and
+                                            incidental expenses incurred during their stay.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            7. Cancellations & Refunds
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            Refund eligibility depends on the reservation policy,
+                                            cancellation timing, and applicable hotel rules.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            8. Guest Conduct
+                                        </h3>
+
+                                        <ul class="list-disc ml-6 text-body-sm text-on-surface-variant space-y-2">
+                                            <li>No unlawful activities.</li>
+                                            <li>No property damage.</li>
+                                            <li>No disruptive behavior.</li>
+                                            <li>Compliance with hotel regulations.</li>
+                                        </ul>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            9. Privacy
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            Personal information is processed solely for account
+                                            management, reservations, and service improvement.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            10. Limitation of Liability
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            LuxeStay shall not be liable for indirect, incidental, or
+                                            consequential damages arising from the use of the platform.
+                                        </p>
+                                    </section>
+
+                                    <section class="space-y-2">
+                                        <h3 class="font-semibold text-primary text-lg">
+                                            11. Governing Law
+                                        </h3>
+
+                                        <p class="text-body-sm text-on-surface-variant leading-relaxed">
+                                            These Terms are governed by the laws of India. Any disputes
+                                            shall be subject to the jurisdiction of courts in Ahmedabad,
+                                            Gujarat.
+                                        </p>
+                                    </section>
+
+                                </div>
+
+                                <!-- Footer -->
+                                <div
+                                    class="border-t border-outline-variant bg-surface-container-low px-6 py-4 flex justify-end gap-3">
+
+                                    <button type="button" onclick="closeTermsModal()"
+                                        class="px-5 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-container transition">
+
+                                        Close
+
+                                    </button>
+
+                                    <button type="button" onclick="acceptTerms()"
+                                        class="px-5 py-2 rounded-lg bg-secondary text-on-secondary hover:bg-secondary/90 transition">
+
+                                        I Understand
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </label>
+
+                </div>
+
+                <!-- Submit -->
+                <button type="submit"
+                    class="w-full py-4 bg-secondary text-on-secondary font-label-caps uppercase tracking-widest rounded-lg hover:bg-secondary/90 transition-all">
+
+                    Create Account
+
+                </button>
+            </form>
+            <!-- Login Link -->
+            <div class="mt-8 text-center border-t border-outline-variant pt-6">
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Already a registered guest?
+                    <a class="font-title-sm text-primary hover:underline underline-offset-4 ml-1" href="/login">Sign
+                        In</a>
+                </p>
+            </div>
+        </section>
+    </main>
+    <!-- Micro-interaction JS -->
+
+    <!-- Footer -->
+    <footer class="absolute bottom-4 w-full text-center z-10 px-4">
+        <p class="font-body-sm text-body-sm text-on-surface-variant opacity-60">
+            © 2026 LuxeStay Hospitality Group. All rights reserved.
+        </p>
+    </footer>
+
+    <script src="JS/auth/register.js"></script>
+    <script src="JS/toastmessage.js"></script>
+</body>
+
+</html>

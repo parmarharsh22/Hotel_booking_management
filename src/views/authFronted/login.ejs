@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>LuxeStay | Multi-Role Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b6c7eb",
+                        "tertiary": "#211400",
+                        "surface-container-high": "#e6e8eb",
+                        "status-available": "#2D8A56",
+                        "outline": "#75777e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef1",
+                        "on-primary-fixed": "#081b38",
+                        "status-dirty": "#64748B",
+                        "on-tertiary-fixed-variant": "#5b4217",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#3c2700",
+                        "tertiary-fixed-dim": "#e5c18a",
+                        "on-secondary-fixed-variant": "#5d4201",
+                        "status-maintenance": "#D97706",
+                        "inverse-primary": "#b6c7eb",
+                        "surface-white": "#FFFFFF",
+                        "primary": "#031632",
+                        "inverse-on-surface": "#eff1f4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ad8d5b",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "primary-container": "#1a2b48",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#e9c176",
+                        "surface-dim": "#d8dadd",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-container": "#fed488",
+                        "tertiary-fixed": "#ffdead",
+                        "on-primary-container": "#8293b5",
+                        "secondary-fixed": "#ffdea5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-fixed": "#281900",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface-container-low": "#f2f4f7",
+                        "outline-variant": "#c5c6ce",
+                        "on-surface-variant": "#44474d",
+                        "surface-bright": "#f7f9fc",
+                        "on-primary-fixed-variant": "#374765",
+                        "on-secondary-fixed": "#261900",
+                        "on-secondary-container": "#785a1a",
+                        "on-error": "#ffffff",
+                        "status-booked": "#1A2B48",
+                        "background": "#f7f9fc",
+                        "secondary": "#775a19",
+                        "surface-tint": "#4e5f7e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "container-margin-desktop": "32px",
+                        "container-margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .luxury-gradient {
+            background: radial-gradient(circle at top right, #1a2b48 0%, #031632 100%);
+        }
+
+        .gold-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gold-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 222, 165, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 6s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+    </style>
+    <!-- captcha service -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body
+    class="bg-background text-on-background font-body-md min-h-screen flex items-center justify-center p-4 luxury-gradient relative">
+    <!-- Background Atmospheric Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-24 -right-24 w-64 h-64 md:w-96 md:h-96 rounded-full bg-secondary opacity-5 blur-3xl">
+        </div>
+        <div
+            class="absolute top-1/2 -left-48 w-60 h-60 md:w-80 md:h-80 rounded-full bg-primary-container opacity-10 blur-3xl">
+        </div>
+    </div>
+    <!-- Main Container -->
+    <main class="w-full max-w-7xl mx-auto grid lg:grid-cols-12 gap-8 items-center z-10">
+        <!-- Left Side: Login Form -->
+        <div class="lg:col-span-7 xl:col-span-6 flex flex-col items-center lg:items-start">
+            <!-- Brand Identity -->
+            <div class="text-center lg:text-left mb-8 md:mb-12">
+                <h1
+                    class="font-display-lg text-[28px] md:text-display-lg text-primary-fixed uppercase tracking-[0.2em] mb-2">
+                    LuxeStay
+                </h1>
+                <p class="font-label-caps text-label-caps text-secondary-fixed opacity-80 uppercase">
+                    Hospitality Business Management System
+                </p>
+            </div>
+            <!-- Login Card -->
+            <div
+                class="w-full max-w-[480px] glass-panel border border-outline-variant/30 rounded-xl shadow-2xl overflow-hidden mx-auto lg:mx-0">
+                <!-- Header Section with Role Tabs -->
+                <div class="bg-surface-container-low p-1 flex border-b border-outline-variant">
+                    <button
+                        class="role-tab flex-1 py-3 px-1 md:px-2 rounded-lg font-label-caps text-[10px] md:text-label-caps transition-all duration-200 bg-primary text-on-primary shadow-sm"
+                        data-role="GUEST" onclick="switchRole('GUEST')">
+                        GUEST
+                    </button>
+                    <button
+                        class="role-tab flex-1 py-3 px-1 md:px-2 rounded-lg font-label-caps text-[10px] md:text-label-caps transition-all duration-200 text-on-surface-variant hover:bg-surface-container"
+                        data-role="FRONT_DESK" onclick="switchRole('FRONT_DESK')">
+                        FRONT DESK
+                    </button>
+                    <button
+                        class="role-tab flex-1 py-3 px-1 md:px-2 rounded-lg font-label-caps text-[10px] md:text-label-caps transition-all duration-200 text-on-surface-variant hover:bg-surface-container"
+                        data-role="ADMIN" onclick="switchRole('ADMIN')">
+                        ADMIN
+                    </button>
+                </div>
+                <!-- Card Body -->
+                <div class="p-6 md:p-10">
+                    <div class="mb-8">
+                        <h2 class="font-headline-md text-headline-md text-primary mb-1" id="role-title">Welcome Back
+                        </h2>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant" id="role-subtitle">Please sign in
+                            to access your guest dashboard.</p>
+                    </div>
+                    <form class="space-y-6" onsubmit="event.preventDefault();" method="post" action="/loginUser">
+                        <!-- Hidden Field taken for the role selection to check for the same role from db  -->
+                        <input type="hidden" id="role" name="role" value="GUEST">
+                        <!-- Email Field -->
+                        <div class="space-y-2">
+                            <label
+                                class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2"
+                                for="email">
+                                <span class="material-symbols-outlined text-[18px]">mail</span>
+                                Email Address
+                            </label>
+                            <input
+                                class="w-full h-12 px-4 bg-white border border-outline-variant rounded-lg font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant"
+                                name="email" id="email" placeholder="name@company.com" type="text" />
+                        </div>
+                        <!-- Password Field -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <label
+                                    class="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2"
+                                    for="password">
+                                    <span class="material-symbols-outlined text-[18px]">lock</span>
+                                    Password
+                                </label>
+                                <a class="font-body-sm text-body-sm text-secondary hover:underline underline-offset-4 font-medium"
+                                    href="#">Forgot?</a>
+                            </div>
+                            <div class="relative">
+                                <input
+                                    class="w-full h-12 px-4 bg-white border border-outline-variant rounded-lg font-body-md text-on-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-outline-variant"
+                                    name="password" id="password" placeholder="••••••••" type="password" />
+                                <button
+                                    class="absolute right-4 top-1/4 text-on-surface-variant hover:text-primary transition-colors"
+                                    type="button">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Human Verification -->
+                        <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>">
+                        </div>
+
+                        <!-- Login Button -->
+                        <button
+                            class="w-full h-14 bg-secondary text-on-secondary font-label-caps text-label-caps rounded-lg flex items-center justify-center gap-3 gold-shimmer hover:scale-[1.01] active:scale-[0.98] transition-all shadow-lg"
+                            type="submit">
+                            SECURE LOGIN
+                            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                        </button>
+                    </form>
+                    <!-- Footer Links -->
+                    <div class="mt-8 pt-6 border-t border-outline-variant flex flex-col items-center gap-4">
+                        <p class="font-body-sm text-body-sm text-on-surface-variant text-center">
+                            Don't have an account? <a class="text-primary font-bold hover:underline"
+                                href="/register">Register
+                                Property</a>
+                        </p>
+                        <div class="flex gap-6">
+                            <span
+                                class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer transition-colors"
+                                title="Privacy Policy">verified_user</span>
+                            <span
+                                class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer transition-colors"
+                                title="Terms of Service">description</span>
+                            <span
+                                class="material-symbols-outlined text-outline-variant hover:text-secondary cursor-pointer transition-colors"
+                                title="Help Center">help</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- System Status Mini-Card -->
+            <div
+                class="mt-6 w-full max-w-[480px] p-4 rounded-lg bg-primary-container/30 border border-primary-fixed-dim/20 flex items-center justify-between mx-auto lg:mx-0">
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-status-available animate-pulse"></span>
+                    <span class="font-label-caps text-[10px] text-primary-fixed tracking-wider uppercase">HBMS Cloud
+                        Service: Operational</span>
+                </div>
+                <span class="font-data-mono text-[10px] text-primary-fixed opacity-60">v2.4.0-LX</span>
+            </div>
+        </div>
+        <!-- Right Side: Cinematic Image (Visible on Large Tablet & Desktop) -->
+        <div
+            class="hidden lg:block lg:col-span-5 xl:col-span-6 h-[600px] xl:h-[700px] relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
+            <img alt="Luxury Hotel Ambience"
+                class="w-full h-full object-cover grayscale-[0.2] contrast-[1.1] transition-transform duration-700 group-hover:scale-105"
+                data-alt="A cinematic, wide-angle interior photograph of a luxury hotel lobby during the blue hour. The space is defined by polished dark marble floors reflecting warm, amber-toned ambient lighting. Minimalist furniture in navy blue velvet and gold accents creates a sophisticated hospitality atmosphere. The mood is tranquil and exclusive, with a focus on high-end textures and architectural precision."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAn3DlULXk718lahlzez1e4S9jCbQ3fI-Zghxf_ZfEmKOSLUvYyRssDV8Rzirx9hHIRm2JUDQuwPxzo9ncIGzHsLlZN5PiCTlhmFD_t5j-rWWc9QIOF5mlaYfGOLjcNHnW1yNcQoFG2bfttSHTjKDUKA6Ev12R_0e4jRAmvfsbdTfKxiClJoxHhUUZIpxhPyAa9zodbao6AgxeQYe0swX-yoyjNsoZaGdn4H8N6eXbScscKV3zIox_dTfpH6g-bUv73mkvwfk3HqyL" />
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent flex flex-col justify-end p-8 xl:p-12">
+                <p class="font-label-caps text-label-caps text-secondary-fixed mb-2 tracking-[0.2em]">THE LUXE
+                    EXPERIENCE</p>
+                <p class="font-display-lg text-white text-2xl xl:text-3xl mb-4 italic leading-relaxed">"Precision at
+                    every touchpoint of the guest journey."</p>
+                <div class="w-12 h-0.5 bg-secondary-fixed opacity-50"></div>
+            </div>
+        </div>
+    </main>
+    <script>
+        function switchRole(role) {
+            const tabs = document.querySelectorAll('.role-tab');
+            const title = document.getElementById('role-title');
+            const subtitle = document.getElementById('role-subtitle');
+
+            const roleuse = document.getElementById("role").value = role;
+            console.log(roleuse);
+
+            tabs.forEach(tab => {
+                if (tab.dataset.role === role) {
+                    tab.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+                    tab.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+                } else {
+                    tab.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+                    tab.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+                }
+            });
+
+            // Content Mapping
+            const mapping = {
+                'GUEST': {
+                    title: 'Welcome Back',
+                    subtitle: 'Please sign in to access your guest dashboard.'
+                },
+                'FRONT_DESK': {
+                    title: 'Terminal Sign-In',
+                    subtitle: 'Access property management and guest folios.'
+                },
+                'ADMIN': {
+                    title: 'Global Administration',
+                    subtitle: 'Manage your hotel for portfolio-wide management.'
+                }
+            };
+
+            title.textContent = mapping[role].title;
+            subtitle.textContent = mapping[role].subtitle;
+        }
+
+        // Simple button active state micro-interaction
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => el.style.transform = 'scale(0.98)');
+            el.addEventListener('mouseup', () => el.style.transform = 'scale(1)');
+            el.addEventListener('mouseleave', () => el.style.transform = 'scale(1)');
+        });
+    </script>
+    <script src="JS/toastmessage.js"></script>
+    <script src="JS/auth/login.js"></script>
+    <% if (successMessage) { %>
+        <script>
+            showToast("<%= successMessage %>");
+        </script>
+        <% } %>
+            <% if (failure) { %>
+                <script>
+                    showToast("<%= failure %>", "error");
+                </script>
+                <% } %>
+
+
+</body>
+
+</html>

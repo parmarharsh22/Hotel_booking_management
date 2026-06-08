@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>LuxeStay | Premium Hospitality</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b6c7eb",
+                        "tertiary": "#211400",
+                        "surface-container-high": "#e6e8eb",
+                        "status-available": "#2D8A56",
+                        "outline": "#75777e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef1",
+                        "on-primary-fixed": "#081b38",
+                        "status-dirty": "#64748B",
+                        "on-tertiary-fixed-variant": "#5b4217",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#3c2700",
+                        "tertiary-fixed-dim": "#e5c18a",
+                        "on-secondary-fixed-variant": "#5d4201",
+                        "status-maintenance": "#D97706",
+                        "inverse-primary": "#b6c7eb",
+                        "surface-white": "#FFFFFF",
+                        "primary": "#031632",
+                        "inverse-on-surface": "#eff1f4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ad8d5b",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "primary-container": "#1a2b48",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#e9c176",
+                        "surface-dim": "#d8dadd",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-container": "#fed488",
+                        "tertiary-fixed": "#ffdead",
+                        "on-primary-container": "#8293b5",
+                        "secondary-fixed": "#ffdea5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-fixed": "#281900",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface-container-low": "#f2f4f7",
+                        "outline-variant": "#c5c6ce",
+                        "on-surface-variant": "#44474d",
+                        "surface-bright": "#f7f9fc",
+                        "on-primary-fixed-variant": "#374765",
+                        "on-secondary-fixed": "#261900",
+                        "on-secondary-container": "#785a1a",
+                        "on-error": "#ffffff",
+                        "status-booked": "#1A2B48",
+                        "background": "#f7f9fc",
+                        "secondary": "#775a19",
+                        "surface-tint": "#4e5f7e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "container-margin-desktop": "32px",
+                        "container-margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+    <!-- TopNavBar -->
+    <!-- TopNavBar -->
+    <header class="bg-surface sticky top-0 z-50 border-b border-outline-variant">
+        <div
+            class="flex justify-between items-center w-full px-container-margin-mobile lg:px-container-margin-desktop h-20 max-w-[1440px] mx-auto">
+
+            <div class="flex items-center gap-4 lg:gap-12">
+                <a href="#" class="font-display-lg text-2xl lg:text-display-lg text-primary tracking-tight font-bold">
+                    LuxeStay
+                </a>
+
+                <nav class="hidden md:flex gap-4 lg:gap-8">
+                    <a href="#"
+                        class="text-secondary border-b-2 border-secondary pb-1 font-body-md hover:text-secondary transition-colors">
+                        Hotels
+                    </a>
+                    <a href="#" class="text-on-surface-variant font-body-md hover:text-secondary transition-colors">
+                        Bookings
+                    </a>
+                    <a href="#" class="text-on-surface-variant font-body-md hover:text-secondary transition-colors">
+                        Rewards
+                    </a>
+                    <a href="#" class="text-on-surface-variant font-body-md hover:text-secondary transition-colors">
+                        Support
+                    </a>
+                </nav>
+            </div>
+
+            <div class="flex items-center gap-3 lg:gap-6">
+
+                <% if(user) { %>
+
+                    <div class="flex items-center gap-2 lg:gap-4">
+
+                        <a href="/notifications" class="material-symbols-outlined text-primary cursor-pointer">
+                            notifications
+                        </a>
+
+                        <a href="/authen/updateProfile" class="material-symbols-outlined text-primary cursor-pointer">
+                        <a href="/profile" class="material-symbols-outlined text-primary cursor-pointer">
+                            account_circle
+                        </a>
+
+                    </div>
+
+                    <a href="/my-bookings"
+                        class="hidden md:block text-on-surface-variant font-body-md hover:text-secondary transition-colors">
+                        My Bookings
+                    </a>
+
+                    <a href="/logout"
+                        class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                        Logout
+                    </a>
+
+                    <% } else { %>
+
+                        <a href="/login"
+                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                            Sign In
+                        </a>
+                        <a href="/register"
+                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                            Register
+                        </a>
+
+                        <% } %>
+
+                            <button class="md:hidden flex items-center">
+                                <a href="#" class="material-symbols-outlined text-primary">
+                                    menu
+                                </a>
+                            </button>
+<<<<<<< HEAD
+=======
+                <div class="flex items-center gap-2 lg:gap-4">
+                    <a href="#" class="material-symbols-outlined text-primary cursor-pointer" data-icon="notifications">
+                        notifications
+                    </a>
+                    <a href="#" class="material-symbols-outlined text-primary cursor-pointer"
+                        data-icon="account_circle">
+                        account_circle
+                    </a>
+                </div>
+
+                <a href="/login"
+                    class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                    Sign In
+                </a>
+>>>>>>> 1f093e8f9c230d9ed9239476a67bf705902099c1
+
+            </div>
+
+        </div>
+    </header>
+    <main>
+        <!-- Hero Section -->
+        <section class="relative min-h-[640px] flex items-center justify-center overflow-hidden py-20 lg:py-0">
+            <div class="absolute inset-0 z-0">
+                <img alt="Luxury Hotel Lobby" class="w-full h-full object-cover"
+                    data-alt="An expansive, high-ceilinged luxury hotel lobby with grand marble floors and gold-accented architectural details. Large floor-to-ceiling windows reveal a serene sunset over a metropolitan skyline. The space is filled with soft, warm ambient lighting that highlights plush velvet seating areas and a massive crystal chandelier. The overall aesthetic is one of sophisticated corporate luxury, utilizing a palette of deep navy blues and radiant gold accents."
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiYLu1XtmBE00glUSt3CaHbCaf9vOsu30P3bMXI8zkMg5ZgYLTbqkfRa-hub8UbZBRlvdn8Wt8Mr6L42wE6ucpxlKEs4YE5NDSYdQbLtvdLHL0Xqcwd_W5CwMW2iGFwAvx-zK9MtY-18T2V7egvwel-M9ywrRPI9OfwXl6bNxUeYLuqGiFNtU3FfEE_qj-RJgKjLhJLW3qQiXAgM2wvyFWsAX4qtjtYfEC9oW0F65maQjWVZ_PRQQIZtxWRrq4YzzCmihlD4Fl3oNM" />
+                <div class="absolute inset-0 bg-gradient-to-b from-primary/40 to-primary/80"></div>
+            </div>
+            <div
+                class="relative z-10 w-full max-w-[1200px] px-container-margin-mobile lg:px-gutter text-center text-white">
+                <h1 class="font-display-lg-mobile lg:font-display-lg text-white mb-6 drop-shadow-lg">Experience the
+                    Zenith of Hospitality</h1>
+                <p class="font-body-md text-base lg:text-xl mb-12 max-w-2xl mx-auto opacity-90">Discover handpicked
+                    premium stays across the globe, managed with precision and care for the discerning traveler.</p>
+                <!-- Search Widget -->
+                <div
+                    class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2">
+                    <!-- Form Tag Wraps the Entire Component -->
+                    <form id="search-form"
+                        class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2"
+                        method="post" action="/rooms/searchHotels">
+                        <!-- LOCATION -->
+                        <div
+                            class="flex-1 group px-4 py-1 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
+
+                            <label class="font-label-caps text-on-surface-variant block mb-1">
+                                LOCATION
+                            </label>
+
+                            <div class="flex items-center gap-2">
+
+                                <span class="material-symbols-outlined text-primary shrink-0">
+                                    location_on
+                                </span>
+
+                                <div class="relative flex-1">
+                                    <select name="location" id="location-input"
+                                        class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-title-sm pr-10 appearance-none cursor-pointer">
+
+                                        <option value="" selected disabled>
+                                            Select Location
+                                        </option>
+                                    </select>
+
+                                    <span
+                                        class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">
+                                        expand_more
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- CHECK-IN DATE -->
+                        <div
+                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
+                            <label class="font-label-caps text-on-surface-variant block mb-1">CHECK-IN</label>
+                            <div class="flex items-center gap-2">
+                                <!-- <span class="material-symbols-outlined text-primary"
+                                    data-icon="calendar_today">calendar_today</span> -->
+                                <input name="check_in" id="checkin-input"
+                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
+                                    type="date" />
+                            </div>
+                        </div>
+
+                        <!-- CHECK-OUT DATE -->
+                        <div
+                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
+                            <label class="font-label-caps text-on-surface-variant block mb-1">CHECK-OUT</label>
+                            <div class="flex items-center gap-2">
+                                <!-- <span class="material-symbols-outlined text-primary"
+                                    data-icon="calendar_today">calendar_today</span> -->
+                                <input name="check_out" id="checkout-input"
+                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
+                                    type="date" />
+                            </div>
+                        </div>
+
+                        <!-- ROOMS INPUT -->
+                        <div
+                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
+                            <label class="font-label-caps text-on-surface-variant block mb-1">ROOMS</label>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary"
+                                    data-icon="meeting_room">meeting_room</span>
+                                <input name="rooms" id="rooms-input"
+                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm p-0"
+                                    type="number" value="1" min="1" max="10" />
+                            </div>
+                        </div>
+
+                        <!-- GUESTS INPUT -->
+                        <div
+                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
+                            <label class="font-label-caps text-on-surface-variant block mb-1">GUESTS</label>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+                                <input name="guests" id="guests-input"
+                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm p-0"
+                                    type="number" value="2" min="1" max="30" />
+                            </div>
+                        </div>
+
+                        <!-- SEARCH (P TAG) -->
+                        <button type="submit"
+                            class="bg-secondary text-white px-10 py-4 rounded-lg font-title-sm hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer select-none border-none outline-none">
+                            <span>SEARCH</span>
+                            <span class="material-symbols-outlined">search</span>
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+        </section>
+        <!-- Featured Hotels Grid -->
+        <section
+            class="py-16 lg:py-24 max-w-[1440px] mx-auto px-container-margin-mobile lg:px-container-margin-desktop">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
+                <div>
+                    <h2 class="font-display-lg-mobile lg:font-display-lg text-primary mb-2">Hand-Selected Destinations
+                    </h2>
+                    <p class="text-on-surface-variant">Our most prestigious properties offering unmatched service and
+                        luxury.</p>
+                </div>
+                <a href="#" class="text-secondary font-title-sm flex items-center gap-2 hover:gap-4 transition-all">
+                    View all Properties
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div
+                    class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
+                    <div class="relative h-64 overflow-hidden">
+                        <img alt="The Royal Azure"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            data-alt="An ultra-modern luxury resort situated on a cliffside overlooking a crystal-clear turquoise ocean."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8_iGx8kfBkRmy1hS-jWG5NurahVXexrXLVlBgMPbst6lhb6YHgaZFo2K44AC2bZcBG9Q-iOd8rKhShdWuH-T4cSS8sgxsQbpWPqvhVqegEgMDPU2VpGkLOzVwOryKUsCCZowi34P8UQkfuUqKlDnPHwSch_CeNaF4Z_CwKDkba2GmDb2TgGCpFWuGLKOZs7k_641h4J5AuNrWAF61eOEgpVixZAT99fIbAQIZt6VhoNrdM8BYhsI9F1VyECIs_yq07z4xKxl3hu0T" />
+                        <div
+                            class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
+                            <span class="material-symbols-outlined text-secondary text-sm" data-icon="star"
+                                style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label-caps text-primary">4.9</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="font-label-caps text-secondary mb-2 block">SANTORINI, GREECE</span>
+                        <h3 class="font-headline-md text-primary mb-2">The Royal Azure Resort</h3>
+                        <p class="text-on-surface-variant font-body-sm mb-6">Experience breathtaking sunsets and
+                            world-class culinary excellence in our signature cliffside suites.</p>
+                        <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
+                            <div>
+                                <span class="text-on-surface-variant text-xs block">Starting at</span>
+                                <span class="font-title-sm text-primary text-xl">$850<span class="text-xs font-normal">
+                                        /night</span></span>
+                            </div>
+                            <a href="#"
+                                class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps inline-block text-center">
+                                Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
+                    <div class="relative h-64 overflow-hidden">
+                        <img alt="Empire Grand Central"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            data-alt="The exterior of a classic grand hotel in a bustling metropolitan city."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA743enRbvE3q2Baw0fARPOvbz7QOyk6O3U0JL2alj-SjQHhmJX-09GNxM4uMIzvOh6QuJpCg8qzUOaJc6xzVep5L4Wr0BDpHz-Wh37bJt9E9AXIaq9ZZMGXRfyzfYjSFx2YqzXdFyDqXOYLP2pVZkEm27iEmeKJmGIjH5cf9kPZVY5XroSyMIsvqswKQd-ucoQ5SpUsx6AAK-Mg7kd1QvBwuF817riGpF8f0tEgf3UbwBLFUa-iB10u7gu93maBcywp6y-bE9fs0u3" />
+                        <div
+                            class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
+                            <span class="material-symbols-outlined text-secondary text-sm" data-icon="star"
+                                style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label-caps text-primary">4.8</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="font-label-caps text-secondary mb-2 block">NEW YORK, USA</span>
+                        <h3 class="font-headline-md text-primary mb-2">Empire Grand Central</h3>
+                        <p class="text-on-surface-variant font-body-sm mb-6">Unmatched elegance in the heart of
+                            Manhattan. A sanctuary of peace amidst the city's vibrant energy.</p>
+                        <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
+                            <div>
+                                <span class="text-on-surface-variant text-xs block">Starting at</span>
+                                <span class="font-title-sm text-primary text-xl">$1,200<span
+                                        class="text-xs font-normal"> /night</span></span>
+                            </div>
+                            <button
+                                class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps hover:bg-secondary transition-colors">Book
+                                Now</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
+                    <div class="relative h-64 overflow-hidden">
+                        <img alt="Zenith Garden"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            data-alt="A lush, tropical villa retreat in Bali surrounded by dense jungle greenery."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAewLpyXc1rDk4QQIobjXmLEK7NQ7v6zyJG1OuOOTIKn-59QXt0o5He6sPLnLaWPJDk4g_HTy2fInzm2_Z__6hHSqbfyefMTzIYBAo6t0M8UV2htPIsr6YYdjoY4PvKAPIHDuh9XHagyxXzNRRMbvdKPNCz4oSh_T7EB5P1EZXSb0w2CAoCU-rftxoqDNSqBFt0H1GBnSJxXIxgDCnVFvc8-KJU9MhZAiJrcw7uyeY2tWwD0Onz54qULMdawBqfUgXORUydKAAHteyq" />
+                        <div
+                            class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
+                            <span class="material-symbols-outlined text-secondary text-sm" data-icon="star"
+                                style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="font-label-caps text-primary">5.0</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="font-label-caps text-secondary mb-2 block">UBUD, INDONESIA</span>
+                        <h3 class="font-headline-md text-primary mb-2">Zenith Garden Villas</h3>
+                        <p class="text-on-surface-variant font-body-sm mb-6">Reconnect with nature in our private garden
+                            sanctuaries. Award-winning spa treatments and organic dining.</p>
+                        <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
+                            <div>
+                                <span class="text-on-surface-variant text-xs block">Starting at</span>
+                                <span class="font-title-sm text-primary text-xl">$640<span class="text-xs font-normal">
+                                        /night</span></span>
+                            </div>
+                            <button
+                                class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps hover:bg-secondary transition-colors">Book
+                                Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Popular Destinations (Asymmetric Layout) -->
+        <section class="bg-surface-container-low py-16 lg:py-24">
+            <div class="max-w-[1440px] mx-auto px-container-margin-mobile lg:px-container-margin-desktop">
+                <div class="grid grid-cols-12 gap-8 items-center">
+                    <div class="col-span-12 lg:col-span-4">
+                        <h2 class="font-display-lg-mobile lg:font-display-lg text-primary mb-6">Popular Destinations
+                        </h2>
+                        <p class="text-on-surface-variant mb-8 font-body-md">Join over 50,000 monthly travelers who
+                            trust LuxeStay for their high-end travel management and luxury accommodation needs.</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3 text-primary font-title-sm">
+                                <span class="material-symbols-outlined text-secondary"
+                                    data-icon="check_circle">check_circle</span>
+                                Handpicked Property Portfolio
+                            </li>
+                            <li class="flex items-center gap-3 text-primary font-title-sm">
+                                <span class="material-symbols-outlined text-secondary"
+                                    data-icon="check_circle">check_circle</span>
+                                Exclusive Guest Rewards
+                            </li>
+                            <li class="flex items-center gap-3 text-primary font-title-sm">
+                                <span class="material-symbols-outlined text-secondary"
+                                    data-icon="check_circle">check_circle</span>
+                                24/7 Premium Concierge
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-span-12 lg:col-span-8">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="relative h-[300px] md:h-[400px] rounded-xl overflow-hidden group">
+                                <img class="w-full h-full object-cover transition-all group-hover:scale-110"
+                                    data-alt="A vibrant landscape shot of Kyoto, Japan."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMd-sQkNPCtHZmRm9NW1uuC63jXfGxLPJEzdrCAbkFpW3vLFmTGBs_vEjCUi4cY8d1ybnQag8LdbqdA78aYvjd0Xw662fxWnX4FAtyY0qe2HozxUYk59cyundZRh4j7RogGTZA_eidAXTyNCDKQVw_pY2RGxaydWBlb1TkrYMn2PVCQPIl3ZncV9IsSmMDHixaA2ldlcaJfA-nIQk9aKFBpzQHZc47-kNtGbZ3H2CHYBlPI0zhZmdQjLZ3HDYisvo8s5LNOfmo6ZNE" />
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-primary/90 via-transparent to-transparent">
+                                </div>
+                                <span class="absolute bottom-6 left-6 text-white font-title-sm">Kyoto</span>
+                            </div>
+                            <div class="relative h-[300px] md:h-[400px] rounded-xl overflow-hidden md:mt-8 group">
+                                <img class="w-full h-full object-cover transition-all group-hover:scale-110"
+                                    data-alt="The Eiffel Tower standing tall against a pale blue Parisian sky."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDT_SNz3CR49w4j1duP3JgeeyPogxYgQBrGPXug7onRbdgudPF61Bt3FCbF6ruyiwiL8cIYdA9o5Oe1Yu5QxAv033SYmIMwMxVmyTfCTdiop2MwtQN6-P5N6u1QNVk-hqUSzzrvYN2X13_Sc6PN2cV59wCORV4fQGT-l19lu9txQPykIUMO2YD9W37YXD7uAYp7Ff2t5FV6Yj01_JmdEVrNkGtxQl2gZXC2JB35f2rzWLTQq-ebrK5Gsh00bx2EoQ7Q_PyeVaSuFn4" />
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-primary/90 via-transparent to-transparent">
+                                </div>
+                                <span class="absolute bottom-6 left-6 text-white font-title-sm">Paris</span>
+                            </div>
+                            <div class="relative h-[300px] md:h-[400px] rounded-xl overflow-hidden group">
+                                <img class="w-full h-full object-cover transition-all group-hover:scale-110"
+                                    data-alt="A high-angle view of the Dubai Marina at night."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuABHuSUc9VV1LNnUaU4KfH_3AhTvR--9gpMne7qYqCxOsl5UJ1wiXBwx2S5hidyGgcciM4yVHavLowFRhgO2qGtT4TcQ2jqJ_lrWdE4iQWpj3ouvMfSxRdXj7e--yp_JSXatngt1wIz8NQejmTUhsbVdN2qwoP0OfIF5zHqok7RlK9YGv5gE-PLZ5cZByBfkI46igXG8cW8HYdHHivZnNBqxkSdUfro1CxLg_61mHl2SjOW2uYra5i5mVGy942LM5djj55YOcHB-0KR" />
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-primary/90 via-transparent to-transparent">
+                                </div>
+                                <span class="absolute bottom-6 left-6 text-white font-title-sm">Dubai</span>
+                            </div>
+                            <div class="relative h-[300px] md:h-[400px] rounded-xl overflow-hidden md:mt-8 group">
+                                <img class="w-full h-full object-cover transition-all group-hover:scale-110"
+                                    data-alt="The Sydney Opera House at sunset."
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGTrW20MPJC4AQOQH4Qk6SF7CmX2mqpk9SVbmqC9c1Yb176LXPVguZ6HRe9hcQ9MFmAWt6I0ecyhHLYE67YKl-k4r37ZcIjWlr6VkFtBo0BYJR9rxZhFf3Glh_CA-Zasd8U3FSf5-tn2Vole7h-lPkpMdek3zcu-Z0H2LpWkMElozIU_G-Dw3N8hbqC6SkkEZf8NRuO4dg1xhs4J8JFfGTcQYEkXeOt8zvc5fLb8gdfml9rpQTzTDENTE2xXETqru9_nJQgXg-rQd9" />
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-primary/90 via-transparent to-transparent">
+                                </div>
+                                <span class="absolute bottom-6 left-6 text-white font-title-sm">Sydney</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Testimonials -->
+        <section
+            class="py-16 lg:py-24 max-w-[1440px] mx-auto px-container-margin-mobile lg:px-container-margin-desktop text-center">
+            <h2 class="font-display-lg-mobile lg:font-display-lg text-primary mb-12 lg:mb-16">Stories from Our Guests
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="p-8 bg-white border border-outline-variant rounded-xl text-left">
+                    <div class="flex gap-1 text-secondary mb-4">
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <p class="font-body-md text-on-surface-variant mb-6 italic">"The level of detail and personalization
+                        LuxeStay provides is simply unmatched. Their properties are always pristine and the staff goes
+                        above and beyond."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary-container overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="Professional headshot of James Wilson."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoIA9aipHtOkG-CIYPRALMkM90NcohSDtFUcZrbk9GK3XtN3ymVcLu8pvAgGFi7sk2pP0ltfvHwQ40CHhmOdknBM2Pozcz_VJsmcpgMhjQfHmLen9y9z3wNkwFS7rIs1R--6CClyi4IKKvc-2GTAPk_TCJuBfvGU9_Q7ZKNCMAp5Lun3QcCoDd3-DTX5vT5LrePxBOvGrV9RjV06762WuKoLOH8hp34RYjp_kAzd1GoGI0b-TyIT6BNx3x6dPdUYrQZ6N6L4TaYidv" />
+                        </div>
+                        <div>
+                            <span class="block font-title-sm text-primary">James Wilson</span>
+                            <span class="block text-on-surface-variant text-xs">CEO, Global Ventures</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-8 bg-white border border-outline-variant rounded-xl text-left">
+                    <div class="flex gap-1 text-secondary mb-4">
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <p class="font-body-md text-on-surface-variant mb-6 italic">"Booking through the portal is seamless.
+                        I manage all my global hotel stays in one place. Truly a game-changer for frequent business
+                        travelers."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary-container overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="Professional portrait of Sarah Chen."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHgqn7oJH8XT-5S7SyAZJBoEuWipXb9x5FRQZe4f5LaKiltwaN7a-XvqVWixFJ3MIWyz3oVwy78hNIvGOD4sFWT3H6cxIQQlqEVmKbgzIf9B-eHkeZT5ycrXFfqIrGkws3uEZ17_tMreS7M-NObQHWGk-NbCxI1zlxo1ogfdpj04RHrmxq4IhRQCB7ESPcDahRIsVoxP1Z20VNf7XV3E3mk7cRGr-mZaxlorI0g92fIWeVU_4VQ2bOgEbzZYGc7A8xTD9VCyPt8D9G" />
+                        </div>
+                        <div>
+                            <span class="block font-title-sm text-primary">Sarah Chen</span>
+                            <span class="block text-on-surface-variant text-xs">Executive Director, TechCorp</span>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="p-8 bg-white border border-outline-variant rounded-xl text-left md:col-span-2 lg:col-span-1">
+                    <div class="flex gap-1 text-secondary mb-4">
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" data-icon="star"
+                            style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <p class="font-body-md text-on-surface-variant mb-6 italic">"Luxurious amenities and prime
+                        locations. Every hotel recommended by LuxeStay has exceeded my high expectations for comfort and
+                        style."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-primary-container overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="High-end portrait of Robert Van der Post."
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmDB6cT8iwsfCxn6ao2NO2OkSrfVgo-8GqyfMmMLl9vM2VUoX-KjUGQu1Jc_GEowdABoUtrodCoSans07EL8nsloo87wgQSm9VH1Yakbfpb6cMRudBPpKvF-fC6i3hGUNKUe-k7wXcSa1-4kkH4tPwf7mCKfUbWA6vUgYgohfAGjkMq_-8dDO6Jfpn5dWkLXfvPPMkwGpcW_HM3e0g40uV3JJOjNzk7tgHft7BEOxt_uoJ-k5LaDZHpvkzsalKAh8_fH-2IDWGq_Zb" />
+                        </div>
+                        <div>
+                            <span class="block font-title-sm text-primary">Robert Van der Post</span>
+                            <span class="block text-on-surface-variant text-xs">Founder, Post Real Estate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-surface-container-lowest border-t border-outline-variant">
+        <div
+            class="w-full py-12 px-container-margin-mobile lg:px-container-margin-desktop flex flex-col md:flex-row justify-between items-center max-w-[1440px] mx-auto gap-8 md:gap-0">
+            <div class="text-center md:text-left">
+                <span class="font-headline-md text-headline-md text-primary font-bold block mb-2">LuxeStay</span>
+                <p class="text-on-surface-variant font-body-sm max-w-xs mx-auto md:mx-0">© 2024 LuxeStay Hospitality
+                    Group. All rights reserved.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 lg:gap-8 text-center">
+                <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
+                    href="#">Privacy Policy</a>
+                <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
+                    href="#">Terms of Service</a>
+                <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
+                    href="#">Cookie Policy</a>
+                <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
+                    href="#">Accessibility</a>
+            </div>
+            <div class="flex gap-4">
+                <span
+                    class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors"
+                    data-icon="public">public</span>
+                <span
+                    class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors"
+                    data-icon="share">share</span>
+                <span
+                    class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors"
+                    data-icon="contact_support">contact_support</span>
+            </div>
+        </div>
+    </footer>
+    <script src="JS/home/index.js"></script>
+    <script src="JS/toastmessage.js"></script>
+    <script>
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.closest('.group').classList.add('bg-primary-container/5');
+            });
+            element.addEventListener('blur', () => {
+                element.closest('.group').classList.remove('bg-primary-container/5');
+            });
+        });
+    </script>
+    <script src="JS/toastmessage.js"></script>
+    <% if(welcome) { %>
+        <script>
+            alert("Welcome again!")
+        </script>
+        <% } %>
+</body>
+
+</html>
