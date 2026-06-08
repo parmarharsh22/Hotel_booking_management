@@ -73,4 +73,16 @@ export const loginUser = async (req: Request, res: Response) => {
         (req.session as any).failureMessage = err.message;
         res.redirect("/login")
     }
+
+}
+
+//get All locations to render in the select dropDown
+export const getAllLocations = async (req:Request,res:Response)=>{
+    try{
+        const result = await authServices.getAllLocations();
+        return res.status(200).send({result});
+    }catch(err: any){
+        (req.session as any).failureMessage = err.message;
+        res.redirect("/");
+    }
 }

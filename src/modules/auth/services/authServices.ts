@@ -34,3 +34,11 @@ export const loginUser = async(role:string,email: string,password:string) =>{
         token:token}
 }
 
+//Render all the locations
+export const getAllLocations = async() =>{
+    const locations = authModel.getAllLocations()
+    if(!locations){
+        throw new Error("City loading failed");
+    }
+    return locations;
+}

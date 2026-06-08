@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+</head>
+
+<body>
+    <div id="profileModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-5 border-b">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">
+                        Update Profile
+                    </h2>
+                    <p class="text-sm text-gray-500">
+                        Keep your profile information up to date.
+                    </p>
+                </div>
+
+                <button type="button" onclick="closeProfileModal()"
+                    class="h-10 w-10 rounded-full hover:bg-gray-100 transition">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form action="/profile/update" method="POST" enctype="multipart/form-data" class="p-6">
+
+                <!-- Avatar -->
+
+                <div class="flex items-center gap-5 mb-8">
+
+                    <img id="avatarPreview" src="<%= user.avatar || '/images/default-avatar.png' %>" alt="Profile"
+                        class="h-24 w-24 rounded-full object-cover border-4 border-amber-100">
+
+                    <div>
+                        <label
+                            class="inline-flex items-center gap-2 bg-amber-700 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-amber-800">
+
+                            <span>Upload Photo</span>
+
+                            <input type="file" name="avatar" id="avatarInput" accept="image/*" class="hidden">
+                        </label>
+
+                        <p class="text-xs text-gray-500 mt-2">
+                            JPG, PNG up to 5 MB
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Personal Information -->
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            First Name
+                        </label>
+
+                        <input type="text" name="first_name" value="<%= user.first_name %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Last Name
+                        </label>
+
+                        <input type="text" name="last_name" value="<%= user.last_name %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Email
+                        </label>
+
+                        <input type="email" name="email" value="<%= user.email %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Phone Number
+                        </label>
+
+                        <input type="tel" name="phone" value="<%= user.phone %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Date of Birth
+                        </label>
+
+                        <input type="date" name="dob" value="<%= user.dob %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Gender
+                        </label>
+
+                        <select name="gender" class="w-full border border-gray-300 rounded-lg px-4 py-3">
+
+                            <option value="">Select Gender</option>
+
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-2">
+                            Address
+                        </label>
+
+                        <textarea name="address" rows="3"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3"><%= user.address %></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            City
+                        </label>
+
+                        <input type="text" name="city" value="<%= user.city %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            State
+                        </label>
+
+                        <input type="text" name="state" value="<%= user.state %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Country
+                        </label>
+
+                        <input type="text" name="country" value="<%= user.country %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Postal Code
+                        </label>
+
+                        <input type="text" name="postal_code" value="<%= user.postal_code %>"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3">
+                    </div>
+
+                </div>
+
+                <!-- Footer -->
+
+                <div class="flex justify-end gap-3 mt-8 border-t pt-5">
+
+                    <button type="button" onclick="closeProfileModal()"
+                        class="px-5 py-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800">
+
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

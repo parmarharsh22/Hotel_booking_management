@@ -1,4 +1,4 @@
-import express, { Request,Response } from "express";
+import express from "express";
 import * as authController from "../controller/authController";
 import { uploadProfilePhoto } from "../../../common/middlewares/multer";
 import { verifyCaptchaMiddleware } from "../../../common/middlewares/verifyCaptcha";
@@ -21,5 +21,8 @@ authRouter.post("/checkEmail",authController.checkEmailUniq)
 
 //login a user
 authRouter.post("/loginUser",verifyCaptchaMiddleware("/login"),authController.loginUser);
+
+//getAlltheLocations
+authRouter.get("/getLocations",authController.getAllLocations)
 
 export default authRouter;

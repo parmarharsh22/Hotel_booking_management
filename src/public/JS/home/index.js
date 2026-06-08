@@ -1,7 +1,22 @@
-console.log('Hiii');
-
 const form = document.getElementById("search-form");
-console.log(form);
+
+//Dates logic
+const today = new Date();
+
+const minDate = today.toISOString().split("T")[0];
+
+const maxDateObj = new Date();
+maxDateObj.setMonth(maxDateObj.getMonth() + 6);
+const maxDate = maxDateObj.toISOString().split("T")[0];
+
+const checkinInput = document.getElementById("checkin-input");
+const checkoutInput = document.getElementById("checkout-input");
+
+checkinInput.min = minDate;
+checkinInput.max = maxDate;
+
+checkoutInput.min = minDate;
+checkoutInput.max = maxDate;
 
 window.addError = function (inputId, message) {
     const inputField = document.getElementById(inputId);
@@ -22,7 +37,7 @@ window.removeError = function () {
     activeErrors.forEach(span => span.remove());
 };
 
-form.addEventListener("submit",async (e) => {
+form.addEventListener("submit", async (e) => {
     removeError();
 
     let hasErrors = false;
@@ -40,7 +55,6 @@ form.addEventListener("submit",async (e) => {
     const guestsVal = parseInt(guestsInput.value, 10);
 
     if (!locationVal) { addError("location-input", "Required field"); hasErrors = true; }
-    if (!checkinVal) { addError("checkin-input", "Select check-in"); hasErrors = true; }
     if (!checkoutVal) { addError("checkout-input", "Select check-out"); hasErrors = true; }
     if (isNaN(roomsVal)) { addError("rooms-input", "Enter rooms count"); hasErrors = true; }
     if (isNaN(guestsVal)) { addError("guests-input", "Enter guests count"); hasErrors = true; }
@@ -53,12 +67,33 @@ form.addEventListener("submit",async (e) => {
         }
     }
 
+    if (checkinVal) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const maxBookingDate = new Date();
+        maxBookingDate.setMonth(maxBookingDate.getMonth() + 6);
+        maxBookingDate.setHours(0, 0, 0, 0);
+
+        const selectedCheckin = new Date(checkinVal);
+
+        if (selectedCheckin < today) {
+            addError("checkin-input", "Check-in cannot be before today");
+            hasErrors = true;
+        }
+
+        if (selectedCheckin > maxBookingDate) {
+            addError("checkin-input", "Bookings allowed only 6 months ahead");
+            hasErrors = true;
+        }
+    }
+
     if (checkinVal && checkoutVal) {
-        const d1 = new Date(checkinVal);
-        const d2 = new Date(checkoutVal);
-        if (d1 >= d2) {
-            addError("checkin-input", "Must be before check-out");
-            addError("checkout-input", "Must be after check-in");
+        const checkinDate = new Date(checkinVal);
+        const checkoutDate = new Date(checkoutVal);
+
+        if (checkoutDate <= checkinDate) {
+            addError("checkout-input", "Check-out must be after check-in");
             hasErrors = true;
         }
     }
@@ -67,25 +102,38 @@ form.addEventListener("submit",async (e) => {
 
     if (hasErrors) {
         e.preventDefault();
-        console.log('Prevented form submission');
-    } else {
-        
-        e.preventDefault();
-        console.log("Success! Processing form structure transmission values.");
-
-        const formData = new FormData(form);
-        const plainObject=Object.fromEntries(formData.entries())
-
-        console.log(plainObject);
-        try {
-            const response=await fetch('/rooms/searchHotels',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(plainObject)
-            })
-            
-        } catch (error) {
-            
-        }
     }
 });
+
+
+//load date dynamically on load
+checkinInput.addEventListener("change", () => {
+    const selectedCheckin = checkinInput.value;
+
+    checkoutInput.min = selectedCheckin;
+
+    if (
+        checkoutInput.value &&
+        new Date(checkoutInput.value) <= new Date(selectedCheckin)
+    ) {
+        checkoutInput.value = "";
+    }
+});
+
+
+window.onload = async () => {
+    try {
+        const response = await fetch("/getLocations");
+        const locations = await response.json();    
+        const dropdown = document.getElementById("location-input");
+        locations.result.forEach(location=>{
+            const opt = document.createElement("option");
+            opt.textContent = location.city;
+            opt.value = location.city;
+            dropdown.appendChild(opt);
+        })
+
+    } catch (err) {
+        console.error("Error occurred!", err);
+    }
+};
