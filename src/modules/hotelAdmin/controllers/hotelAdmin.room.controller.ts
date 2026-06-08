@@ -3,8 +3,7 @@ import { RoomService } from "../services/hotelAdmin.room.service";
 
 const roomService = new RoomService();
 
-export class AdminController {
-
+export class AdminRoomController {
 
     // GET /admin/rooms
   // hotelId comes from session (injected by tenant.middleware.ts into req.hotelId)

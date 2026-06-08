@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { AdminController } from "../controllers/hotelAdmin.room.controller";
+import { AdminRoomController } from "../controllers/hotelAdmin.room.controller";
 import { uploadRoomPhoto } from "../../../common/middlewares/multer";
 
-const adminController = new AdminController();
+const adminController = new AdminRoomController();
 
 const router = Router();
 
