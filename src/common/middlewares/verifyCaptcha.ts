@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { Request,Response,NextFunction } from "express";
 import { verifyRecaptcha } from "../utils/recaptcha";
-
 export const verifyCaptchaMiddleware = (location: string) => {
     return async (
         req: Request,
@@ -8,15 +7,15 @@ export const verifyCaptchaMiddleware = (location: string) => {
         next: NextFunction,
     ) => {
 
-        const token =
-            req.body["g-recaptcha-response"];
+        const token = req.body["g-recaptcha-response"];
 
-        const isValid =
-            await verifyRecaptcha(token);
+        const isValid = await verifyRecaptcha(token);
 
         if (!isValid) {
 
-            (req.session as any).failureMessage = "Captcha verification failed";
+            (req.session as any).failureMessage =
+                "Captcha verification failed";
+
             return res.redirect(location);
         }
 

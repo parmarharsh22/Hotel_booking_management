@@ -5,11 +5,10 @@ import { storeToken } from "../../../common/utils/jwt_token";
 //Render the homePage
 export const showMainPage = (req: Request, res: Response) => {
     const currentUser = res.locals.user;
-
-    if(currentUser){
-        return res.render("index",{welcome:" Welcome again !"});
+    if (currentUser) {
+        return res.render("index", { welcome: " Welcome again !" });
     }
-    return res.render("index",{welcome:""});
+    return res.render("index", { welcome: "" });
 }
 
 //Render the login page
@@ -28,6 +27,8 @@ export const showLoginPage = (req: Request, res: Response) => {
 
 //Render the registration page
 export const showRegistrationPage = (req: Request, res: Response) => {
+    const failure = (req.session as any).failureMessage;
+    delete (req.session as any).failureMessage;
     res.render("authFronted/register", {
         recaptchaSiteKey: process.env.GOOGLE_SITE_KEY
     });
@@ -42,7 +43,6 @@ export const registerUser = async (req: Request, res: Response) => {
     } catch (err: any) {
         console.log("error", err);
     }
-
 }
 
 //check for the email in the DB if exists then error 
@@ -64,12 +64,12 @@ export const checkEmailUniq = async (req: Request, res: Response) => {
 
 //login a user
 export const loginUser = async (req: Request, res: Response) => {
-    try{
-        const {role,email,password} = req.body;
-        const result = await authServices.loginUser(role,email,password);
-        storeToken(result.token,res);
+    try {
+        const { role, email, password } = req.body;
+        const result = await authServices.loginUser(role, email, password);
+        storeToken(result.token, res);
         res.redirect("/");
-    }catch(err:any){
+    } catch (err: any) {
         (req.session as any).failureMessage = err.message;
         res.redirect("/login")
     }
@@ -77,11 +77,11 @@ export const loginUser = async (req: Request, res: Response) => {
 }
 
 //get All locations to render in the select dropDown
-export const getAllLocations = async (req:Request,res:Response)=>{
-    try{
+export const getAllLocations = async (req: Request, res: Response) => {
+    try {
         const result = await authServices.getAllLocations();
-        return res.status(200).send({result});
-    }catch(err: any){
+        return res.status(200).send({ result });
+    } catch (err: any) {
         (req.session as any).failureMessage = err.message;
         res.redirect("/");
     }
