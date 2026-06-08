@@ -46,7 +46,6 @@ export class AdminController {
         photo_url,
         notes:          req.body.notes || null,
       };
-
       await roomService.createRoom(room);
       // After create, redirect back to the rooms list
       return res.redirect("/admin/rooms");
@@ -86,7 +85,6 @@ export class AdminController {
         photo_url,
         notes:        req.body.notes || null,
       };
-
       await roomService.updateRoom(roomId, hotelId, data);
       return res.redirect("/admin/rooms");
     } catch (err: any) {
