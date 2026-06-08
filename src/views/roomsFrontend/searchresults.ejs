@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,54 +8,65 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body class="bg-gray-50 text-gray-800 font-sans">
 
     <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 px-6 py-3 shadow-sm">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            
+
             <div class="flex items-center">
                 <a href="/" class="text-2xl font-bold text-slate-900 tracking-tight">
-                    LuxeStay<span class="text-amber-700">.</span>
+                    LuxeStay
                 </a>
             </div>
 
-            <div class="hidden md:flex items-center bg-gray-100 border border-gray-200 rounded-full px-4 py-2 shadow-sm divide-x divide-gray-300 text-sm max-w-2xl text-gray-600">
+            <div
+                class="hidden md:flex items-center bg-gray-100 border border-gray-200 rounded-full px-4 py-2 shadow-sm divide-x divide-gray-300 text-sm max-w-2xl text-gray-600">
                 <div class="px-3 flex items-center gap-2">
                     <i class="fa-solid fa-location-dot text-amber-700"></i>
-                    <span class="font-medium text-gray-900 capitalize"><%= query.location || 'Anywhere' %></span>
+                    <span class="font-medium text-gray-900 capitalize">
+                        <%= query.location || 'Anywhere' %>
+                    </span>
                 </div>
                 <div class="px-3 flex items-center gap-2">
                     <i class="fa-regular fa-calendar text-gray-400"></i>
-                    <span>In: <strong class="text-gray-900"><%= query.check_in || '--/--/--' %></strong></span>
+                    <span>In: <strong class="text-gray-900">
+                            <%= query.check_in || '--/--/--' %>
+                        </strong></span>
                 </div>
                 <div class="px-3 flex items-center gap-2">
                     <i class="fa-regular fa-calendar text-gray-400"></i>
-                    <span>Out: <strong class="text-gray-900"><%= query.check_out || '--/--/--' %></strong></span>
+                    <span>Out: <strong class="text-gray-900">
+                            <%= query.check_out || '--/--/--' %>
+                        </strong></span>
                 </div>
                 <div class="px-3 flex items-center gap-2">
                     <i class="fa-solid fa-users text-gray-400"></i>
-                    <span><%= query.guests || 1 %> Guests, <%= query.rooms || 1 %> Room</span>
+                    <span>
+                        <%= query.guests || 1 %> Guests, <%= query.rooms || 1 %> Room
+                    </span>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
                 <% if (locals.user) { %>
                     <div class="flex items-center gap-2 cursor-pointer">
-                        <img class="h-9 w-9 rounded-full object-cover border-2 border-amber-700 ring-offset-2" 
-                             src="<%= user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80' %>" 
-                             alt="User Profile">
+                        <img class="h-9 w-9 rounded-full object-cover border-2 border-amber-700 ring-offset-2"
+                            src="<%= user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80' %>"
+                            alt="User Profile">
                     </div>
-                <% } else { %>
-                    <a href="/login" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition duration-200">
-                        Log In / Sign Up
-                    </a>
-                <% } %>
+                    <% } else { %>
+                        <a href="/login"
+                            class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition duration-200">
+                            Log In / Sign Up
+                        </a>
+                        <% } %>
             </div>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
-        
+
         <aside class="w-full lg:w-1/4 bg-white p-6 rounded-xl border border-gray-200 shadow-sm self-start">
             <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
                 <h2 class="text-lg font-semibold text-slate-900">Filters</h2>
@@ -70,7 +82,8 @@
 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Price Range per Night</label>
-                    <input type="range" min="50" max="1000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-700">
+                    <input type="range" min="50" max="1000"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-700">
                     <div class="flex justify-between text-xs text-gray-500 mt-2">
                         <span>$50</span>
                         <span>$1000+</span>
@@ -81,115 +94,139 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Hotel Rating</label>
                     <div class="space-y-2">
                         <label class="flex items-center gap-3 text-sm text-gray-600 cursor-pointer">
-                            <input type="checkbox" class="rounded border-gray-300 text-amber-700 focus:ring-amber-600 h-4 w-4">
+                            <input type="checkbox"
+                                class="rounded border-gray-300 text-amber-700 focus:ring-amber-600 h-4 w-4">
                             <span>4.5★ & above</span>
                         </label>
                         <label class="flex items-center gap-3 text-sm text-gray-600 cursor-pointer">
-                            <input type="checkbox" class="rounded border-gray-300 text-amber-700 focus:ring-amber-600 h-4 w-4">
+                            <input type="checkbox"
+                                class="rounded border-gray-300 text-amber-700 focus:ring-amber-600 h-4 w-4">
                             <span>4.0★ & above</span>
                         </label>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-amber-700 hover:bg-amber-800 text-white text-center py-2.5 rounded-lg text-sm font-medium transition duration-200 shadow-sm">
+                <button type="submit"
+                    class="w-full bg-amber-700 hover:bg-amber-800 text-white text-center py-2.5 rounded-lg text-sm font-medium transition duration-200 shadow-sm">
                     Apply Filters
                 </button>
             </form>
         </aside>
 
         <section class="w-full lg:w-3/4">
-            
-            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center justify-between">
+
+            <div
+                class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center justify-between">
                 <div>
                     <h1 class="text-xl font-bold text-slate-900">
                         Available Accommodations
                     </h1>
                     <p class="text-sm text-gray-500 mt-0.5">
-                        Showing <span class="font-semibold text-slate-800"><%= hotels.length %></span> stays in <%= query.location || 'your destination' %>
+                        Showing <span class="font-semibold text-slate-800">
+                            <%= hotels.length %>
+                        </span> stays in <%= query.location || 'your destination' %>
                     </p>
                 </div>
                 <div class="text-sm text-gray-500">
-                    Sort by: <span class="font-medium text-slate-800 cursor-pointer hover:underline">Popularity <i class="fa-solid fa-chevron-down text-xs"></i></span>
+                    Sort by: <span class="font-medium text-slate-800 cursor-pointer hover:underline">Popularity <i
+                            class="fa-solid fa-chevron-down text-xs"></i></span>
                 </div>
             </div>
 
-            <% if (hotels.length === 0) { %>
+            <% if (hotels.length===0) { %>
                 <div class="bg-white rounded-xl border border-dashed border-gray-300 p-12 text-center shadow-sm">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 text-amber-700 mb-4">
+                    <div
+                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 text-amber-700 mb-4">
                         <i class="fa-solid fa-hotel text-2xl"></i>
                     </div>
                     <h3 class="text-lg font-bold text-slate-900 mb-1">No accommodations found</h3>
                     <p class="text-gray-500 text-sm max-w-md mx-auto">
-                        We couldn't find any available properties matching your criteria in <span class="font-medium text-slate-800">"<%= query.location %>"</span>. Try adjusting your dates or expanding your filter choices!
+                        We couldn't find any available properties matching your criteria in <span
+                            class="font-medium text-slate-800">"<%= query.location %>"</span>. Try adjusting your dates
+                        or expanding your filter choices!
                     </p>
                 </div>
-            <% } else { %>
-                <div class="space-y-6">
-                    <% hotels.forEach(hotel => { %>
-                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
-                            
-                            <div class="w-full md:w-2/5 h-56 md:h-auto relative bg-gray-100 shrink-0">
-                                <img src="<%= hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80' %>" 
-                                     alt="<%= hotel.name %>" 
-                                     class="w-full h-full object-cover">
-                                <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded">
-                                    Top Rated
-                                </span>
-                            </div>
+                <% } else { %>
+                    <div class="space-y-6">
+                        <% hotels.forEach(hotel=> { %>
+                            <div
+                                class="bg-white rounded-3xl overflow-hidden border border-gray-200 hover:border-amber-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 md:flex">
+                                <div class="w-full md:w-2/5 h-72 md:h-auto relative bg-gray-100 shrink-0">
+                                    <div class="overflow-hidden h-full">
+                                        <img src="<%= hotel.image_url || 'https://img.magnific.com/free-photo/beautiful-luxury-outdoor-swimming-pool-hotel-resort_74190-7433.jpg?semt=ais_hybrid&w=740&q=80 '%>"
+                                        alt="<%= hotel.name %>" class="w-full h-full object-cover hover:scale-110 transition duration-700">
+                                    </div>
+                                    <span
+                                        class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded">
+                                        Top Rated
+                                    </span>
+                                </div>
 
-                            <div class="w-full md:w-3/5 p-6 flex flex-col justify-between">
-                                <div>
-                                    <div class="flex items-start justify-between gap-2 mb-1">
-                                        <h3 class="text-xl font-bold text-slate-900 hover:text-amber-700 transition cursor-pointer">
-                                            <%= hotel.name %>
-                                        </h3>
-                                        <div class="flex items-center gap-1 shrink-0 text-sm font-semibold text-slate-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                                            <span>4.8</span><i class="fa-solid fa-star text-amber-600 text-xs"></i>
+                                <div class="w-full md:w-3/5 p-6 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-start justify-between gap-2 mb-1">
+                                            <h3
+                                                class="text-xl font-bold text-slate-900 hover:text-amber-700 transition cursor-pointer">
+                                                <%= hotel.name %>
+                                            </h3>
+                                            <div
+                                                class="flex items-center gap-1 shrink-0 text-sm font-semibold text-slate-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                                <span>4.8</span><i class="fa-solid fa-star text-amber-600 text-xs"></i>
+                                            </div>
+                                        </div>
+
+                                        <p class="text-sm text-gray-500 flex items-center gap-1.5 mb-4">
+                                            <i class="fa-solid fa-location-dot text-gray-400"></i>
+                                            <%= hotel.city %>, <%= hotel.state %>, <%= hotel.country %>
+                                        </p>
+
+                                        <div class="mb-4">
+                                            <button
+                                                class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
+                                                <span class="relative flex h-2 w-2">
+                                                    <span
+                                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                    <span
+                                                        class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                                </span>
+                                                <%= hotel.available_rooms %> Rooms Left
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <p class="text-sm text-gray-500 flex items-center gap-1.5 mb-4">
-                                        <i class="fa-solid fa-location-dot text-gray-400"></i>
-                                        <%= hotel.city %>, <%= hotel.state %>, <%= hotel.country %>
-                                    </p>
+                                    <div
+                                        class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
+                                        <div>
+                                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                                                Starting
+                                                From</p>
+                                            <p class="text-2xl font-black text-slate-900">
+                                                $<%= Math.floor(hotel.starting_price) %> <span
+                                                        class="text-sm font-medium text-gray-500">/night</span>
+                                            </p>
+                                        </div>
 
-                                    <div class="mb-4">
-                                        <button class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
-                                            <span class="relative flex h-2 w-2">
-                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                            </span>
-                                            <%= hotel.available_rooms %> Rooms Left
-                                        </button>
+                                        <div class="flex items-center gap-2">
+                                            <a href="/rooms/details/<%= hotel.hotel_id %>"
+                                                class="border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
+                                                View Details
+                                            </a>
+                                            <a href="/checkout?hotel_id=<%= hotel.hotel_id %>"
+                                                class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
+                                                Book Now
+                                            </a>
+                                        </div>
                                     </div>
+
                                 </div>
-
-                                <div class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
-                                    <div>
-                                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Starting From</p>
-                                        <p class="text-2xl font-black text-slate-900">
-                                            $<%= Math.floor(hotel.starting_price) %> <span class="text-sm font-medium text-gray-500">/night</span>
-                                        </p>
-                                    </div>
-
-                                    <div class="flex items-center gap-2">
-                                        <a href="/rooms/details/<%= hotel.hotel_id %>" class="border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
-                                            View Details
-                                        </a>
-                                        <a href="/checkout?hotel_id=<%= hotel.hotel_id %>" class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
-                                            Book Now
-                                        </a>
-                                    </div>
-                                </div>
-
                             </div>
-                        </div>
-                    <% }) %>
-                </div>
-            <% } %>
+                            <% }) %>
+                    </div>
+                    <% } %>
 
         </section>
     </main>
 
 </body>
+
 </html>

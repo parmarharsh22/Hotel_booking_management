@@ -12,11 +12,12 @@ export const validToken = async(
         if(!valid){
             (req.session as any).failureMessage = "Invalid or expired Token detected!"
             res.clearCookie("token");
-            res.redirect("/login");
+            return res.redirect("/login");
         }
+        (req as any).user = valid;
         next();
     }catch(err: any){
         (req.session as any).failureMessage = "Login_first"
         res.redirect("/login");
     }
-}
+}   

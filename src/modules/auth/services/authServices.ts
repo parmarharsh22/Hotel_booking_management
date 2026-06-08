@@ -10,10 +10,10 @@ export const checkEmail = async (email: string) => {
 
 //register the user
 export const registerUser = async (body: any, file: any) => {
-    const { firstName, lastName, email, phone, state, city, password } = body;
+    const { firstName, lastName, email, phone, state, city, password,gender,address,dob} = body;
     const hashedPass = await bcrypt.hash(password,10);
     const filename = file;
-    await authModel.insertUser(firstName, lastName, email, phone, state, city, hashedPass,filename);
+    await authModel.insertUser(firstName, lastName, email, phone, state, city, hashedPass,filename,gender,address,dob);
 }
 
 //login a user
@@ -29,9 +29,8 @@ export const loginUser = async(role:string,email: string,password:string) =>{
     if(!passmatch){
         throw new Error("Invalid Credentials!");
     }
-    const token = generateToken(result.user_id,result.user_role_id);
-    return{
-        token:token}
+    const token = generateToken(result.user_id,result.role_name,result.hotel_id ? result.hotel_id : "GUEST");
+    return{token:token}
 }
 
 //Render all the locations
