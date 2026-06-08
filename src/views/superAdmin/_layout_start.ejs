@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+      <%= typeof pageTitle !== 'undefined' ? pageTitle : 'HBMS Admin' %>
+    </title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["DM Sans", "sans-serif"],
+
+              mono: ["DM Mono", "monospace"],
+            },
+
+     colors: {
+  surface: {
+    DEFAULT: "#f8fafc",
+    1: "#ffffff",
+    2: "#f8fafc",
+    3: "#f1f5f9",
+    border: "#e2e8f0",
+  },
+
+  accent: {
+    DEFAULT: "#2563eb",
+    hover: "#1d4ed8",
+    muted: "#dbeafe",
+  },
+
+  success: "#16a34a",
+  warning: "#d97706",
+  danger: "#dc2626",
+  muted: "#64748b",
+},
+          },
+        },
+      };
+    </script>
+
+    <style>
+    body {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-family: "DM Sans", sans-serif;
+}
+
+.sidebar-link {
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.badge-active {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.badge-suspended {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fcd34d;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  transition: background 0.15s;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-ghost {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #475569;
+  transition: all 0.15s;
+}
+
+.btn-ghost:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  color: white;
+}
+
+.input-field {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #0f172a;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-field::placeholder {
+  color: #94a3b8;
+}
+
+.table-row:hover {
+  background: #f8fafc;
+}
+    </style>
+  </head>
+
+  <body class="min-h-screen flex">
+    <!-- Sidebar -->
+
+    <aside
+      class="w-60 min-h-screen flex flex-col border-r border-surface-border bg-surface-1 fixed top-0 left-0 z-40"
+    >
+      <!-- Logo -->
+
+      <div class="px-6 py-5 border-b border-surface-border">
+        <div class="flex items-center gap-2">
+          <div
+            class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-mono font-bold text-sm"
+          >
+            H
+          </div>
+
+          <div>
+            <div class="text-white font-semibold text-sm leading-none">
+              HBMS
+            </div>
+
+            <div class="text-muted text-xs mt-0.5">Super Admin</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+
+      <nav class="flex-1 px-3 py-4 space-y-0.5">
+        <div
+          class="text-xs font-mono text-muted uppercase tracking-widest px-3 mb-3"
+        >
+          Navigation
+        </div>
+
+        <a
+          href="/superadmin/dashboard"
+          class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+
+          Dashboard
+        </a>
+
+        <a
+          href="/superadmin/hotels"
+          class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 <%= typeof activePage !== 'undefined' && activePage === 'hotels' ? 'active' : '' %>"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+
+          Hotels
+        </a>
+
+        <a
+          href="/superadmin/users"
+          class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 <%= typeof activePage !== 'undefined' && activePage === 'users' ? 'active' : '' %>"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+
+          Users
+        </a>
+      </nav>
+
+      <!-- Footer -->
+
+      <div class="px-4 py-4 border-t border-surface-border">
+        <div class="flex items-center gap-2 px-2">
+          <div
+            class="w-7 h-7 rounded-full bg-accent-muted text-accent text-xs font-mono flex items-center justify-center font-bold"
+          >
+            SA
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="text-xs text-white font-medium truncate">
+              Super Admin
+            </div>
+
+            <div class="text-xs text-muted truncate">admin@hbms.com</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content slot -->
+
+    <main class="ml-60 flex-1 min-h-screen flex flex-col">
