@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/axios": "^0.9.36",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^2.4.6",
