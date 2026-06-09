@@ -97,9 +97,6 @@ export class AdminRoomTypeController {
 async addAmenities(req: Request, res: Response) {
   try {
     const typeId     = parseInt(req.params.typeId as any);
-    // amenity_ids comes as array from form checkboxes or Postman array
-    // form sends: amenity_ids=1&amenity_ids=2&amenity_ids=3
-    // Postman sends: { "amenity_ids": [1, 2, 3] }
     const amenityIds = Array.isArray(req.body.amenity_ids)
       ? req.body.amenity_ids.map(Number)
       : [Number(req.body.amenity_ids)];  // if only one value, wrap it in array
