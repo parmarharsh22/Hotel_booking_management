@@ -138,31 +138,33 @@ export class RoomTypeModel {
 
 
     // POST /admin/room-types/:typeId/amenities  →  addAmenity
-      static async addAmenity(typeId: number, amenityId: number): Promise<boolean> {
+  static async addAmenities(typeId: number, amenityIds: number[]): Promise<boolean> {
     try {
-      const [result]: any = await db.query(
-        `INSERT IGNORE INTO room_type_amenities (room_type_id, amenity_id)
-         VALUES (?, ?)`,
-        [typeId, amenityId]
-      );
-      return result.affectedRows > 0;
+    // build bulk insert values → (typeId, 1), (typeId, 2), (typeId, 3)
+    const values = amenityIds.map(id => [typeId, id]);
+    await db.query(
+      `INSERT IGNORE INTO room_type_amenities (room_type_id, amenity_id) VALUES ?`,
+      [values]
+    );
+    return true;
     } catch (err: any) {
-      throw err;
+    throw err;
     }
   }
 
+
     // DELETE /admin/room-types/:typeId/amenities/:amenityId  →  removeAmenity
-    static async removeAmenity(typeId: number, amenityId: number): Promise<boolean> {
-    try {
-      const [result]: any = await db.query(
-        `DELETE FROM room_type_amenities
-         WHERE room_type_id = ? AND amenity_id = ?`,
-        [typeId, amenityId]
-      );
-      return result.affectedRows > 0;
-    } catch (err: any) {
-      throw err;
-    }
+    static async removeAmenities(typeId: number, amenityIds: number[]): Promise<boolean> {
+  try {
+    await db.query(
+      `DELETE FROM room_type_amenities 
+       WHERE room_type_id = ? AND amenity_id IN (?)`,
+      [typeId, amenityIds]
+    );
+    return true;
+  } catch (err: any) {
+    throw err;
+  }
   }
 
 

@@ -29,9 +29,9 @@ router.put(
 router.delete("/room-types/:typeId", adminRoomTypeController.deleteRoomType.bind(adminRoomTypeController));
 
 // link amenity to room type
-router.post("/room-types/:typeId/amenities", adminRoomTypeController.addAmenity.bind(adminRoomTypeController));
+router.post("/room-types/:typeId/amenities", adminRoomTypeController.addAmenities.bind(adminRoomTypeController));
 
 // unlink amenity from room type
-router.delete("/room-types/:typeId/amenities/:amenityId", adminRoomTypeController.removeAmenity.bind(adminRoomTypeController));
+router.delete("/room-types/:typeId/amenities", adminRoomTypeController.removeAmenities.bind(adminRoomTypeController));
 
 export default router;

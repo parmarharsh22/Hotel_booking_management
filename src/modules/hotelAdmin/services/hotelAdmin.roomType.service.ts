@@ -78,28 +78,26 @@ export class RoomTypeService {
   }
 
   // addAmenity
-  async addAmenity(typeId: number, amenityId: number): Promise<boolean> {
-    try {
-      if (!typeId)    throw new Error("Room type ID is required.");
-      if (!amenityId) throw new Error("Amenity ID is required.");
-      return await RoomTypeModel.addAmenity(typeId, amenityId);
-    } catch (err) {
-      throw err;
-    }
+  async addAmenities(typeId: number, amenityIds: number[]): Promise<boolean> {
+  try {
+    if (!typeId)                throw new Error("Room type ID is required.");
+    if (!amenityIds?.length)    throw new Error("At least one amenity ID is required.");
+    return await RoomTypeModel.addAmenities(typeId, amenityIds);
+  } catch (err) {
+    throw err;
   }
+}
 
   // removeAmenity
-  async removeAmenity(typeId: number, amenityId: number): Promise<boolean> {
-    try {
-      if (!typeId)    throw new Error("Room type ID is required.");
-      if (!amenityId) throw new Error("Amenity ID is required.");
-      const removed = await RoomTypeModel.removeAmenity(typeId, amenityId);
-      if (!removed) throw new Error("Amenity link not found.");
-      return removed;
-    } catch (err) {
-      throw err;
-    }
+ async removeAmenities(typeId: number, amenityIds: number[]): Promise<boolean> {
+  try {
+    if (!typeId)                throw new Error("Room type ID is required.");
+    if (!amenityIds?.length)    throw new Error("At least one amenity ID is required.");
+    return await RoomTypeModel.removeAmenities(typeId, amenityIds);
+  } catch (err) {
+    throw err;
   }
+}
 
   // getAllAmenities — for form dropdown
   async getAllAmenities(): Promise<any[]> {

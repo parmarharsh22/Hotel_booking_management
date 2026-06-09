@@ -94,25 +94,34 @@ export class AdminRoomTypeController {
     }
   }
 
-  async addAmenity(req: Request, res: Response) {
-    try {
-      const typeId    = parseInt(req.params.typeId as any);
-      const amenityId = parseInt(req.body.amenity_id);
-      await roomTypeService.addAmenity(typeId, amenityId);
-      return res.redirect(`/hotelAdmin/room-types/${typeId}/edit`);
-    } catch (err: any) {
-      return res.status(400).json({ message: err.message });
-    }
-  }
+async addAmenities(req: Request, res: Response) {
+  try {
+    const typeId     = parseInt(req.params.typeId as any);
+    // amenity_ids comes as array from form checkboxes or Postman array
+    // form sends: amenity_ids=1&amenity_ids=2&amenity_ids=3
+    // Postman sends: { "amenity_ids": [1, 2, 3] }
+    const amenityIds = Array.isArray(req.body.amenity_ids)
+      ? req.body.amenity_ids.map(Number)
+      : [Number(req.body.amenity_ids)];  // if only one value, wrap it in array
 
-  async removeAmenity(req: Request, res: Response) {
-    try {
-      const typeId    = parseInt(req.params.typeId as any);
-      const amenityId = parseInt(req.params.amenityId as any);
-      await roomTypeService.removeAmenity(typeId, amenityId);
-      return res.redirect(`/hotelAdmin/room-types/${typeId}/edit`);
-    } catch (err: any) {
-      return res.status(400).json({ message: err.message });
-    }
+    await roomTypeService.addAmenities(typeId, amenityIds);
+    return res.redirect(`/admin/room-types/${typeId}/edit`);
+  } catch (err: any) {
+    return res.status(400).json({ message: err.message });
   }
+}
+
+  async removeAmenities(req: Request, res: Response) {
+  try {
+    const typeId     = parseInt(req.params.typeId as any);
+    const amenityIds = Array.isArray(req.body.amenity_ids)
+      ? req.body.amenity_ids.map(Number)
+      : [Number(req.body.amenity_ids)];
+
+    await roomTypeService.removeAmenities(typeId, amenityIds);
+    return res.redirect(`/admin/room-types/${typeId}/edit`);
+  } catch (err: any) {
+    return res.status(400).json({ message: err.message });
+  }
+}
 }
