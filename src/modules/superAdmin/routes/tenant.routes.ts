@@ -5,6 +5,8 @@ import { upload } from "../../../common/middlewares/multerCloud";
 const router = express.Router();
 
 router.get("/", tenantController.listHotels);
+router.get("/users", tenantController.listUsers);
+
 router.get("/new", tenantController.showNewHotel);
 // router.post("/", tenantController.createHotel);
 // // multer handles both fields
@@ -30,6 +32,7 @@ router.put("/:hotelId",
 router.put("/:hotelId/status", tenantController.updateHotelStatus);
 
 router.delete("/:hotelId", tenantController.deleteHotel);
+
 
 export default router; 
 

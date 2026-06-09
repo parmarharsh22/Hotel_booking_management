@@ -6,7 +6,8 @@
   activePage = "users";
  
 %>
- 
+   <%- include('_layout_start') %>
+
  
 <!-- Top bar -->
  
@@ -129,7 +130,9 @@
  
     try {
  
-      const res = await fetch('/superadmin/users');
+      const res = await fetch('/superadmin/auth/getAllUser', {
+        headers:{'Accept':'application/json'}
+      });
  
       allUsers  = await res.json();
  
@@ -288,3 +291,4 @@
 </script>
  
 
+   <%- include('_layout_end') %>

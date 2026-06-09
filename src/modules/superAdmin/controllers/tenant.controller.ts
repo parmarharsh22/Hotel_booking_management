@@ -18,6 +18,19 @@ export const listHotels = async (req: Request, res: Response) => {
   }
 };
 
+export const listUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await tenantService.listUsers();
+    if (req.headers.accept?.includes("application/json")) {
+      return res.json(users);
+    }
+    res.render("superAdmin/users", { users });
+    // res.send(hotels)
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).send("Failed to fetch hotels");
+  }
+};
 /**
  * SHOW CREATE PAGE
  */
