@@ -11,8 +11,9 @@ export const searchHotels = async (req: Request, res: Response) => {
             location: data.location,
             check_in: data.check_in,
             check_out: data.check_out,
-            guests: data.guests,
-            rooms: data.rooms
+            rooms: data.rooms,
+            adults: data.adults,
+            child:data.child
         };
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
