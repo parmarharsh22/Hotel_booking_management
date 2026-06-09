@@ -124,74 +124,88 @@
                 </div>
 
                 <!-- Inventory Data Sheet -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-            <h3 class="font-bold text-slate-900">Modify Property Room Configuration</h3>
-            <p class="text-xs text-slate-500">Update specific room definitions, pricing maps, and live status conditions.</p>
+            <h3 class="font-bold text-slate-900">Provision New Property Unit</h3>
+            <p class="text-xs text-slate-500">Register new physical assets into the live inventory matrix.</p>
         </div>
-        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200 uppercase tracking-wider">
-            Room ID: <%= room.room_id %>
+        <span class="text-[10px] px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200 uppercase tracking-wider">
+            Creation Deck
         </span>
     </div>
 
-    <form id="editRoomForm" onsubmit="handleFormSubmission(event, '<%= room.room_id %>')" class="p-6 md:p-8 space-y-6">
+    <form id="createRoomForm" onsubmit="handleCreationSubmission(event)" class="p-6 md:p-8 space-y-6">
+        <input type="hidden" name="hotel_id" value="101"> 
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Room Number</label>
-                    <input type="text" name="room_number" value="<%= room.room_number %>" required
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                        Room Number / Identifier
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="roomNumberInput" name="room_number" placeholder="e.g. 404-B" required
+                            onblur="validateRoomNumberUniqueness(this.value)"
+                            class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
+                        <div id="validationFeedbackIcon" class="absolute right-3 top-1/2 -translate-y-1/2 hidden text-xs"></div>
+                    </div>
+                    <p id="validationFeedbackText" class="text-[11px] mt-1 transition-all hidden"></p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Floor Designation</label>
+                    <input type="number" name="floor" placeholder="e.g. 4" required
                         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Floor Level</label>
-                    <input type="number" name="floor" value="<%= room.floor %>" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Room Category Fleet Map</label>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Room Category Allocation</label>
                     <select name="room_type_id" required
                         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                        <option value="1" <%= room.room_type_id == 1 ? 'selected' : '' %>>Deluxe King Suite (12)</option>
-                        <option value="2" <%= room.room_type_id == 2 ? 'selected' : '' %>>Presidential Royal (15)</option>
-                        <option value="3" <%= room.room_type_id == 3 ? 'selected' : '' %>>Executive Twin (8)</option>
+                        <option value="" disabled selected>Select dynamic operational category...</option>
+                        <% if (typeof roomTypes !== 'undefined' && roomTypes.length > 0) { %>
+                            <% roomTypes.forEach(type => { %>
+                                <option value="<%= type.room_type_id %>"><%= type.type_name %> (ID: <%= type.room_type_id %>)</option>
+                            <% }) %>
+                        <% } else { %>
+                            <option value="1">Standard Room (1)</option>
+                            <option value="2">Deluxe Suite (2)</option>
+                            <option value="3">Family Penthouse (3)</option>
+                        <% } %>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Operational Condition Status</label>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Initial Status Condition</label>
                     <select name="room_status_id" required
                         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                        <option value="1" <%= room.room_status_id == 1 ? 'selected' : '' %>>Available (1)</option>
-                        <option value="2" <%= room.room_status_id == 2 ? 'selected' : '' %>>Occupied (2)</option>
-                        <option value="3" <%= room.room_status_id == 3 ? 'selected' : '' %>>Maintenance (3)</option>
+                        <option value="1" selected>AVAILABLE (1)</option>
+                        <option value="2">OCCUPIED (2)</option>
+                        <option value="3">DIRTY (3)</option>
+                        <option value="4">MAINTENANCE (4)</option>
                     </select>
                 </div>
             </div>
 
             <div class="space-y-4 flex flex-col justify-between">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Internal Operations Notes</label>
-                    <textarea name="notes" rows="4" placeholder="Housekeeping conditions, hardware leaks or client profiles changes..."
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 h-[114px] outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition resize-none"><%= room.notes %></textarea>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Operations Logistics Notes</label>
+                    <textarea name="notes" rows="4" placeholder="Mention hardware attributes, layout preferences, or structural constraints..."
+                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 h-[114px] outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition resize-none"></textarea>
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Property Spatial Image</label>
                     <div class="flex items-center space-x-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-200 bg-white shrink-0">
-                            <img id="roomPhotoPreview" 
-                                 src="<%= room.photo_url || 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=200&q=80' %>" 
-                                 data-default-src="<%= room.photo_url || 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=200&q=80' %>"
-                                 alt="Live Preview Frame" 
-                                 class="w-full h-full object-cover">
+                        <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-200 bg-white shrink-0 flex items-center justify-center text-slate-300">
+                            <i id="previewPlaceholderIcon" class="fa-solid fa-bed text-xl"></i>
+                            <img id="creationPhotoPreview" alt="Live Preview Frame" class="absolute inset-0 w-full h-full object-cover hidden">
                         </div>
                         <div class="flex-1 space-y-1">
-                            <input type="file" id="roomPhotoInput" name="room_photo" accept="image/*" onchange="previewSelectedPhoto(this)" class="hidden">
-                            <button type="button" onclick="document.getElementById('roomPhotoInput').click()" 
+                            <input type="file" id="creationPhotoInput" name="room_photo" accept="image/*" onchange="previewCreationPhoto(this)" class="hidden">
+                            <button type="button" onclick="document.getElementById('creationPhotoInput').click()" 
                                 class="text-xs bg-white text-slate-700 font-medium px-3 py-2 rounded border border-slate-200 shadow-sm hover:bg-slate-100 transition">
                                 <i class="fa-solid fa-cloud-arrow-up mr-1.5 text-slate-400"></i>Upload Image File
                             </button>
@@ -203,19 +217,20 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-            <button type="button" onclick="resetFormState()" 
+            <button type="button" onclick="resetCreationForm()" 
                 class="flex items-center space-x-2 text-xs text-slate-500 hover:text-slate-800 font-medium px-4 py-2.5 rounded transition">
                 <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
-                <span>Reset Modifications</span>
+                <span>Clear Form</span>
             </button>
-            <button type="submit" 
-                class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-medium px-5 py-2.5 rounded-md shadow-sm transition">
-                <i class="fa-regular fa-floppy-disk text-[11px]"></i>
-                <span>Save Parameters</span>
+            <button type="submit" id="submitButton"
+                class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-medium px-5 py-2.5 rounded-md shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa-solid fa-plus text-[11px]"></i>
+                <span>Deploy Unit</span>
             </button>
         </div>
     </form>
 </div>
+
 
 <script>
     /**
@@ -306,133 +321,137 @@
         </main>
     </div>
 
-    <!-- Interface Event Control Scripts -->
-    <script>
-        // Safely parse the EJS variables directly into a client-side database matrix 
-        // to keep search/filter features working completely without extra API hits!
-        let mockRoomsDatabase = <%- JSON.stringify(room) %>;
-        console.log(mockRoomsDatabase);
+
+<script>
+    let isRoomNumberValid = false;
+
+    /**
+     * Triggers asynchronous pipeline check to avoid database level composite duplicate constraint rejections
+     */
+    async function validateRoomNumberUniqueness(roomNumber) {
+        if (!roomNumber.trim()) return;
+
+        const textFeedback = document.getElementById('validationFeedbackText');
+        const iconFeedback = document.getElementById('validationFeedbackIcon');
+        const submitBtn = document.getElementById('submitButton');
+            // Matches our input architecture configuration context
+
+        // Setup loading state indicators
+        iconFeedback.className = "absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 animate-spin";
+        iconFeedback.innerHTML = `<i class="fa-solid fa-spinner"></i>`;
+        iconFeedback.classList.remove('hidden');
+
+        try {
+            // Adjust this API string path to perfectly match your verification endpoint
+            const checkUrl = `/api/validate-room?hotel_id=${hotelId}&room_number=${encodeURIComponent(roomNumber)}`;
+            const response = await fetch(checkUrl);
+            const data = await response.json();
+
+            textFeedback.classList.remove('hidden');
+
+            if (data.exists) {
+                // Duplicate identity conflict matches found
+                isRoomNumberValid = false;
+                submitBtn.disabled = true;
+                textFeedback.className = "text-[11px] mt-1 text-rose-600 font-medium";
+                textFeedback.innerText = "✕ Identification mismatch: This room identifier actively exists in this property asset.";
+                iconFeedback.className = "absolute right-3 top-1/2 -translate-y-1/2 text-rose-500";
+                iconFeedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+            } else {
+                // Identity clean to proceed
+                isRoomNumberValid = true;
+                submitBtn.disabled = false;
+                textFeedback.className = "text-[11px] mt-1 text-emerald-600 font-medium";
+                textFeedback.innerText = "✓ Room configuration identifier code verified unique.";
+                iconFeedback.className = "absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500";
+                iconFeedback.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+            }
+        } catch (err) {
+            console.error("Uniqueness engine connection interruption context: ", err);
+            // Graceful fallback to avoid locking administration interface due to temporary server lag
+            iconFeedback.classList.add('hidden');
+            textFeedback.classList.add('hidden');
+            submitBtn.disabled = false;
+            isRoomNumberValid = true;
+        }
+    }
+
+    /**
+     * File Reader Stream mapping to construct instantaneous UI presentation frame references
+     */
+    function previewCreationPhoto(input) {
+        const previewElement = document.getElementById('creationPhotoPreview');
+        const placeholderIcon = document.getElementById('previewPlaceholderIcon');
+        const file = input.files[0];
+
+        if (file) {
+            const streamUrl = URL.createObjectURL(file);
+            previewElement.src = streamUrl;
+            previewElement.classList.remove('hidden');
+            placeholderIcon.classList.add('hidden');
+
+            previewElement.onload = () => URL.revokeObjectURL(streamUrl);
+        }
+    }
+
+    /**
+     * Drops data states back to base default arrays
+     */
+    function resetCreationForm() {
+        const creationForm = document.getElementById('createRoomForm');
+        const previewElement = document.getElementById('creationPhotoPreview');
+        const placeholderIcon = document.getElementById('previewPlaceholderIcon');
+        const textFeedback = document.getElementById('validationFeedbackText');
+        const iconFeedback = document.getElementById('validationFeedbackIcon');
         
-        // Toggle Filter UI Popup Card
-        function toggleFilterDropdown() {
-            const dropdown = document.getElementById('filterDropdown');
-            dropdown.classList.toggle('hidden');
+        creationForm.reset();
+        previewElement.src = "";
+        previewElement.classList.add('hidden');
+        placeholderIcon.classList.remove('hidden');
+        textFeedback.classList.add('hidden');
+        iconFeedback.classList.add('hidden');
+        document.getElementById('submitButton').disabled = false;
+        isRoomNumberValid = false;
+    }
+
+    /**
+     * Form pipeline package delivery interception route mapping
+     */
+    async function handleCreationSubmission(event) {
+        event.preventDefault();
+        
+        // Final sanity verification check
+        if (!isRoomNumberValid) {
+            alert("Rectify duplicate unit identification parameters before execution.");
+            return;
         }
 
-        // Close dropdown when clicking outside components boundary
-        window.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('filterDropdown');
-            if (!dropdown.contains(e.target) && !e.target.closest('button')?.innerText.includes('Filter')) {
-                dropdown.classList.add('hidden');
+        const activeForm = event.target;
+        const packedPayload = new FormData(activeForm);
+
+        try {
+            // Adjust endpoint string mapping configuration contextual parameters to match your generic POST route setups
+            const actionResponse = await fetch('/rooms', {
+                method: 'POST',
+                body: packedPayload
+            });
+
+            if (actionResponse.ok) {
+                alert('Property units structural configuration asset appended.');
+                resetCreationForm();
+                window.location.reload(); 
+            } else {
+                const failureDetails = await actionResponse.json();
+                alert(`Asset Provision Exception: ${failureDetails.message || 'Validation layer anomaly.'}`);
             }
-        });
-
-        // Dynamic table structural redraw client side for sorting/filtering mechanisms
-        function renderRoomCards(dataset) {
-            const container = document.getElementById('roomContainer');
-            container.innerHTML = '';
-
-            if (dataset.length === 0) {
-                container.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="py-8 text-center text-slate-400 font-medium">
-                            No active entries match current filter rules.
-                        </td>
-                    </tr>`;
-                updateCounters(0);
-                return;
-            }
-
-            dataset.forEach(room => {
-                let statusBadge = room.room_status_id === 1 
-                    ? '<span class="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">Available</span>'
-                    : '<span class="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold border border-amber-200">Occupied</span>';
-
-                let amenitiesHtml = (room.amenities || []).map(icon => 
-                    `<i class="fa-solid ${icon} text-xs text-slate-400 bg-slate-100 p-1 rounded"></i>`
-                ).join(' ');
-
-                let imgUrl = room.photo_url || 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=200&q=80';
-
-                let rowHtml = `
-                    <tr class="hover:bg-slate-50/70 transition">
-                        <td class="py-4 px-6 flex items-center space-x-4">
-                            <img src="${imgUrl}" alt="Room Thumbnail" class="w-12 h-12 object-cover rounded-lg bg-slate-100 shrink-0 border border-slate-200">
-                            <div>
-                                <div class="font-semibold text-slate-900">${room.category_name}</div>
-                                <div class="text-[10px] tracking-wide font-bold text-slate-400 uppercase mt-0.5">${room.tag || ''}</div>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6">
-                            <div class="text-xs font-semibold text-slate-700">Room ${room.room_number}</div>
-                            <div class="text-[11px] text-slate-400">Floor Layout: ${room.floor}</div>
-                        </td>
-                        <td class="py-4 px-6 max-w-xs">
-                            <div class="flex items-center space-x-2 mb-1.5">
-                                ${amenitiesHtml}
-                                ${statusBadge}
-                            </div>
-                            <p class="text-[11px] text-slate-500 italic truncate" title="${room.notes || ''}">"${room.notes || 'No extra notes.'}"</p>
-                        </td>
-                        <td class="py-4 px-6 font-bold text-slate-900 text-base">
-                            ${room}
-                        </td>
-                        <td class="py-4 px-6 text-right">
-                            <div class="flex items-center justify-end space-x-2 text-slate-400">
-                                <button class="p-1.5 hover:text-slate-600 hover:bg-slate-100 rounded transition"><i class="fa-regular fa-eye"></i></button>
-                                <button class="p-1.5 hover:text-slate-600 hover:bg-slate-100 rounded transition"><i class="fa-regular fa-pen-to-square"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                container.insertAdjacentHTML('beforeend', rowHtml);
-            });
-
-            updateCounters(dataset.length);
+        } catch (networkAnomaly) {
+            console.error('Asset creation endpoint failure context: ', networkAnomaly);
+            alert('A data serialization connection pipeline termination fault was caught.');
         }
+    }
+</script>
 
-        // Reactive UI text adjustments for table metrics counters
-        function updateCounters(count) {
-            document.getElementById('visibleCounter').innerText = `${count} type${count !== 1 ? 's' : ''} visible`;
-            document.getElementById('showingIndicator').innerText = `Showing 1-${count} of ${count} items`;
-        }
 
-        // Filter Evaluation Engine 
-        function applyFilters() {
-            const typeValue = document.getElementById('filterRoomType').value;
-            const statusValue = document.getElementById('filterStatus').value;
-            const floorValue = document.getElementById('filterFloor').value;
 
-            let filteredResult = mockRoomsDatabase.filter(room => {
-                let matchesType = typeValue === "" || room.room_type_id == typeValue;
-                let matchesStatus = statusValue === "" || room.room_status_id == statusValue;
-                let matchesFloor = floorValue === "" || room.floor == floorValue;
-                return matchesType && matchesStatus && matchesFloor;
-            });
-
-            renderRoomCards(filteredResult);
-            toggleFilterDropdown(); 
-        }
-
-        // Clear filter panel state triggers
-        function resetFilters() {
-            document.getElementById('filterRoomType').value = "";
-            document.getElementById('filterStatus').value = "";
-            document.getElementById('filterFloor').value = "";
-            renderRoomCards(mockRoomsDatabase);
-            toggleFilterDropdown();
-        }
-
-        // Live client-side interactive search engine
-        function searchTable() {
-            const searchVal = document.getElementById('tableSearch').value.toLowerCase();
-            let queryMatch = mockRoomsDatabase.filter(room => {
-                return (room.category_name || '').toLowerCase().includes(searchVal) || 
-                       (room.notes || '').toLowerCase().includes(searchVal) ||
-                       (room.room_number || '').toString().toLowerCase().includes(searchVal);
-            });
-            renderRoomCards(queryMatch);
-        }
-    </script>
 </body>
 </html>
