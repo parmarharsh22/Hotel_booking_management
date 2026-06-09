@@ -9,8 +9,8 @@ export class AdminRoomController {
   // hotelId comes from session (injected by tenant.middleware.ts into req.hotelId)
   async listRooms(req: Request, res: Response) {
     try {
-      // const hotelId = (req as any).hotelId as number;
-      const hotelId = 101;
+      const hotelId = (req as any).hotelId as number;
+     
       const rooms = await roomService.getAllRoomsByHotel(hotelId);
       // EJS: render the rooms list page
       return res.status(200).render("admin/rooms", { rooms });
@@ -34,9 +34,12 @@ export class AdminRoomController {
   async createRoom(req: Request, res: Response) {
     try {
       const hotelId = (req as any).hotelId as number;
+      
+     
       const files: any = req.files;
       const photo_url = files?.room_photo ? files.room_photo[0].path : null;
-
+    
+      
       const room = {
         hotel_id:       hotelId,
         room_type_id:   parseInt(req.body.room_type_id),
@@ -46,6 +49,7 @@ export class AdminRoomController {
         photo_url,
         notes:          req.body.notes || null,
       };
+      
       await roomService.createRoom(room);
       // After create, redirect back to the rooms list
       return res.redirect("/admin/rooms");
@@ -58,10 +62,10 @@ export class AdminRoomController {
   // Fetches existing room data to pre-fill the edit form
    async showEditRoom(req: Request, res: Response) {
     try {
-      // const hotelId = (req as any).hotelId as number;
-       const hotelId = 101;
+      const hotelId = (req as any).hotelId as number;
+     
       const roomId  = parseInt(req.params.roomId as any);
-      console.log(roomId);
+      
       
       const room = await roomService.getRoomById(roomId, hotelId);
       return res.status(200).render("admin/room-edit", { room });
@@ -75,10 +79,10 @@ export class AdminRoomController {
   // method-override converts the form's POST into PUT
   async updateRoom(req: Request, res: Response) {
     try {
-      // const hotelId = (req as any).hotelId as number;
-      const hotelId = 101;
+      const hotelId = (req as any).hotelId as number;
+     
       const roomId  = parseInt(req.params.roomId as any);
-      console.log(roomId);
+    
       
       const files: any = req.files;
       const photo_url = files?.room_photo ? files.room_photo[0].path : req.body.existing_photo || null;
