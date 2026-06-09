@@ -32,7 +32,6 @@ app.use("/superadmin", superadminRoutes);
 
 //protected Routes
 app.use("/authen",authenRoute);
-app.use("/superadmin", superadminRoutes);
 
 //All the unproctedRoutes
 app.use("/",authRouter);

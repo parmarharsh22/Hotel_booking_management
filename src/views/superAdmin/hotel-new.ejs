@@ -1,0 +1,320 @@
+ 
+<%
+ 
+  pageTitle  = "Add Hotel — HBMS";
+ 
+  activePage = "hotels";
+ 
+%>
+ 
+  <%- include('_layout_start') %>
+
+<!-- Top bar -->
+ 
+<div class="px-8 py-5 border-b border-surface-border flex items-center gap-4">
+ 
+  <a href="/superadmin/hotels" class="p-1.5 rounded-lg text-muted hover:text-white hover:bg-surface-2 transition-colors">
+ 
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+ 
+  </a>
+ 
+  <div>
+ 
+    <h1 class="text-lg font-semibold text-white">Add New Hotel</h1>
+ 
+    <p class="text-xs text-muted mt-0.5">Create a new tenant and admin account</p>
+ 
+  </div>
+ 
+</div>
+ 
+ 
+<div class="px-8 py-8 max-w-3xl">
+ 
+  <div id="form-error" class="hidden mb-5 px-4 py-3 rounded-lg bg-red-950 border border-red-800 text-red-300 text-sm"></div>
+ 
+ 
+  <!-- Hotel details section -->
+ 
+  <div class="card p-6 mb-6">
+ 
+    <div class="flex items-center gap-2 mb-5">
+ 
+      <div class="w-6 h-6 rounded-md bg-accent-muted text-accent flex items-center justify-center">
+ 
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+ 
+      </div>
+ 
+      <h2 class="text-sm font-semibold text-white">Hotel Details</h2>
+ 
+    </div>
+ 
+ 
+    <div class="grid grid-cols-2 gap-4">
+ 
+      <div class="col-span-2">
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Hotel Name <span class="text-danger">*</span></label>
+ 
+        <input type="text" name="name" id="name" placeholder="e.g. Grand Palace Hotel" class="input-field text-sm" required />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Email <span class="text-danger">*</span></label>
+ 
+        <input type="email" name="email" id="email" placeholder="hotel@example.com" class="input-field text-sm" required />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Phone</label>
+ 
+        <input type="text" name="phone" id="phone" placeholder="+1 234 567 8900" class="input-field text-sm" />
+ 
+      </div>
+ 
+ 
+      <div class="col-span-2">
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Address</label>
+ 
+        <input type="text" name="address" id="address" placeholder="Street address" class="input-field text-sm" />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">City</label>
+ 
+        <input type="text" name="city" id="city" placeholder="City" class="input-field text-sm" />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">State</label>
+ 
+        <input type="text" name="state" id="state" placeholder="State" class="input-field text-sm" />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Country</label>
+ 
+        <input type="text" name="country" id="country" placeholder="Country" class="input-field text-sm" />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Logo URL</label>
+ 
+        <!-- <input type="url" name="logo_url" id="logo_url" placeholder="https://..." class="input-field text-sm" /> -->
+ <input type="file" name="logo_url" accept="image/*" id="logo_url" class="input-field text-sm" />
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Cover Image URL</label>
+ 
+        <!-- <input type="url" name="cover_url" id="cover_url" placeholder="https://..." class="input-field text-sm" /> -->
+ <input type="file" name="cover_url" accept="image/*" id="cover_url" class="input-field text-sm" />
+      </div>
+ 
+    </div>
+ 
+  </div>
+ 
+ 
+  <!-- Admin account section -->
+ 
+  <div class="card p-6 mb-6">
+ 
+    <div class="flex items-center gap-2 mb-5">
+ 
+      <div class="w-6 h-6 rounded-md bg-accent-muted text-accent flex items-center justify-center">
+ 
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+ 
+      </div>
+ 
+      <h2 class="text-sm font-semibold text-white">Admin Account</h2>
+ 
+      <span class="text-xs text-muted ml-1">— auto-generated password will be logged</span>
+ 
+    </div>
+ 
+ 
+    <div class="grid grid-cols-2 gap-4">
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">First Name <span class="text-danger">*</span></label>
+ 
+        <input type="text" name="admin_first_name" id="admin_first_name" placeholder="John" class="input-field text-sm" required />
+ 
+      </div>
+ 
+ 
+      <div>
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Last Name <span class="text-danger">*</span></label>
+ 
+        <input type="text" name="admin_last_name" id="admin_last_name" placeholder="Smith" class="input-field text-sm" required />
+ 
+      </div>
+ 
+ 
+      <div class="col-span-2">
+ 
+        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Admin Email <span class="text-danger">*</span></label>
+ 
+        <input type="email" name="admin_email" id="admin_email" placeholder="admin@grandpalace.com" class="input-field text-sm" required />
+ 
+      </div>
+ 
+    </div>
+ 
+  </div>
+ 
+ 
+  <!-- Actions -->
+ 
+  <div class="flex items-center gap-3">
+ 
+    <button id="submit-btn" onclick="submitForm()" class="btn-primary px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2">
+ 
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+ 
+      Create Hotel
+ 
+    </button>
+ 
+    <a href="/superadmin/hotels" class="btn-ghost px-6 py-2.5 rounded-lg text-sm font-medium">Cancel</a>
+ 
+  </div>
+ 
+</div>
+ 
+ 
+<script>
+ 
+  // async function submitForm() {
+ 
+  //   const btn = document.getElementById('submit-btn');
+ 
+  //   const errEl = document.getElementById('form-error');
+ 
+ 
+  //   const fields = ['name','email','phone','address','city','state','country','logo_url','cover_url',
+ 
+  //                   'admin_first_name','admin_last_name','admin_email'];
+ 
+  //   const body = {};
+ 
+  //   fields.forEach(f => body[f] = document.getElementById(f).value.trim());
+ 
+ 
+  //   if (!body.name || !body.email || !body.admin_first_name || !body.admin_last_name || !body.admin_email) {
+ 
+  //     errEl.textContent = 'Please fill in all required fields.';
+ 
+  //     errEl.classList.remove('hidden');
+ 
+  //     return;
+ 
+  //   }
+ 
+ 
+  //   errEl.classList.add('hidden');
+ 
+  //   btn.disabled = true;
+ 
+  //   btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg> Creating...`;
+ 
+ 
+  //   try {
+ 
+  //     const res = await fetch('/superadmin/hotels', {
+ 
+  //       method: 'POST',
+ 
+  //       headers: { 'Content-Type': 'application/json' },
+ 
+  //       body: JSON.stringify(body)
+ 
+  //     });
+ 
+ 
+  //     if (res.ok) {
+ 
+  //       window.location.href = '/superadmin/hotels';
+ 
+  //     } else {
+ 
+  //       const msg = await res.text();
+ 
+  //       errEl.textContent = msg || 'Failed to create hotel.';
+ 
+  //       errEl.classList.remove('hidden');
+ 
+  //       btn.disabled = false;
+ 
+  //       btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Create Hotel`;
+ 
+  //     }
+ 
+  //   } catch {
+ 
+  //     errEl.textContent = 'Network error. Please try again.';
+ 
+  //     errEl.classList.remove('hidden');
+ 
+  //     btn.disabled = false;
+ 
+  //     btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Create Hotel`;
+ 
+  //   }
+ 
+  // }
+ async function submitForm() {
+    const formData = new FormData();
+
+    // text fields
+    ['name','email','phone','address','city','state','country',
+     'admin_first_name','admin_last_name','admin_email'].forEach(f => {
+        formData.append(f, document.getElementById(f).value.trim());
+    });
+
+    // file fields
+    const logo  = document.getElementById('logo_url').files[0];
+    const cover = document.getElementById('cover_url').files[0];
+    if (logo)  formData.append('logo_url',  logo);
+    if (cover) formData.append('cover_url', cover);
+
+    const res = await fetch('/superadmin/hotels', {
+        method: 'POST',
+        body: formData,
+        // NO Content-Type header — browser sets it automatically with boundary
+    });
+
+    if (res.ok) window.location.href = '/superadmin/hotels';
+}
+
+</script>
+ 
+
+ <%- include('_layout_end') %>

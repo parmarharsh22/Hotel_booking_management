@@ -1,12 +1,16 @@
 import * as tenantModel from "../models/tenant.model";
 import bcrypt from "bcryptjs";
 import { db } from "../../../config/db";
+import { SuperAdminModel } from "../models/superAdmin.auth.model";
 
 /**
  * LIST HOTELS
  */
 export const listHotels = async () => {
     return await tenantModel.getAllHotels();
+};
+export const listUsers = async () => {
+    return await SuperAdminModel.getAllUserData();
 };
 
 /**
