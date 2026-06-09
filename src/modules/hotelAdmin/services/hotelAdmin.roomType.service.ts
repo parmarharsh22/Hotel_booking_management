@@ -31,9 +31,11 @@ export class RoomTypeService {
     try {
       if (!roomType.type_name)   throw new Error("Room type name is required.");
       if (!roomType.base_price)  throw new Error("Base price is required.");
-      if (!roomType.max_occupancy) throw new Error("Max occupancy is required.");
+      if (!roomType.max_adults) throw new Error("Max occupancy is required.");
+      if (!roomType.max_children) throw new Error("Max occupancy is required.");
       if (roomType.base_price <= 0) throw new Error("Base price must be greater than 0.");
-      if (roomType.max_occupancy <= 0) throw new Error("Max occupancy must be greater than 0.");
+      if (roomType.max_adults <= 0) throw new Error("Max occupancy must be greater than 0.");
+      if (roomType.max_children <= 0) throw new Error("Max occupancy must be greater than 0.");
       return await RoomTypeModel.createRoomType(roomType);
     } catch (err) {
       throw err;
@@ -46,7 +48,8 @@ export class RoomTypeService {
       if (!typeId)  throw new Error("Room type ID is required.");
       if (!hotelId) throw new Error("Hotel ID is required.");
       if (data.base_price && data.base_price <= 0) throw new Error("Base price must be greater than 0.");
-      if (data.max_occupancy && data.max_occupancy <= 0) throw new Error("Max occupancy must be greater than 0.");
+      if (data.max_adults && data.max_adults <= 0) throw new Error("Max occupancy must be greater than 0.");
+      if (data.max_children && data.max_children <= 0) throw new Error("Max occupancy must be greater than 0.");
       const updated = await RoomTypeModel.updateRoomType(typeId, hotelId, data);
       if (!updated) throw new Error("Room type not found or no changes made.");
       return updated;

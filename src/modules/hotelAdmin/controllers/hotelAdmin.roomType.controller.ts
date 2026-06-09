@@ -9,6 +9,7 @@ export class AdminRoomTypeController {
     try {
       const hotelId  = (req as any).hotelId as number;
       const roomTypes = await roomTypeService.getAllRoomTypes(hotelId);
+      console.log(roomTypes);
       return res.status(200).render("hotelAdmin/room-types", { roomTypes });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
@@ -36,7 +37,8 @@ export class AdminRoomTypeController {
         photo_url,
         description:   req.body.description   || null,
         base_price:    parseFloat(req.body.base_price),
-        max_occupancy: parseInt(req.body.max_occupancy),
+        max_adults: parseInt(req.body.max_adults),
+        max_children: parseInt(req.body.max_children), 
       };
 
       await roomTypeService.createRoomType(roomType);
@@ -70,7 +72,8 @@ export class AdminRoomTypeController {
         photo_url,
         description:   req.body.description   || null,
         base_price:    parseFloat(req.body.base_price),
-        max_occupancy: parseInt(req.body.max_occupancy),
+        max_adults: parseInt(req.body.max_adults),
+        max_children: parseInt(req.body.max_children)
       };
 
       await roomTypeService.updateRoomType(typeId, hotelId, data);

@@ -7,7 +7,8 @@ export interface RoomTypeInterface {
   photo_url?:     string | null;
   description?:   string | null;
   base_price:     number;
-  max_occupancy:  number;
+  max_adults: number;
+  max_children: number;
   created_at?:    Date;
 }
 
@@ -17,7 +18,8 @@ export interface RoomTypeUpdateInterface {
   photo_url?:     string | null;
   description?:   string | null;
   base_price?:    number;
-  max_occupancy?: number;
+  max_adults?: number;
+  max_children?: number;
 }
 
 export class RoomTypeModel {
@@ -72,15 +74,16 @@ export class RoomTypeModel {
   static async createRoomType(roomType: RoomTypeInterface): Promise<RoomTypeInterface> {
     try {
       const [data]: any = await db.query(
-        `INSERT INTO room_types (hotel_id, type_name, photo_url, description, base_price, max_occupancy)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO room_types (hotel_id, type_name, photo_url, description, base_price, max_adults, max_children)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           roomType.hotel_id,
           roomType.type_name,
           roomType.photo_url   ?? null,
           roomType.description ?? null,
           roomType.base_price,
-          roomType.max_occupancy,
+          roomType.max_adults,
+          roomType.max_children,
         ]
       );
       return { room_type_id: data.insertId, ...roomType };
@@ -92,20 +95,23 @@ export class RoomTypeModel {
    // PUT /admin/room-types/:typeId  →  updateRoomType
   static async updateRoomType(typeId: number, hotelId: number, data: RoomTypeUpdateInterface): Promise<boolean> {
     try {
+      console.log(data);
       const [result]: any = await db.query(
         `UPDATE room_types
          SET type_name     = ?,
              photo_url     = ?,
              description   = ?,
              base_price    = ?,
-             max_occupancy = ?
+             max_adults = ?,
+             max_children = ?,
          WHERE room_type_id = ? AND hotel_id = ?`,
         [
           data.type_name,
           data.photo_url     ?? null,
           data.description   ?? null,
           data.base_price,
-          data.max_occupancy,
+          data.max_adults,
+          data.max_children,
           typeId,
           hotelId,
         ]
