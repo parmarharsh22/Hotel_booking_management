@@ -4,17 +4,15 @@ import {
   FilteredHotelResult,
   Hotel,
 } from "../interfaces/room.avalibaleHotel.interface";
+import { HotelDetails, RoomType } from "../interfaces/room.hotelDetails.interface";
 
 export const searchHotels = async (params: searchHotelReqBody) => {
-  const { location, check_in, check_out, rooms, adults, child } = params;
+  const { location, check_in, check_out, rooms, adults, children } = params;
 
   const hotels_data = await roomModel.searchHotels(
     location,
     check_in,
-    check_out,
-    rooms,
-    adults,
-    child,
+    check_out
   );
 
   const hotels: Record<string, Hotel> = {};
@@ -57,7 +55,7 @@ export const searchHotels = async (params: searchHotelReqBody) => {
       0,
     );
 
-    const numberOfChild = Number(child ?? 0);
+    const numberOfChild = Number(children ?? 0);
 
     if (
       hotel.rooms.length >= rooms &&
@@ -71,6 +69,45 @@ export const searchHotels = async (params: searchHotelReqBody) => {
       });
     }
   }
-//   console.log(result);
+
   return result;
 };
+
+export const hotelDetails=async (hotelId:number,check_in:string,check_out:string)=>{
+  const hotelDetails=await roomModel.hotelDetails(hotelId,check_in,check_out);
+
+  let hotel: HotelDetails | undefined;
+  let room_type:RoomType[]=[];
+
+  for(let i=0;i< hotelDetails.length;i++)
+  {
+    const element=hotelDetails[i];
+
+    if(i==0)
+    {
+      hotel={
+        hotel_id:Number(element.hotel_id),
+        name:element.name,
+        address:element.address,
+        city:element.city,
+        state:element.state,
+        country:element.country,
+        cover_url:element.cover_url
+      }
+    }
+
+    room_type.push({
+      room_type_id:element.room_type_id,
+      type:element.type_name,
+      price:element.base_price,
+      max_adults:element.max_adults,
+      max_children:element.max_children,
+      available_rooms:element.available_rooms,
+      description:element.description,
+      amenities:element.amenities.split(',').map((item:string)=>item.trim())
+    })
+  }
+  console.log(hotel,room_type);
+
+  return {hotel,room_type};
+}
