@@ -8,9 +8,9 @@ export class AdminRoomTypeController {
  async listRoomTypes(req: Request, res: Response) {
     try {
       const hotelId  = (req as any).hotelId as number;
+     
       const roomTypes = await roomTypeService.getAllRoomTypes(hotelId);
-      console.log(roomTypes);
-      return res.status(200).render("hotelAdmin/room-types", { roomTypes });
+      return res.status(200).json({ roomTypes });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
