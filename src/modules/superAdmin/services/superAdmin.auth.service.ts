@@ -1,4 +1,3 @@
-import { error } from "node:console";
 import { SuperAdminInterface } from "../models/superAdmin.auth.model";
 import { SuperAdminModel } from "../models/superAdmin.auth.model";
 

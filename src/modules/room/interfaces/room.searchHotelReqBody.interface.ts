@@ -3,5 +3,6 @@ export interface searchHotelReqBody{
     check_in:string;
     check_out:string;
     rooms:number;
-    guests:number;
+    adults:number;
+    child?:number;
 }

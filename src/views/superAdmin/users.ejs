@@ -1,0 +1,273 @@
+ 
+<%
+ 
+  pageTitle  = "Users — HBMS";
+ 
+  activePage = "users";
+ 
+%>
+   <%- include('_layout_start') %>
+
+ 
+<!-- Top bar -->
+ 
+<div class="px-8 py-5 border-b border-surface-border flex items-center justify-between">
+ 
+  <div>
+ 
+    <h1 class="text-lg font-semibold ">Users</h1>
+ 
+    <p class="text-xs text-muted mt-0.5">All platform users across tenants</p>
+ 
+  </div>
+ 
+</div>
+ 
+ 
+<div class="px-8 py-6 space-y-4">
+ 
+ 
+  <!-- Search & filter -->
+ 
+  <div class="flex items-center gap-3">
+ 
+    <div class="relative flex-1 max-w-xs">
+ 
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+ 
+      <input id="user-search" type="text" placeholder="Search by name or email..." class="input-field pl-9 text-sm" />
+ 
+    </div>
+ 
+    <select id="role-filter" class="input-field text-sm w-44">
+ 
+      <option value="">All Roles</option>
+ 
+      <option value="SUPER_ADMIN">Super Admin</option>
+ 
+      <option value="HOTEL_ADMIN">Hotel Admin</option>
+ 
+      <option value="FRONT_DESK">Front Desk</option>
+ 
+      <option value="GUEST">Guest</option>
+ 
+    </select>
+ 
+
+ 
+    <span id="user-count" class="text-xs text-muted font-mono ml-auto"></span>
+ 
+  </div>
+ 
+ 
+  <!-- Table -->
+ 
+  <div class="card overflow-hidden">
+ 
+    <table class="w-full text-sm">
+ 
+      <thead>
+ 
+        <tr class="border-b border-surface-border bg-surface-2 text-left">
+ 
+          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">User</th>
+ 
+          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Role</th>
+ 
+          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Hotel</th>
+ 
+          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Contact</th>
+ 
+
+ 
+          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Joined</th>
+ 
+        </tr>
+ 
+      </thead>
+ 
+      <tbody id="users-tbody">
+ 
+        <tr><td colspan="5" class="px-6 py-10 text-center text-muted">Loading...</td></tr>
+ 
+      </tbody>
+ 
+    </table>
+ 
+  </div>
+ 
+ 
+</div>
+ 
+ 
+<script>
+ 
+  let allUsers = [];
+ 
+ 
+  const roleStyles = {
+ 
+    SUPER_ADMIN: 'bg-purple-950 border border-purple-800 text-purple-300',
+ 
+    HOTEL_ADMIN: 'bg-blue-950 border border-blue-800 text-blue-300',
+ 
+    FRONT_DESK:  'bg-cyan-950 border border-cyan-800 text-cyan-300',
+ 
+    GUEST:       'bg-slate-800 border border-slate-700 text-slate-400',
+ 
+  };
+ 
+ 
+  async function loadUsers() {
+ 
+    try {
+ 
+      const res = await fetch('/superadmin/auth/getAllUser', {
+        headers:{'Accept':'application/json'}
+      });
+ 
+      allUsers  = await res.json();
+ 
+      renderUsers(allUsers);
+ 
+    } catch {
+ 
+      document.getElementById('users-tbody').innerHTML =
+ 
+        `<tr><td colspan="5" class="px-6 py-10 text-center text-danger">Failed to load users</td></tr>`;
+ 
+    }
+ 
+  }
+ 
+ 
+  function renderUsers(users) {
+ 
+    document.getElementById('user-count').textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
+ 
+ 
+    if (users.length === 0) {
+ 
+      document.getElementById('users-tbody').innerHTML =
+ 
+        `<tr><td colspan="5" class="px-6 py-10 text-center text-muted">No users found</td></tr>`;
+ 
+      return;
+ 
+    }
+ 
+ 
+    document.getElementById('users-tbody').innerHTML = users.map(u => {
+ 
+      const initials = `${(u.first_name || '')[0] || ''}${(u.last_name || '')[0] || ''}`.toUpperCase() || '?';
+ 
+      const roleCls  = roleStyles[u.role_name] || roleStyles.GUEST;
+ 
+      const roleName = u.role_name || `Role #${u.user_role_id}`;
+ 
+ 
+      return `
+ 
+        <tr class="table-row border-b border-surface-border last:border-0">
+ 
+          <td class="px-6 py-3.5">
+ 
+            <div class="flex items-center gap-3">
+ 
+              <div class="w-8 h-8 rounded-full bg-accent-muted text-accent font-mono text-xs font-bold flex items-center justify-center flex-shrink-0">${initials}</div>
+ 
+              <div>
+ 
+                <div class="font-medium  text-sm">${u.first_name} ${u.last_name}</div>
+ 
+                <div class="text-xs text-muted font-mono">#${u.user_id}</div>
+ 
+              </div>
+ 
+            </div>
+ 
+          </td>
+ 
+          <td class="px-6 py-3.5">
+ 
+            <span class="text-xs font-mono px-2 py-0.5 rounded-md ${roleCls}">${roleName}</span>
+ 
+          </td>
+ 
+          <td class="px-6 py-3.5 text-slate-400 text-xs">
+ 
+            ${u.hotel_name ? `<div class="text-slate-300">${u.hotel_name}</div>` : '<span class="text-muted">—</span>'}
+ 
+            ${u.hotel_id ? `<div class="text-muted font-mono">#${u.hotel_id}</div>` : ''}
+ 
+          </td>
+ 
+          <td class="px-6 py-3.5">
+ 
+            <div class="text-xs text-slate-300">${u.email}</div>
+ 
+            <div class="text-xs text-muted">${u.phone || ''}</div>
+ 
+          </td>
+ 
+ 
+ 
+          <td class="px-6 py-3.5 text-slate-400 font-mono text-xs">${formatDate(u.created_at)}</td>
+ 
+        </tr>
+ 
+      `;
+ 
+    }).join('');
+ 
+  }
+ 
+ 
+  function applyFilters() {
+ 
+    const q      = document.getElementById('user-search').value.toLowerCase();
+ 
+    const role   = document.getElementById('role-filter').value;
+ 
+ 
+ 
+    const filtered = allUsers.filter(u => {
+ 
+      const fullName = `${u.first_name} ${u.last_name}`.toLowerCase();
+ 
+      const matchQ = !q || fullName.includes(q) || u.email.toLowerCase().includes(q);
+ 
+      const matchR = !role   || u.role_name === role;
+ 
+ 
+      return matchQ && matchR;
+ 
+    });
+ 
+ 
+    renderUsers(filtered);
+ 
+  }
+ 
+ 
+  document.getElementById('user-search').addEventListener('input', applyFilters);
+ 
+  document.getElementById('role-filter').addEventListener('change', applyFilters);
+ 
+ 
+ 
+  function formatDate(ts) {
+ 
+    if (!ts) return '—';
+ 
+    return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+ 
+  }
+ 
+ 
+  loadUsers();
+ 
+</script>
+ 
+
+   <%- include('_layout_end') %>

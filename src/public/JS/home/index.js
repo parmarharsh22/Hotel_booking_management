@@ -46,18 +46,21 @@ form.addEventListener("submit", async (e) => {
     const checkinInput = document.getElementById("checkin-input");
     const checkoutInput = document.getElementById("checkout-input");
     const roomsInput = document.getElementById("rooms-input");
-    const guestsInput = document.getElementById("guests-input");
+    const adultsInput = document.getElementById("adults-input");
+    const childInput = document.getElementById("child-input");
 
     const locationVal = locationInput.value.trim();
     const checkinVal = checkinInput.value;
     const checkoutVal = checkoutInput.value;
     const roomsVal = parseInt(roomsInput.value, 10);
-    const guestsVal = parseInt(guestsInput.value, 10);
+    const adultsVal = parseInt(adultsInput.value, 10);
+    const childVal = parseInt(childInput.value, 10);
 
     if (!locationVal) { addError("location-input", "Required field"); hasErrors = true; }
     if (!checkoutVal) { addError("checkout-input", "Select check-out"); hasErrors = true; }
     if (isNaN(roomsVal)) { addError("rooms-input", "Enter rooms count"); hasErrors = true; }
-    if (isNaN(guestsVal)) { addError("guests-input", "Enter guests count"); hasErrors = true; }
+    if (isNaN(adultsVal)) { addError("adults-input", "Enter adults count"); hasErrors = true; }
+    if (isNaN(childVal)) { addError("child-input", "Enter childs count"); hasErrors = true; }
 
     if (locationVal) {
         const locationRegex = /^[A-Za-z\s,\-]*$/;
@@ -98,7 +101,8 @@ form.addEventListener("submit", async (e) => {
         }
     }
     if (!isNaN(roomsVal) && roomsVal < 1) { addError("rooms-input", "Minimum 1 room required"); hasErrors = true; }
-    if (!isNaN(guestsVal) && guestsVal < 1) { addError("guests-input", "Minimum 1 guest required"); hasErrors = true; }
+    if (!isNaN(adultsVal) && adultsVal < 1) { addError("adults-input", "Minimum 1 adult required"); hasErrors = true; }
+    // if (!isNaN(childVal) && childVal < 1) { addError("child-input", "Minimum 1 child required"); hasErrors = true; }
 
     if (hasErrors) {
         e.preventDefault();
@@ -130,6 +134,7 @@ window.onload = async () => {
             const opt = document.createElement("option");
             opt.textContent = location.city;
             opt.value = location.city;
+            opt.classList.add('bg-black')
             dropdown.appendChild(opt);
         })
 
@@ -138,21 +143,26 @@ window.onload = async () => {
     }
 };
 
-document.querySelectorAll('input, select').forEach(element => {
+document.querySelectorAll('input, select, textarea').forEach(element => {
+
     element.addEventListener('focus', () => {
-        element.closest('.group').classList.add('bg-primary-container/5');
+        element.parentElement.classList.add('ring-1', 'ring-amber-500');
     });
+
     element.addEventListener('blur', () => {
-        element.closest('.group').classList.remove('bg-primary-container/5');
+        element.parentElement.classList.remove('ring-1', 'ring-amber-500');
     });
+
 });
+
 async function openProfileModal() {
     const modal = document.getElementById("profileModal");
-    try{
+    try {
         const response = await fetch("/authen/fetchUserDetails");
         const data = await response.json();
+
         console.log(data);
-        
+
         const imgInput = document.getElementById("avatarPreview");
         const first_name = document.getElementById("first_name");
         const last_name = document.getElementById("last_name");
@@ -167,18 +177,19 @@ async function openProfileModal() {
         imgInput.src = `/uploads/profile-photos/${data.photo_url}`;
         first_name.value = `${data.first_name}`;
         last_name.value = `${data.last_name}`;
-        inpemail.value =`${data.email}`;
+        inpemail.value = `${data.email}`;
         dob.value = new Date(data.dob).toISOString().split("T")[0];
         phone.value = `${data.phone}`;
         gender.value = `${data.gender}`;
-        state.value = `${data.state}`;
-        city.value = `${data.city}`;
+        // state.innerHTML = `<option>${data.state}</option>`;
+        // city.innerHTML = `<option>${data.city}</option>`;
+        state.value = data.state;
+        await loadCities();
+        city.value = data.city;
         address.value = `${data.address}`;
-        
 
-    
-    }catch(err){
-        console.log("error occured ",err);
+    } catch (err) {
+        console.log("error occured ", err);
     }
     modal.classList.remove("hidden");
     modal.classList.add("flex");
@@ -186,10 +197,121 @@ async function openProfileModal() {
     document.body.style.overflow = "hidden";
 }
 
-function closeProfileModal() {
+window.closeProfileModal = function () {
     const modal = document.getElementById("profileModal");
+
     modal.classList.remove("flex");
     modal.classList.add("hidden");
 
     document.body.style.overflow = "auto";
+};
+
+const stateSelect = document.getElementById("state");
+const citySelect = document.getElementById("city");
+
+window.addEventListener("DOMContentLoaded", loadStates);
+
+async function loadStates() {
+
+    try {
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/states",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    country: "India"
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        data.data.states.forEach(state => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = state.name;
+            option.textContent = state.name;
+
+            stateSelect.appendChild(option);
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
 }
+
+stateSelect.addEventListener(
+    "change",
+    loadCities
+);
+
+async function loadCities() {
+
+    citySelect.innerHTML =
+        '<option value="">Loading...</option>';
+
+    try {
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/state/cities",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    country: "India",
+                    state: stateSelect.value
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        citySelect.innerHTML =
+            '<option value="">Select City</option>';
+
+        data.data.forEach(city => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = city;
+            option.textContent = city;
+
+            citySelect.appendChild(option);
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        citySelect.innerHTML =
+            '<option value="">Unable to load cities</option>';
+    }
+}
+
+const avatarInput =
+    document.getElementById("avatarInput");
+
+const avatarPreview =
+    document.getElementById("avatarPreview");
+
+avatarInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        if (!file) return;
+
+        avatarPreview.src =
+            URL.createObjectURL(file);
+    }
+);

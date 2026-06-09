@@ -1,0 +1,49 @@
+ 
+  </main>
+ 
+ 
+  <!-- Toast -->
+ 
+  <div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+ 
+    <div id="toast-inner" class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium border"></div>
+ 
+  </div>
+ 
+ 
+  <script>
+ 
+    function showToast(msg, type = 'success') {
+ 
+      const toast = document.getElementById('toast');
+ 
+      const inner = document.getElementById('toast-inner');
+ 
+      const styles = {
+ 
+        success: 'bg-white border-green-200 text-green-700',
+ 
+        error:   'bg-white border-red-200 text-red-700',
+ 
+        info:    'bg-white border-blue-200 text-blue-700',
+ 
+      };
+ 
+      inner.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium border ${styles[type] || styles.success}`;
+ 
+      inner.textContent = msg;
+ 
+      toast.classList.remove('hidden');
+ 
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+ 
+    }
+ 
+  </script>
+ 
+ 
+</body>
+ 
+</html>
+ 
+

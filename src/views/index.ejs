@@ -22,106 +22,110 @@
             -webkit-backdrop-filter: blur(12px);
         }
     </style>
-        <script id="tailwind-config">
-            tailwind.config = {
-                darkMode: "class",
-                theme: {
-                    extend: {
-                        "colors": {
-                            "primary-fixed-dim": "#b6c7eb",
-                            "tertiary": "#211400",
-                            "surface-container-high": "#e6e8eb",
-                            "status-available": "#2D8A56",
-                            "outline": "#75777e",
-                            "error": "#ba1a1a",
-                            "surface-container": "#eceef1",
-                            "on-primary-fixed": "#081b38",
-                            "status-dirty": "#64748B",
-                            "on-tertiary-fixed-variant": "#5b4217",
-                            "on-background": "#191c1e",
-                            "inverse-surface": "#2d3133",
-                            "tertiary-container": "#3c2700",
-                            "tertiary-fixed-dim": "#e5c18a",
-                            "on-secondary-fixed-variant": "#5d4201",
-                            "status-maintenance": "#D97706",
-                            "inverse-primary": "#b6c7eb",
-                            "surface-white": "#FFFFFF",
-                            "primary": "#031632",
-                            "inverse-on-surface": "#eff1f4",
-                            "surface-container-lowest": "#ffffff",
-                            "error-container": "#ffdad6",
-                            "on-tertiary-container": "#ad8d5b",
-                            "on-primary": "#ffffff",
-                            "on-surface": "#191c1e",
-                            "primary-container": "#1a2b48",
-                            "on-error-container": "#93000a",
-                            "on-secondary": "#ffffff",
-                            "secondary-fixed-dim": "#e9c176",
-                            "surface-dim": "#d8dadd",
-                            "surface": "#f7f9fc",
-                            "surface-variant": "#e0e3e6",
-                            "secondary-container": "#fed488",
-                            "tertiary-fixed": "#ffdead",
-                            "on-primary-container": "#8293b5",
-                            "secondary-fixed": "#ffdea5",
-                            "on-tertiary": "#ffffff",
-                            "primary-fixed": "#d7e2ff",
-                            "on-tertiary-fixed": "#281900",
-                            "surface-container-highest": "#e0e3e6",
-                            "surface-container-low": "#f2f4f7",
-                            "outline-variant": "#c5c6ce",
-                            "on-surface-variant": "#44474d",
-                            "surface-bright": "#f7f9fc",
-                            "on-primary-fixed-variant": "#374765",
-                            "on-secondary-fixed": "#261900",
-                            "on-secondary-container": "#785a1a",
-                            "on-error": "#ffffff",
-                            "status-booked": "#1A2B48",
-                            "background": "#f7f9fc",
-                            "secondary": "#775a19",
-                            "surface-tint": "#4e5f7e"
-                        },
-                        "borderRadius": {
-                            "DEFAULT": "0.125rem",
-                            "lg": "0.25rem",
-                            "xl": "0.5rem",
-                            "full": "0.75rem"
-                        },
-                        "spacing": {
-                            "gutter": "24px",
-                            "sidebar-width": "260px",
-                            "container-margin-desktop": "32px",
-                            "container-margin-mobile": "16px",
-                            "unit": "4px"
-                        },
-                        "fontFamily": {
-                            "body-md": ["Inter"],
-                            "body-sm": ["Inter"],
-                            "title-sm": ["Inter"],
-                            "headline-md": ["Inter"],
-                            "data-mono": ["Inter"],
-                            "display-lg-mobile": ["Inter"],
-                            "label-caps": ["Inter"],
-                            "display-lg": ["Inter"]
-                        },
-                        "fontSize": {
-                            "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                            "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-                            "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
-                            "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-                            "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
-                            "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
-                            "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
-                            "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
-                        }
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b6c7eb",
+                        "tertiary": "#211400",
+                        "surface-container-high": "#e6e8eb",
+                        "status-available": "#2D8A56",
+                        "outline": "#75777e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef1",
+                        "on-primary-fixed": "#081b38",
+                        "status-dirty": "#64748B",
+                        "on-tertiary-fixed-variant": "#5b4217",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#3c2700",
+                        "tertiary-fixed-dim": "#e5c18a",
+                        "on-secondary-fixed-variant": "#5d4201",
+                        "status-maintenance": "#D97706",
+                        "inverse-primary": "#b6c7eb",
+                        "surface-white": "#FFFFFF",
+                        "primary": "#031632",
+                        "inverse-on-surface": "#eff1f4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ad8d5b",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "primary-container": "#1a2b48",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#e9c176",
+                        "surface-dim": "#d8dadd",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-container": "#fed488",
+                        "tertiary-fixed": "#ffdead",
+                        "on-primary-container": "#8293b5",
+                        "secondary-fixed": "#ffdea5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-fixed": "#281900",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface-container-low": "#f2f4f7",
+                        "outline-variant": "#c5c6ce",
+                        "on-surface-variant": "#44474d",
+                        "surface-bright": "#f7f9fc",
+                        "on-primary-fixed-variant": "#374765",
+                        "on-secondary-fixed": "#261900",
+                        "on-secondary-container": "#785a1a",
+                        "on-error": "#ffffff",
+                        "status-booked": "#1A2B48",
+                        "background": "#f7f9fc",
+                        "secondary": "#775a19",
+                        "surface-tint": "#4e5f7e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "container-margin-desktop": "32px",
+                        "container-margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
                     }
                 }
             }
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 
 <body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] space-y-2">
+    </div>
+
     <!-- TopNavBar -->
     <header class="bg-surface sticky top-0 z-50 border-b border-outline-variant">
         <div
@@ -159,34 +163,40 @@
 
                     </div>
 
-                    <a href="/my-bookings"
+                    <a href="/authen/my-bookings"
                         class="hidden md:block text-on-surface-variant font-body-md hover:text-secondary transition-colors">
                         My Bookings
                     </a>
-                    
-                    <a href="/logout"
-                    class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
-                    Logout
-                </a>
-                
-                <%- include('partials/authenticated/updateprofilepage.ejs') %>
-                    <% } else { %>
 
-                        <a href="/login"
-                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
-                            Sign In
-                        </a>
-                        <a href="/register"
-                            class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
-                            Register
-                        </a>
-                        <% } %>
+                    <a href="/authen/logout"
+                        class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                        Logout
+                    </a>
+
+                    <%- include('partials/authenticated/updateprofilepage.ejs') %>
+                        <% } else { %>
+
+                            <a href="/login"
+                                class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                                Sign In
+                            </a>
+                            <a href="/register"
+                                class="bg-primary text-on-primary px-4 lg:px-6 py-2 rounded-lg font-title-sm text-sm lg:text-body-md">
+                                Register
+                            </a>
+                            <% } %>
 
                             <button class="md:hidden flex items-center">
                                 <a href="#" class="material-symbols-outlined text-primary">
                                     menu
                                 </a>
                             </button>
+
+                                <button class="md:hidden flex items-center">
+                                    <a href="#" class="material-symbols-outlined text-primary">
+                                        menu
+                                    </a>
+                                </button>
             </div>
 
         </div>
@@ -200,113 +210,135 @@
                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiYLu1XtmBE00glUSt3CaHbCaf9vOsu30P3bMXI8zkMg5ZgYLTbqkfRa-hub8UbZBRlvdn8Wt8Mr6L42wE6ucpxlKEs4YE5NDSYdQbLtvdLHL0Xqcwd_W5CwMW2iGFwAvx-zK9MtY-18T2V7egvwel-M9ywrRPI9OfwXl6bNxUeYLuqGiFNtU3FfEE_qj-RJgKjLhJLW3qQiXAgM2wvyFWsAX4qtjtYfEC9oW0F65maQjWVZ_PRQQIZtxWRrq4YzzCmihlD4Fl3oNM" />
                 <div class="absolute inset-0 bg-gradient-to-b from-primary/40 to-primary/80"></div>
             </div>
-            <div
-                class="relative z-10 w-full max-w-[1200px] px-container-margin-mobile lg:px-gutter text-center text-white">
-                <h1 class="font-display-lg-mobile lg:font-display-lg text-white mb-6 drop-shadow-lg">Experience the
-                    Zenith of Hospitality</h1>
-                <p class="font-body-md text-base lg:text-xl mb-12 max-w-2xl mx-auto opacity-90">Discover handpicked
-                    premium stays across the globe, managed with precision and care for the discerning traveler.</p>
-                <!-- Search Widget -->
+            <div class="relative z-10 w-full max-w-[1200px] px-4 md:px-8 mx-auto text-center text-white">
+                <h1 class="text-3xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+                    Experience the Zenith of Hospitality
+                </h1>
+                <p class="text-base md:text-xl mb-12 max-w-2xl mx-auto opacity-90">
+                    Discover handpicked premium stays across the globe, managed with precision and care for the
+                    discerning traveler.
+                </p>
+
                 <div
-                    class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2">
-                    <!-- Form Tag Wraps the Entire Component -->
+                    class="backdrop-blur-md bg-black/30 p-4 md:p-3 rounded-2xl border border-white/20 shadow-2xl max-w-6xl mx-auto">
                     <form id="search-form"
-                        class="glass-effect p-4 md:p-2 rounded-xl border border-white/20 shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row gap-2"
+                        class="flex flex-col md:flex-row gap-4 md:gap-2 w-full items-stretch md:items-center"
                         method="post" action="/rooms/searchHotels">
-                        <!-- LOCATION -->
+
                         <div
-                            class="flex-1 group px-4 py-1 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
-
-                            <label class="font-label-caps text-on-surface-variant block mb-1">
-                                LOCATION
-                            </label>
-
+                            class="flex-2 md:min-w-[220px] shrink-0 group px-4 py-2 text-left border-b md:border-b-0 md:border-r border-white/10">
+                            <label
+                                class="text-xs font-semibold tracking-wider text-white/60 block mb-1">LOCATION</label>
                             <div class="flex items-center gap-2">
-
-                                <span class="material-symbols-outlined text-primary shrink-0">
-                                    location_on
-                                </span>
-
-                                <div class="relative flex-1">
+                                <span class="material-symbols-outlined text-amber-400 shrink-0">location_on</span>
+                                <div class="relative flex-1 w-full">
                                     <select name="location" id="location-input"
-                                        class="w-full bg-transparent border-none focus:ring-0 text-on-surface font-title-sm pr-10 appearance-none cursor-pointer">
-
-                                        <option value="" selected disabled>
-                                            Select Location
+                                        class="w-full bg-transparent border-none outline-none focus:ring-0 text-white font-medium pr-8 appearance-none cursor-pointer text-sm md:text-base">
+                                        <option value="" class="bg-white text-black" selected disabled>Select Location
                                         </option>
                                     </select>
-
-                                    <span
-                                        class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-outline">
-                                        expand_more
-                                    </span>
+                                    <!-- <span class="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white/50">expand_more</span> -->
                                 </div>
-
                             </div>
                         </div>
 
-                        <!-- CHECK-IN DATE -->
                         <div
-                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
-                            <label class="font-label-caps text-on-surface-variant block mb-1">CHECK-IN</label>
+                            class="flex-1 md:min-w-[130px] group px-4 py-2 text-left border-b md:border-b-0 md:border-r border-white/10">
+                            <label
+                                class="text-xs font-semibold tracking-wider text-white/60 block mb-1">CHECK-IN</label>
                             <div class="flex items-center gap-2">
-                                <!-- <span class="material-symbols-outlined text-primary"
-                                    data-icon="calendar_today">calendar_today</span> -->
                                 <input name="check_in" id="checkin-input"
-                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
+                                    class="bg-transparent border-none outline-none focus:ring-0 text-white w-full font-medium text-sm md:text-base p-0 [color-scheme:dark]"
                                     type="date" />
                             </div>
                         </div>
 
-                        <!-- CHECK-OUT DATE -->
                         <div
-                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
-                            <label class="font-label-caps text-on-surface-variant block mb-1">CHECK-OUT</label>
+                            class="flex-1 md:min-w-[130px] group px-4 py-2 text-left border-b md:border-b-0 md:border-r border-white/10">
+                            <label
+                                class="text-xs font-semibold tracking-wider text-white/60 block mb-1">CHECK-OUT</label>
                             <div class="flex items-center gap-2">
-                                <!-- <span class="material-symbols-outlined text-primary"
-                                    data-icon="calendar_today">calendar_today</span> -->
                                 <input name="check_out" id="checkout-input"
-                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm placeholder:text-outline p-0"
+                                    class="bg-transparent border-none outline-none focus:ring-0 text-white w-full font-medium text-sm md:text-base p-0 [color-scheme:dark]"
                                     type="date" />
                             </div>
                         </div>
 
-                        <!-- ROOMS INPUT -->
                         <div
-                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
-                            <label class="font-label-caps text-on-surface-variant block mb-1">ROOMS</label>
-                            <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary"
-                                    data-icon="meeting_room">meeting_room</span>
-                                <input name="rooms" id="rooms-input"
-                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm p-0"
-                                    type="number" value="1" min="1" max="10" />
+                            class="flex-1 md:min-w-[120px] group px-4 py-2 text-left border-b md:border-b-0 md:border-r border-white/10">
+                            <label class="text-xs font-semibold tracking-wider text-white/60 block mb-1">ROOMS</label>
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="material-symbols-outlined text-amber-400 shrink-0"
+                                        data-icon="meeting_room">meeting_room</span>
+                                    <input name="rooms" id="rooms-input" type="hidden" value="1" />
+                                    <span id="room-display"
+                                        class="text-white font-medium w-5 text-center select-none text-sm md:text-base">1</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button type="button"
+                                        onclick="changeCount('rooms-input', 'room-display', -1, 1, 10)"
+                                        class="w-6 h-6 rounded-md border border-white/30 flex items-center justify-center text-sm font-bold text-white hover:bg-white/20 active:scale-90 transition select-none">-</button>
+                                    <button type="button" onclick="changeCount('rooms-input', 'room-display', 1, 1, 10)"
+                                        class="w-6 h-6 rounded-md border border-white/30 flex items-center justify-center text-sm font-bold text-white hover:bg-white/20 active:scale-90 transition select-none">+</button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- GUESTS INPUT -->
                         <div
-                            class="flex-1 group px-4 py-3 text-left border-b md:border-b-0 md:border-r border-outline-variant/30">
-                            <label class="font-label-caps text-on-surface-variant block mb-1">GUESTS</label>
-                            <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary" data-icon="person">person</span>
-                                <input name="guests" id="guests-input"
-                                    class="bg-transparent border-none focus:ring-0 text-on-surface w-full font-title-sm p-0"
-                                    type="number" value="2" min="1" max="30" />
+                            class="flex-1 md:min-w-[120px] group px-4 py-2 text-left border-b md:border-b-0 md:border-r border-white/10">
+                            <label class="text-xs font-semibold tracking-wider text-white/60 block mb-1">ADULTS</label>
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="material-symbols-outlined text-amber-400 shrink-0"
+                                        data-icon="person">person</span>
+                                    <input name="adults" id="adults-input" type="hidden" value="2" />
+                                    <span id="adults-display"
+                                        class="text-white font-medium w-5 text-center select-none text-sm md:text-base">2</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button type="button"
+                                        onclick="changeCount('adults-input', 'adults-display', -1, 1, 30)"
+                                        class="w-6 h-6 rounded-md border border-white/30 flex items-center justify-center text-sm font-bold text-white hover:bg-white/20 active:scale-90 transition select-none">-</button>
+                                    <button type="button"
+                                        onclick="changeCount('adults-input', 'adults-display', 1, 1, 30)"
+                                        class="w-6 h-6 rounded-md border border-white/30 flex items-center justify-center text-sm font-bold text-white hover:bg-white/20 active:scale-90 transition select-none">+</button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- SEARCH (P TAG) -->
+                        <div class="flex-1 md:min-w-[120px] group px-4 py-2 text-left md:border-r-0 border-white/10">
+                            <label
+                                class="text-xs font-semibold tracking-wider text-white/60 block mb-1">CHILDREN</label>
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <span class="material-symbols-outlined text-amber-400 shrink-0"
+                                        data-icon="child_care">child_care</span>
+                                    <input name="children" id="child-input" type="hidden" value="0" />
+                                    <span id="child-display"
+                                        class="text-white font-medium w-5 text-center select-none text-sm md:text-base">0</span>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button type="button"
+                                        onclick="changeCount('child-input', 'child-display', -1, 0, 20)"
+                                        class="w-6 h-6 rounded-md border border-white/30 flex items-center justify-center text-sm font-bold text-white hover:bg-white/20 active:scale-90 transition select-none">-</button>
+                                    <button type="button"
+                                        onclick="changeCount('child-input', 'child-display', 1, 0, 20)"
+                                        class="w-6 h-6 rounded-md border border-white/30 flex items-center justify-center text-sm font-bold text-white hover:bg-white/20 active:scale-90 transition select-none">+</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit"
-                            class="bg-secondary text-white px-10 py-4 rounded-lg font-title-sm hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer select-none border-none outline-none">
-                            <span>SEARCH</span>
-                            <span class="material-symbols-outlined">search</span>
+                            class="shrink-0 bg-amber-500 text-neutral-900 md:h-12 px-6 py-3 md:py-0 rounded-xl font-bold hover:bg-amber-400 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer select-none border-none outline-none">
+                            <span class="material-symbols-outlined font-bold">search</span>
+                            <span class="md:hidden font-semibold tracking-wide">SEARCH HOTELS</span>
                         </button>
                     </form>
-
                 </div>
-
             </div>
+
+
         </section>
         <!-- Featured Hotels Grid -->
         <section
@@ -616,14 +648,63 @@
             </div>
         </div>
     </footer>
+    <script src="JS/editProfile/editPageValidation.js"></script>
     <script src="JS/home/index.js"></script>
     <script src="JS/toastmessage.js"></script>
-    
-    <% if(welcome) { %>
+    <script>
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('focus', () => {
+                element.closest('.group').classList.add('bg-primary-container/5');
+            });
+            element.addEventListener('blur', () => {
+                element.closest('.group').classList.remove('bg-primary-container/5');
+            });
+        });
+    </script>
+    <script>
+        function changeCount(inputId, displayId, change, min, max) {
+            const inputEl = document.getElementById(inputId);
+            const displayEl = document.getElementById(displayId);
+
+            let value = parseInt(inputEl.value) + change;
+
+            if (value >= min && value <= max) {
+                inputEl.value = value;
+                displayEl.innerText = value;
+            }
+        }
+    </script>
+    <script>
+        function showToast(message, type = "success") {
+
+            const toast = document.createElement("div");
+
+            const colors = {
+                success: "bg-green-600 text-white",
+                error: "bg-red-600 text-white",
+                warning: "bg-yellow-500 text-black",
+                info: "bg-blue-600 text-white"
+            };
+
+            toast.className =
+                `fixed top-5 right-5 z-[9999] px-4 py-3 rounded-lg shadow-lg ${colors[type] || colors.success
+                }`;
+
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+    <% if (welcome) { %>
         <script>
-            alert("Welcome again!")
+            showToast("<%= welcome %>");
         </script>
         <% } %>
+
 </body>
 
 </html>
