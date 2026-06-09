@@ -9,7 +9,8 @@ export class AdminRoomController {
   // hotelId comes from session (injected by tenant.middleware.ts into req.hotelId)
   async listRooms(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+      // const hotelId = (req as any).hotelId as number;
+      const hotelId = 101;
       const rooms = await roomService.getAllRoomsByHotel(hotelId);
       // EJS: render the rooms list page
       return res.status(200).render("admin/rooms", { rooms });
@@ -57,9 +58,11 @@ export class AdminRoomController {
   // Fetches existing room data to pre-fill the edit form
    async showEditRoom(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+      // const hotelId = (req as any).hotelId as number;
+       const hotelId = 101;
       const roomId  = parseInt(req.params.roomId as any);
-
+      console.log(roomId);
+      
       const room = await roomService.getRoomById(roomId, hotelId);
       return res.status(200).render("admin/room-edit", { room });
     } catch (err: any) {
@@ -72,8 +75,11 @@ export class AdminRoomController {
   // method-override converts the form's POST into PUT
   async updateRoom(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+      // const hotelId = (req as any).hotelId as number;
+      const hotelId = 101;
       const roomId  = parseInt(req.params.roomId as any);
+      console.log(roomId);
+      
       const files: any = req.files;
       const photo_url = files?.room_photo ? files.room_photo[0].path : req.body.existing_photo || null;
 
@@ -85,7 +91,8 @@ export class AdminRoomController {
         notes:        req.body.notes || null,
       };
       await roomService.updateRoom(roomId, hotelId, data);
-      return res.redirect("/admin/rooms");
+      // return res.status(200).json({roomId , hotelId  ,data})
+       res.status(303).location("/hotelAdmin/rooms").end();
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -95,7 +102,8 @@ export class AdminRoomController {
   // method-override converts the form's POST into DELETE
   async deleteRoom(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+      // const hotelId = (req as any).hotelId as number;
+      const hotelId = 1;
       const roomId  = parseInt(req.params.roomId as any);
 
       await roomService.deleteRoom(roomId, hotelId);
@@ -115,7 +123,7 @@ export class AdminRoomController {
       const roomStatusId = parseInt(req.body.room_status_id);
 
       await roomService.updateRoomStatus(roomId, hotelId, roomStatusId);
-      return res.redirect("/admin/rooms");
+      return res.redirect("hotelAdmin/rooms");
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
