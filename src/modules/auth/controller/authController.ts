@@ -5,10 +5,15 @@ import { storeToken } from "../../../common/utils/jwt_token";
 //Render the homePage
 export const showMainPage = (req: Request, res: Response) => {
     const currentUser = res.locals.user;
+
+    //get the sessionFlash message and delte the session
+    const profileEdited = (req.session as any).profileEdited;
+    delete (req.session as any).profileEdited;
+    
     if (currentUser) {
-        return res.render("index", { welcome: " Welcome again !" });
+        return res.render("index", { welcome: " Welcome again !",edited:profileEdited});
     }
-    return res.render("index", { welcome: "" });
+    return res.render("index", { welcome: "",edited: ""});
 }
 
 //Render the login page
