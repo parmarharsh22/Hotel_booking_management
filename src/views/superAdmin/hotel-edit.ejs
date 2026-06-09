@@ -13,7 +13,7 @@
  
 <div class="px-8 py-5 border-b border-surface-border flex items-center gap-4">
  
-  <a href="/superadmin/hotels" class="p-1.5 rounded-lg text-muted hover:text-white hover:bg-surface-2 transition-colors">
+  <a href="/superadmin/hotels" class="p-1.5 rounded-lg text-muted hover: hover:bg-surface-2 transition-colors">
  
     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
  
@@ -21,7 +21,7 @@
  
   <div>
  
-    <h1 class="text-lg font-semibold text-white">Edit Hotel</h1>
+    <h1 class="text-lg font-semibold ">Edit Hotel</h1>
  
     <p class="text-xs text-muted mt-0.5 font-mono" id="hotel-slug-display">Loading...</p>
  
@@ -57,7 +57,7 @@
  
         </div>
  
-        <h2 class="text-sm font-semibold text-white">Hotel Details</h2>
+        <h2 class="text-sm font-semibold ">Hotel Details</h2>
  
       </div>
  
@@ -185,7 +185,11 @@
  
     try {
  
-      const res  = await fetch(`/superadmin/hotels/${hotelId}`);
+      const res  = await fetch(`/superadmin/hotels/${hotelId}`,{
+ 
+        headers: { 'Accept': 'application/json' }
+ 
+      });
  
       const data = await res.json();
  
