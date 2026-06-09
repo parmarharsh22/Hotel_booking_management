@@ -7,6 +7,7 @@ export const verifyRecaptcha = async (
     try {
 
         if (!token) {
+            console.log("No token received");
             return false;
         }
 
@@ -15,8 +16,7 @@ export const verifyRecaptcha = async (
             null,
             {
                 params: {
-                    secret:
-                        process.env.GOOGLE_SECRET,
+                    secret: process.env.GOOGLE_SECRET,
                     response: token
                 },
                 timeout: 5000

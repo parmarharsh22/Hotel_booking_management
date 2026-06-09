@@ -46,18 +46,21 @@ form.addEventListener("submit", async (e) => {
     const checkinInput = document.getElementById("checkin-input");
     const checkoutInput = document.getElementById("checkout-input");
     const roomsInput = document.getElementById("rooms-input");
-    const guestsInput = document.getElementById("guests-input");
+    const adultsInput = document.getElementById("adults-input");
+    const childInput = document.getElementById("child-input");
 
     const locationVal = locationInput.value.trim();
     const checkinVal = checkinInput.value;
     const checkoutVal = checkoutInput.value;
     const roomsVal = parseInt(roomsInput.value, 10);
-    const guestsVal = parseInt(guestsInput.value, 10);
+    const adultsVal = parseInt(adultsInput.value, 10);
+    const childVal = parseInt(childInput.value, 10);
 
     if (!locationVal) { addError("location-input", "Required field"); hasErrors = true; }
     if (!checkoutVal) { addError("checkout-input", "Select check-out"); hasErrors = true; }
     if (isNaN(roomsVal)) { addError("rooms-input", "Enter rooms count"); hasErrors = true; }
-    if (isNaN(guestsVal)) { addError("guests-input", "Enter guests count"); hasErrors = true; }
+    if (isNaN(adultsVal)) { addError("adults-input", "Enter adults count"); hasErrors = true; }
+    if (isNaN(childVal)) { addError("child-input", "Enter childs count"); hasErrors = true; }
 
     if (locationVal) {
         const locationRegex = /^[A-Za-z\s,\-]*$/;
@@ -98,7 +101,8 @@ form.addEventListener("submit", async (e) => {
         }
     }
     if (!isNaN(roomsVal) && roomsVal < 1) { addError("rooms-input", "Minimum 1 room required"); hasErrors = true; }
-    if (!isNaN(guestsVal) && guestsVal < 1) { addError("guests-input", "Minimum 1 guest required"); hasErrors = true; }
+    if (!isNaN(adultsVal) && adultsVal < 1) { addError("adults-input", "Minimum 1 adult required"); hasErrors = true; }
+    // if (!isNaN(childVal) && childVal < 1) { addError("child-input", "Minimum 1 child required"); hasErrors = true; }
 
     if (hasErrors) {
         e.preventDefault();
@@ -124,12 +128,13 @@ checkinInput.addEventListener("change", () => {
 window.onload = async () => {
     try {
         const response = await fetch("/getLocations");
-        const locations = await response.json();    
+        const locations = await response.json();
         const dropdown = document.getElementById("location-input");
-        locations.result.forEach(location=>{
+        locations.result.forEach(location => {
             const opt = document.createElement("option");
             opt.textContent = location.city;
             opt.value = location.city;
+            opt.classList.add('bg-black')
             dropdown.appendChild(opt);
         })
 
@@ -137,3 +142,59 @@ window.onload = async () => {
         console.error("Error occurred!", err);
     }
 };
+
+document.querySelectorAll('input, select').forEach(element => {
+    element.addEventListener('focus', () => {
+        element.closest('.group').classList.add('bg-primary-container/5');
+    });
+    element.addEventListener('blur', () => {
+        element.closest('.group').classList.remove('bg-primary-container/5');
+    });
+});
+async function openProfileModal() {
+    const modal = document.getElementById("profileModal");
+    try{
+        const response = await fetch("/authen/fetchUserDetails");
+        const data = await response.json();
+        console.log(data);
+        
+        const imgInput = document.getElementById("avatarPreview");
+        const first_name = document.getElementById("first_name");
+        const last_name = document.getElementById("last_name");
+        const inpemail = document.getElementById("email");
+        const phone = document.getElementById("phone");
+        const dob = document.getElementById("dob");
+        const gender = document.getElementById("gender");
+        const address = document.getElementById("address");
+        const city = document.getElementById("city");
+        const state = document.getElementById("state");
+
+        imgInput.src = `/uploads/profile-photos/${data.photo_url}`;
+        first_name.value = `${data.first_name}`;
+        last_name.value = `${data.last_name}`;
+        inpemail.value =`${data.email}`;
+        dob.value = new Date(data.dob).toISOString().split("T")[0];
+        phone.value = `${data.phone}`;
+        gender.value = `${data.gender}`;
+        state.value = `${data.state}`;
+        city.value = `${data.city}`;
+        address.value = `${data.address}`;
+        
+
+    
+    }catch(err){
+        console.log("error occured ",err);
+    }
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    document.body.style.overflow = "hidden";
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById("profileModal");
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
+
+    document.body.style.overflow = "auto";
+}
