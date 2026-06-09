@@ -15,7 +15,7 @@
  
   <div>
  
-    <h1 class="text-lg font-semibold text-white">Users</h1>
+    <h1 class="text-lg font-semibold ">Users</h1>
  
     <p class="text-xs text-muted mt-0.5">All platform users across tenants</p>
  
@@ -53,15 +53,7 @@
  
     </select>
  
-    <select id="active-filter" class="input-field text-sm w-36">
- 
-      <option value="">All Status</option>
- 
-      <option value="1">Active</option>
- 
-      <option value="0">Inactive</option>
- 
-    </select>
+
  
     <span id="user-count" class="text-xs text-muted font-mono ml-auto"></span>
  
@@ -86,7 +78,7 @@
  
           <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Contact</th>
  
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Status</th>
+
  
           <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Joined</th>
  
@@ -96,7 +88,7 @@
  
       <tbody id="users-tbody">
  
-        <tr><td colspan="6" class="px-6 py-10 text-center text-muted">Loading...</td></tr>
+        <tr><td colspan="5" class="px-6 py-10 text-center text-muted">Loading...</td></tr>
  
       </tbody>
  
@@ -142,7 +134,7 @@
  
       document.getElementById('users-tbody').innerHTML =
  
-        `<tr><td colspan="6" class="px-6 py-10 text-center text-danger">Failed to load users</td></tr>`;
+        `<tr><td colspan="5" class="px-6 py-10 text-center text-danger">Failed to load users</td></tr>`;
  
     }
  
@@ -158,7 +150,7 @@
  
       document.getElementById('users-tbody').innerHTML =
  
-        `<tr><td colspan="6" class="px-6 py-10 text-center text-muted">No users found</td></tr>`;
+        `<tr><td colspan="5" class="px-6 py-10 text-center text-muted">No users found</td></tr>`;
  
       return;
  
@@ -186,7 +178,7 @@
  
               <div>
  
-                <div class="font-medium text-white text-sm">${u.first_name} ${u.last_name}</div>
+                <div class="font-medium  text-sm">${u.first_name} ${u.last_name}</div>
  
                 <div class="text-xs text-muted font-mono">#${u.user_id}</div>
  
@@ -218,17 +210,7 @@
  
           </td>
  
-          <td class="px-6 py-3.5">
  
-            ${u.is_active
- 
-              ? '<span class="badge-active text-xs font-mono px-2 py-0.5 rounded-md">Active</span>'
- 
-              : '<span class="badge-suspended text-xs font-mono px-2 py-0.5 rounded-md">Inactive</span>'
- 
-            }
- 
-          </td>
  
           <td class="px-6 py-3.5 text-slate-400 font-mono text-xs">${formatDate(u.created_at)}</td>
  
@@ -247,7 +229,6 @@
  
     const role   = document.getElementById('role-filter').value;
  
-    const active = document.getElementById('active-filter').value;
  
  
     const filtered = allUsers.filter(u => {
@@ -258,9 +239,8 @@
  
       const matchR = !role   || u.role_name === role;
  
-      const matchA = active === '' || String(u.is_active) === active;
  
-      return matchQ && matchR && matchA;
+      return matchQ && matchR;
  
     });
  
@@ -274,7 +254,6 @@
  
   document.getElementById('role-filter').addEventListener('change', applyFilters);
  
-  document.getElementById('active-filter').addEventListener('change', applyFilters);
  
  
   function formatDate(ts) {

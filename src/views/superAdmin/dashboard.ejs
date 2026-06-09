@@ -6,7 +6,7 @@
 
 <div class="px-8 py-5 border-b border-surface-border flex items-center justify-between">
   <div>
-    <h1 class="text-lg font-semibold text-white">Dashboard</h1>
+    <h1 class="text-lg font-semibold ">Dashboard</h1>
     <p class="text-xs text-muted mt-0.5">Platform overview</p>
   </div>
   <span class="text-xs font-mono text-muted bg-surface-2 border border-surface-border px-3 py-1 rounded-full" id="live-time"></span>
@@ -83,7 +83,7 @@
           </div>
           <div class="card p-5">
             <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Users</p>
-            <p class="text-3xl font-semibold text-white">${fmt(d.users.total)}</p>
+            <p class="text-3xl font-semibold ">${fmt(d.users.total)}</p>
             <div class="flex gap-3 mt-3 text-xs text-muted">
               <span>Admins: ${fmt(d.users.hotel_admins)}</span>
               <span>Guests: ${fmt(d.users.guests)}</span>
@@ -91,7 +91,7 @@
           </div>
           <div class="card p-5">
             <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Bookings</p>
-            <p class="text-3xl font-semibold text-white">${fmt(d.bookings.total)}</p>
+            <p class="text-3xl font-semibold ">${fmt(d.bookings.total)}</p>
             <div class="flex gap-3 mt-3 text-xs">
               <span class="text-success">● ${fmt(d.bookings.checked_in)} in-house</span>
               <span class="text-danger">● ${fmt(d.bookings.cancelled)} cancelled</span>
@@ -99,7 +99,7 @@
           </div>
           <div class="card p-5">
             <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Rooms</p>
-            <p class="text-3xl font-semibold text-white">${fmt(d.rooms.total)}</p>
+            <p class="text-3xl font-semibold ">${fmt(d.rooms.total)}</p>
             <div class="flex gap-3 mt-3 text-xs">
               <span class="text-success">● ${fmt(d.rooms.available)} free</span>
               <span class="text-accent">● ${fmt(d.rooms.occupied)} occupied</span>
@@ -150,7 +150,7 @@
         <!-- Recent bookings table -->
         <div class="card overflow-hidden">
           <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-white">Recent Bookings</h2>
+            <h2 class="text-sm font-semibold ">Recent Bookings</h2>
           </div>
           <table class="w-full text-sm">
             <thead>
@@ -170,11 +170,11 @@
                 : d.recentBookings.map(b => `
                   <tr class="table-row border-b border-surface-border last:border-0">
                     <td class="px-6 py-3.5 font-mono text-xs text-accent">${b.booking_reference}</td>
-                    <td class="px-6 py-3.5 text-white">${b.first_name} ${b.last_name}</td>
+                    <td class="px-6 py-3.5 ">${b.first_name} ${b.last_name}</td>
                     <td class="px-6 py-3.5 text-slate-400 text-xs">${b.hotel_name}</td>
                     <td class="px-6 py-3.5 text-slate-400 text-xs">${fmtDate(b.checkin_date)}</td>
                     <td class="px-6 py-3.5 text-slate-400 text-xs">${fmtDate(b.checkout_date)}</td>
-                    <td class="px-6 py-3.5 text-white text-xs font-mono">${fmtMoney(b.total_amount)}</td>
+                    <td class="px-6 py-3.5  text-xs font-mono">${fmtMoney(b.total_amount)}</td>
                     <td class="px-6 py-3.5">${bookingBadge(b.status_name)}</td>
                   </tr>
                 `).join('')
