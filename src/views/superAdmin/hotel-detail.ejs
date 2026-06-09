@@ -1,0 +1,456 @@
+ 
+<%
+ 
+  pageTitle  = "Hotel Detail — HBMS";
+ 
+  activePage = "hotels";
+ 
+%>
+ 
+<%- include('_layout_start') %>
+ 
+ 
+<!-- Top bar -->
+ 
+<div class="topbar px-8 py-4 flex items-center justify-between">
+ 
+  <div class="flex items-center gap-3">
+ 
+    <a href="/superadmin/hotels" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+ 
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+ 
+    </a>
+ 
+    <div>
+ 
+      <h1 class="text-base font-semibold text-slate-900" id="page-title">Hotel Detail</h1>
+ 
+      <p class="text-xs text-slate-400 font-mono" id="page-slug">Loading...</p>
+ 
+    </div>
+ 
+  </div>
+ 
+  <div class="flex items-center gap-2" id="top-actions"></div>
+ 
+</div>
+ 
+ 
+<!-- Loading -->
+ 
+<div id="loading-state" class="flex items-center justify-center py-24 text-slate-400 text-sm">
+ 
+  Loading hotel data...
+ 
+</div>
+ 
+ 
+<!-- Content (hidden until loaded) -->
+ 
+<div id="page-content" class="hidden px-8 py-6 space-y-6">
+ 
+ 
+  <!-- Cover + Logo hero -->
+ 
+  <div class="card overflow-hidden">
+ 
+    <div id="cover-wrap" class="h-40 bg-gradient-to-r from-primary-500 to-primary-700 relative">
+ 
+      <div id="logo-wrap" class="absolute bottom-0 left-6 translate-y-1/2 w-16 h-16 rounded-xl border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center">
+ 
+        <span class="text-2xl font-bold text-primary-600" id="logo-initials"></span>
+ 
+      </div>
+ 
+    </div>
+ 
+    <div class="px-6 pt-10 pb-5 flex items-start justify-between">
+ 
+      <div>
+ 
+        <h2 class="text-xl font-semibold text-slate-900" id="hotel-name"></h2>
+ 
+        <p class="text-sm text-slate-500 mt-0.5" id="hotel-location"></p>
+ 
+      </div>
+ 
+      <div id="status-badge-wrap"></div>
+ 
+    </div>
+ 
+  </div>
+ 
+ 
+  <!-- Stat cards -->
+ 
+  <div class="grid grid-cols-4 gap-4">
+ 
+    <div class="card p-5 stat-accent-blue">
+ 
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Users</p>
+ 
+      <p class="text-3xl font-semibold text-slate-900" id="stat-users">—</p>
+ 
+    </div>
+ 
+    <div class="card p-5 stat-accent-green">
+ 
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Status</p>
+ 
+      <p class="text-xl font-semibold text-slate-900 mt-1" id="stat-status">—</p>
+ 
+    </div>
+ 
+    <div class="card p-5 stat-accent-amber">
+ 
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Created</p>
+ 
+      <p class="text-sm font-medium text-slate-700 mt-1" id="stat-created">—</p>
+ 
+    </div>
+ 
+    <div class="card p-5 stat-accent-red">
+ 
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Last Updated</p>
+ 
+      <p class="text-sm font-medium text-slate-700 mt-1" id="stat-updated">—</p>
+ 
+    </div>
+ 
+  </div>
+ 
+ 
+  <!-- Details + Contact -->
+ 
+  <div class="grid grid-cols-2 gap-6">
+ 
+ 
+    <!-- Hotel Info -->
+ 
+    <div class="card p-6">
+ 
+      <div class="flex items-center gap-2 mb-5">
+ 
+        <div class="w-6 h-6 rounded-md bg-primary-50 text-primary-600 flex items-center justify-center">
+ 
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+ 
+        </div>
+ 
+        <h3 class="text-sm font-semibold text-slate-800">Hotel Information</h3>
+ 
+      </div>
+ 
+      <dl class="space-y-3" id="hotel-info-list"></dl>
+ 
+    </div>
+ 
+ 
+    <!-- Contact -->
+ 
+    <div class="card p-6">
+ 
+      <div class="flex items-center gap-2 mb-5">
+ 
+        <div class="w-6 h-6 rounded-md bg-primary-50 text-primary-600 flex items-center justify-center">
+ 
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+ 
+        </div>
+ 
+        <h3 class="text-sm font-semibold text-slate-800">Contact Details</h3>
+ 
+      </div>
+ 
+      <dl class="space-y-3" id="hotel-contact-list"></dl>
+ 
+    </div>
+ 
+ 
+  </div>
+ 
+ 
+  <!-- Quick actions -->
+ 
+  <div class="card p-6">
+ 
+    <h3 class="text-sm font-semibold text-slate-800 mb-4">Quick Actions</h3>
+ 
+    <div class="flex items-center gap-3" id="quick-actions"></div>
+ 
+  </div>
+ 
+ 
+</div>
+ 
+ 
+<script>
+ 
+  const hotelId = window.location.pathname.split('/')[3];
+ 
+ 
+  function infoRow(label, value) {
+ 
+    return `
+ 
+      <div class="flex items-start justify-between py-2 border-b border-slate-100 last:border-0">
+ 
+        <dt class="text-xs font-medium text-slate-400 uppercase tracking-wider w-28 flex-shrink-0">${label}</dt>
+ 
+        <dd class="text-sm text-slate-700 text-right">${value || '<span class="text-slate-300">—</span>'}</dd>
+ 
+      </div>
+ 
+    `;
+ 
+  }
+ 
+ 
+  function statusBadge(id) {
+ 
+    const map = {
+ 
+      1: ['badge-active',    'Active'],
+ 
+      2: ['badge-suspended', 'Suspended'],
+ 
+      3: ['badge-pending',   'Pending'],
+ 
+    };
+ 
+    const [cls, label] = map[id] || ['badge-pending', 'Unknown'];
+ 
+    return `<span class="${cls} text-xs font-semibold px-3 py-1 rounded-full">${label}</span>`;
+ 
+  }
+ 
+ 
+  function formatDate(ts) {
+ 
+    if (!ts) return '—';
+ 
+    return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+ 
+  }
+ 
+ 
+  async function loadHotel() {
+ 
+    try {
+ 
+      const res  = await fetch(`/superadmin/hotels/${hotelId}`, {
+ 
+        headers: { 'Accept': 'application/json' }
+ 
+      });
+ 
+      const data = await res.json();
+ 
+      const h    = data.hotel;
+ 
+      const s    = data.stats;
+ 
+ 
+      // Top bar
+ 
+      document.getElementById('page-title').textContent = h.name;
+ 
+      document.getElementById('page-slug').textContent  = h.slug;
+ 
+ 
+      // Top actions
+ 
+      document.getElementById('top-actions').innerHTML = `
+ 
+        <a href="/superadmin/hotels/${h.hotel_id}/edit" class="btn-ghost px-4 py-2 flex items-center gap-2">
+ 
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+ 
+          Edit Hotel
+ 
+        </a>
+ 
+      `;
+ 
+ 
+      // Cover & logo
+ 
+      if (h.cover_url) {
+ 
+        document.getElementById('cover-wrap').style.backgroundImage = `url('${h.cover_url}')`;
+ 
+        document.getElementById('cover-wrap').style.backgroundSize  = 'cover';
+ 
+        document.getElementById('cover-wrap').style.backgroundPosition = 'center';
+ 
+      }
+ 
+      if (h.logo_url) {
+ 
+        document.getElementById('logo-wrap').innerHTML = `<img src="${h.logo_url}" class="w-full h-full object-cover" />`;
+ 
+      } else {
+ 
+        document.getElementById('logo-initials').textContent = h.name[0].toUpperCase();
+ 
+      }
+ 
+ 
+      // Hero section
+ 
+      document.getElementById('hotel-name').textContent     = h.name;
+ 
+      document.getElementById('hotel-location').textContent = [h.city, h.state, h.country].filter(Boolean).join(', ') || 'No location set';
+ 
+      document.getElementById('status-badge-wrap').innerHTML = statusBadge(h.tenant_status_id);
+ 
+ 
+      // Stat cards
+ 
+      document.getElementById('stat-users').textContent   = s.total_users ?? '0';
+ 
+      document.getElementById('stat-status').innerHTML    = statusBadge(h.tenant_status_id);
+ 
+      document.getElementById('stat-created').textContent = formatDate(h.created_at);
+ 
+      document.getElementById('stat-updated').textContent = formatDate(h.updated_at);
+ 
+ 
+      // Info list
+ 
+      document.getElementById('hotel-info-list').innerHTML =
+ 
+        infoRow('Hotel ID', `#${h.hotel_id}`) +
+ 
+        infoRow('Name',     h.name) +
+ 
+        infoRow('Slug',     `<span class="font-mono text-xs bg-slate-100 px-2 py-0.5 rounded">${h.slug}</span>`) +
+ 
+        infoRow('Address',  h.address) +
+ 
+        infoRow('City',     h.city) +
+ 
+        infoRow('State',    h.state) +
+ 
+        infoRow('Country',  h.country);
+ 
+ 
+      // Contact list
+ 
+      document.getElementById('hotel-contact-list').innerHTML =
+ 
+        infoRow('Email', h.email ? `<a href="mailto:${h.email}" class="text-primary-600 hover:underline">${h.email}</a>` : '') +
+ 
+        infoRow('Phone', h.phone) +
+ 
+        infoRow('Logo',  h.logo_url  ? `<a href="${h.logo_url}"  target="_blank" class="text-primary-600 hover:underline text-xs">View Logo</a>`  : '') +
+ 
+        infoRow('Cover', h.cover_url ? `<a href="${h.cover_url}" target="_blank" class="text-primary-600 hover:underline text-xs">View Cover</a>` : '');
+ 
+ 
+      // Quick actions
+ 
+      document.getElementById('quick-actions').innerHTML = `
+ 
+        <a href="/superadmin/hotels/${h.hotel_id}/edit" class="btn-primary px-4 py-2 flex items-center gap-2">
+ 
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+ 
+          Edit Hotel
+ 
+        </a>
+ 
+        <button onclick="changeStatus(${h.hotel_id}, ${h.tenant_status_id})" class="btn-ghost px-4 py-2 flex items-center gap-2">
+ 
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+ 
+          Change Status
+ 
+        </button>
+ 
+        <button onclick="confirmDelete(${h.hotel_id})" class="btn-danger px-4 py-2 flex items-center gap-2">
+ 
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+ 
+          Delete Hotel
+ 
+        </button>
+ 
+      `;
+ 
+ 
+      document.getElementById('loading-state').classList.add('hidden');
+ 
+      document.getElementById('page-content').classList.remove('hidden');
+ 
+ 
+    } catch (err) {
+ 
+      document.getElementById('loading-state').textContent = 'Failed to load hotel data.';
+ 
+      console.error(err);
+ 
+    }
+ 
+  }
+ 
+ 
+  async function changeStatus(id, currentStatus) {
+ 
+    const next = currentStatus === 1 ? 2 : 1;
+ 
+    const label = next === 1 ? 'Active' : 'Suspended';
+ 
+    if (!confirm(`Change status to ${label}?`)) return;
+ 
+    try {
+ 
+      const res  = await fetch(`/superadmin/hotels/${id}/status`, {
+ 
+        method: 'PUT',
+ 
+        headers: { 'Content-Type': 'application/json' },
+ 
+        body: JSON.stringify({ tenant_status_id: next })
+ 
+      });
+ 
+      const data = await res.json();
+ 
+      if (data.success) { showToast('Status updated', 'success'); loadHotel(); }
+ 
+      else showToast('Failed to update status', 'error');
+ 
+    } catch { showToast('Network error', 'error'); }
+ 
+  }
+ 
+ 
+  async function confirmDelete(id) {
+ 
+    if (!confirm('Delete this hotel? This cannot be undone.')) return;
+ 
+    try {
+ 
+      const res  = await fetch(`/superadmin/hotels/${id}`, { method: 'DELETE' });
+ 
+      const data = await res.json();
+ 
+      if (data.success) window.location.href = '/superadmin/hotels';
+ 
+      else showToast('Delete failed', 'error');
+ 
+    } catch { showToast('Network error', 'error'); }
+ 
+  }
+ 
+ 
+  loadHotel();
+ 
+</script>
+ 
+ 
+<%- include('_layout_end') %>
+ 
+
