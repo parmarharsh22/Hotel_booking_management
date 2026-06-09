@@ -275,7 +275,41 @@
                         </select>
 
                     </div>
+                    <!-- Date of Birth -->
+                    <div class="space-y-1.5">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="dob">
+                            Date of Birth
+                        </label>
 
+                        <input id="dob" name="dob" type="date"
+                            class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="space-y-1.5">
+                        <label class="font-label-caps text-label-caps text-on-surface-variant" for="gender">
+                            Gender
+                        </label>
+
+                        <select id="gender" name="gender"
+                            class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none">
+
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+
+                        </select>
+                    </div>
+                </div>
+                <!-- Address -->
+                <div class="space-y-1.5">
+                    <label class="font-label-caps text-label-caps text-on-surface-variant" for="address">
+                        Address
+                    </label>
+
+                    <textarea id="address" name="address" rows="3" maxlength="500" placeholder="Enter your address"
+                        class="w-full px-4 py-3 bg-surface-bright border border-outline-variant rounded-lg focus:border-primary outline-none resize-none"></textarea>
                 </div>
                 <!-- Profile Photo -->
 

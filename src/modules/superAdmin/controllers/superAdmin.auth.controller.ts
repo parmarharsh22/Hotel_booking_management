@@ -45,7 +45,12 @@ export class SuperAdminController {
             if (!data) {
                 res.status(400).json("Data not found");
             }
-            res.json(data);
+             if (req.headers.accept?.includes("application/json")) {
+      return res.json(data);
+    }
+    res.render("superAdmin/hotels_list", { data });
+            // res.json(data);
+
         }
         catch (err) {
             res.status(400).json(err);

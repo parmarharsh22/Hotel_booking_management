@@ -59,15 +59,33 @@ export class SuperAdminModel {
     }
     }
 
-    static async getAllUserData():Promise<SuperAdminInterface>{
-      try{
-        const [data]: any = await db.query(`select * from users`);
+    // static async getAllUserData():Promise<SuperAdminInterface>{
+    //   try{
+    //     const [data]: any = await db.query(`select * from users`);
+    //     return data;
+    //   }
+    //   catch(err: any){
+    //     throw err;
+    //   }
+    // }
+
+    static async getAllUserData() {
+    try {
+        const [data]: any = await db.query(`
+            SELECT 
+                u.*,
+                r.role_name,
+                h.name AS hotel_name
+            FROM users u
+            LEFT JOIN user_roles r ON u.user_role_id = r.user_role_id
+            LEFT JOIN hotels h ON u.hotel_id = h.hotel_id
+        `);
         return data;
-      }
-      catch(err: any){
+    } catch (err: any) {
         throw err;
-      }
     }
+}
+
 
 
 }

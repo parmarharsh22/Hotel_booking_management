@@ -13,14 +13,14 @@ export const findByEmail = async (email: string) => {
 };
 
 //register a new user
-export const insertUser = async (firstName: string, lastName: string, email: string, phone: string, state: string, city: any, hashedPass: any, filename: any) => {
-    await db.query("INSERT INTO users(hotel_id,user_role_id,first_name,last_name,email,phone,password_hash,state,city,photo_url) values(?,?,?,?,?,?,?,?,?,?)", [
-        null, 4, firstName, lastName, email, phone, hashedPass, state, city, filename]);
+export const insertUser = async (firstName: string, lastName: string, email: string, phone: string, state: string, city: any, hashedPass: any, filename: any,gender: any,address: any,dob:any ) => {
+    await db.query("INSERT INTO users(hotel_id,user_role_id,first_name,last_name,email,phone,dob,gender,password_hash,state,city,address,photo_url) values(?,?,?,?,?,?,?,?,?,?,?,?,?)", [
+        null, 4, firstName, lastName, email, phone,dob,gender,hashedPass, state, city,address, filename]);
 }
 
 //login a user
 export const logon = async (email: string) => {
-    const [rows]: any = await db.query(`SELECT u.user_id,r.role_name,u.email,u.password_hash from users as u JOIN user_roles as r ON r.user_role_id = u.user_role_id where 
+    const [rows]: any = await db.query(`SELECT u.user_id,u.hotel_id,r.role_name,u.email,u.password_hash from users as u JOIN user_roles as r ON r.user_role_id = u.user_role_id where 
         u.email = ?  `, [email]);
     return rows.length > 0 ? rows[0] : null
 }

@@ -30,7 +30,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //url routes
-app.use("/superadmin", superadminRoutes);
 
 //protected Routes
 app.use("/authen",authenRoute);
