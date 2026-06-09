@@ -89,21 +89,23 @@ export const createHotel = async (req: Request, res: Response) => {
  * GET HOTEL DETAIL
  */
 export const getHotel = async (req: Request, res: Response) => {
-  try {
-    const hotelId = Number(req.params.hotelId);
+    try {
+        const hotelId = Number(req.params.hotelId);
+        if (!hotelId) return res.status(400).send("Invalid hotel ID");
 
-    if (!hotelId) {
-      return res.status(400).send("Invalid hotel ID");
+        const data = await tenantService.getHotel(hotelId);
+
+        if (req.headers.accept?.includes('application/json')) {
+            return res.json(data);
+        }
+
+        res.render("superAdmin/hotel-detail");
+
+    } catch (err: any) {
+        res.status(500).send("Failed to fetch hotel");
     }
-
-    const data = await tenantService.getHotel(hotelId);
-    // res.render("superadmin/tenant/detail", data);
-    res.send(data);
-  } catch (err: any) {
-    console.error(err);
-    res.status(500).send("Failed to fetch hotel");
-  }
 };
+
 
 /**
  * SHOW EDIT PAGE
