@@ -128,9 +128,9 @@ checkinInput.addEventListener("change", () => {
 window.onload = async () => {
     try {
         const response = await fetch("/getLocations");
-        const locations = await response.json();    
+        const locations = await response.json();
         const dropdown = document.getElementById("location-input");
-        locations.result.forEach(location=>{
+        locations.result.forEach(location => {
             const opt = document.createElement("option");
             opt.textContent = location.city;
             opt.value = location.city;
@@ -142,3 +142,59 @@ window.onload = async () => {
         console.error("Error occurred!", err);
     }
 };
+
+document.querySelectorAll('input, select').forEach(element => {
+    element.addEventListener('focus', () => {
+        element.closest('.group').classList.add('bg-primary-container/5');
+    });
+    element.addEventListener('blur', () => {
+        element.closest('.group').classList.remove('bg-primary-container/5');
+    });
+});
+async function openProfileModal() {
+    const modal = document.getElementById("profileModal");
+    try{
+        const response = await fetch("/authen/fetchUserDetails");
+        const data = await response.json();
+        console.log(data);
+        
+        const imgInput = document.getElementById("avatarPreview");
+        const first_name = document.getElementById("first_name");
+        const last_name = document.getElementById("last_name");
+        const inpemail = document.getElementById("email");
+        const phone = document.getElementById("phone");
+        const dob = document.getElementById("dob");
+        const gender = document.getElementById("gender");
+        const address = document.getElementById("address");
+        const city = document.getElementById("city");
+        const state = document.getElementById("state");
+
+        imgInput.src = `/uploads/profile-photos/${data.photo_url}`;
+        first_name.value = `${data.first_name}`;
+        last_name.value = `${data.last_name}`;
+        inpemail.value =`${data.email}`;
+        dob.value = new Date(data.dob).toISOString().split("T")[0];
+        phone.value = `${data.phone}`;
+        gender.value = `${data.gender}`;
+        state.value = `${data.state}`;
+        city.value = `${data.city}`;
+        address.value = `${data.address}`;
+        
+
+    
+    }catch(err){
+        console.log("error occured ",err);
+    }
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    document.body.style.overflow = "hidden";
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById("profileModal");
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
+
+    document.body.style.overflow = "auto";
+}

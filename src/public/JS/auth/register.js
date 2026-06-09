@@ -96,6 +96,9 @@ const terms = document.getElementById('terms');
 const photo = document.getElementById('photo');
 const state = document.getElementById("state");
 const city = document.getElementById("city");
+const address = document.getElementById("address");
+const dob = document.getElementById("dob");
+const gender = document.getElementById("gender");
 
 const form = document.getElementById("registrationForm");
 
@@ -213,6 +216,135 @@ form.addEventListener("submit", async function (e) {
     } else {
         clearError(confirmPassword);
     }
+    // DOB
+    if (!dob.value) {
+
+        showError(dob, "Date of birth is required");
+        isValid = false;
+
+    } else {
+
+        const birthDate = new Date(dob.value);
+        const today = new Date();
+
+        // Remove time portion
+        today.setHours(0, 0, 0, 0);
+
+        if (birthDate > today) {
+
+            showError(
+                dob,
+                "Date of birth cannot be in the future"
+            );
+
+            isValid = false;
+
+        } else {
+
+            let age =
+                today.getFullYear() -
+                birthDate.getFullYear();
+
+            const monthDifference =
+                today.getMonth() -
+                birthDate.getMonth();
+
+            if (
+                monthDifference < 0 ||
+                (
+                    monthDifference === 0 &&
+                    today.getDate() < birthDate.getDate()
+                )
+            ) {
+                age--;
+            }
+
+            if (age < 18) {
+
+                showError(
+                    dob,
+                    "You must be at least 18 years old"
+                );
+
+                isValid = false;
+
+            } else {
+
+                clearError(dob);
+
+            }
+        }
+    }
+
+
+    // Gender
+    if (!gender.value) {
+
+        showError(
+            gender,
+            "Please select a gender"
+        );
+
+        isValid = false;
+
+    } else {
+
+        const validGenders = [
+            "Male",
+            "Female",
+            "Other",
+            "Prefer Not To Say"
+        ];
+
+        if (!validGenders.includes(gender.value)) {
+
+            showError(
+                gender,
+                "Invalid gender selected"
+            );
+
+            isValid = false;
+
+        } else {
+
+            clearError(gender);
+
+        }
+    }
+
+    //Address
+    if (!address.value.trim()) {
+
+        showError(
+            address,
+            "Address is required"
+        );
+
+        isValid = false;
+
+    } else if (address.value.trim().length < 10) {
+
+        showError(
+            address,
+            "Address is too short"
+        );
+
+        isValid = false;
+
+    } else if (address.value.trim().length > 500) {
+
+        showError(
+            address,
+            "Address is too long"
+        );
+
+        isValid = false;
+
+    } else {
+
+        clearError(address);
+
+    }
 
     /* Profile Photo */
 
@@ -288,7 +420,9 @@ form.addEventListener("submit", async function (e) {
     /* Success Animation */
 
     const btn =
-        document.querySelector('button[type="submit"], input[type="submit"]');
+        document.querySelector(
+            'button[type="submit"], input[type="submit"]'
+        );
 
     if (btn) {
 
@@ -309,65 +443,65 @@ form.addEventListener("submit", async function (e) {
             btn.value = "Processing...";
         }
 
-        setTimeout(async () => {
+        try {
 
-            if (btn.tagName === "BUTTON") {
+            const response = await fetch(
+                "/checkEmail",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email.value.trim()
+                    })
+                }
+            );
 
-                btn.innerHTML =
-                    '<span class="material-symbols-outlined">check_circle</span> Registration Successful';
+            const data = await response.json();
 
-            } else {
+            if (data.exists) {
 
-                btn.value = "Registration Successful";
-            }
-            console.log("Validation Passed");
-
-            try {
-
-                const response = await fetch(
-                    "/checkEmail",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            email: email.value.trim()
-                        })
-                    }
+                showError(
+                    email,
+                    "An account with this email already exists"
                 );
 
-                const data = await response.json();
+                btn.disabled = false;
 
-                if (data.exists) {
-
-                    showError(
-                        email,
-                        "An account with this email already exists"
-                    );
-                    console.log("Email invalid");
-                    return;
+                if (btn.tagName === "BUTTON") {
+                    btn.innerHTML = originalContent;
+                } else {
+                    btn.value = originalContent;
                 }
 
-                form.submit();
-
-            }
-            catch (error) {
-
-                console.error(
-                    "Email validation failed",
-                    error
-                );
-
-                alert(
-                    "Unable to verify email at the moment."
-                );
+                return;
             }
 
-        }, 1000);
+            console.log("Form submission called!");
+            HTMLFormElement.prototype.submit.call(form);
+
+        } catch (error) {
+
+            console.error(
+                "Email validation failed",
+                error
+            );
+
+            btn.disabled = false;
+
+            if (btn.tagName === "BUTTON") {
+                btn.innerHTML = originalContent;
+            } else {
+                btn.value = originalContent;
+            }
+
+            alert(
+                "Unable to verify email at the moment."
+            );
+        }
     }
-});
-
+}, 1000);
 const stateSelect = document.getElementById("state");
 const citySelect = document.getElementById("city");
 

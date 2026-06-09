@@ -2,13 +2,15 @@ import jwt from "jsonwebtoken";
 
 export const generateToken = (
     userId: number,
-    roleId: number
+    roleId: number,
+    hotel_id?: number
 ): string => {
 
     return jwt.sign(
         {
             userId,
-            roleId
+            roleId,
+            hotel_id
         },
         process.env.JWT_SECRET!,
         {

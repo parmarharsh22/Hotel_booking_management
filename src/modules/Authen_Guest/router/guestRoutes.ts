@@ -4,6 +4,6 @@ import * as authenGuestCont from "../controller/guestController";
 
 const authenRoute = express.Router();
 
-authenRoute.get("/updateProfile",validToken,authenGuestCont.showEditProfilePage);
+authenRoute.get("/fetchUserDetails",validToken,authenGuestCont.getUserDetails);
 
 export default authenRoute;
