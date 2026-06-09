@@ -14,7 +14,7 @@
             
             <div class="flex items-center">
                 <a href="/" class="text-2xl font-bold text-slate-900 tracking-tight">
-                    LuxeStay<span class="text-amber-700">.</span>
+                    LuxeStay
                 </a>
             </div>
 
@@ -126,7 +126,7 @@
             <% } else { %>
                 <div class="space-y-6">
                     <% hotels.forEach(hotel => { %>
-                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
+                        <div data-hotel-id="<%= hotel.hotel_id %>" class="view-hotel-details bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
                             
                             <div class="w-full md:w-2/5 h-56 md:h-auto relative bg-gray-100 shrink-0">
                                 <img src="<%= hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80' %>" 
@@ -173,9 +173,9 @@
                                     </div>
 
                                     <div class="flex items-center gap-2">
-                                        <a href="/rooms/details/<%= hotel.hotel_id %>" class="border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
+                                        <div data-hotel-id="<%= hotel.hotel_id %>" class="view-hotel-details border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
                                             View Details
-                                        </a>
+                                        </div>
                                         <a href="/checkout?hotel_id=<%= hotel.hotel_id %>" class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
                                             Book Now
                                         </a>
@@ -190,6 +190,7 @@
 
         </section>
     </main>
+    <script src="/JS/rooms/searchResults.js"></script>
 
 </body>
 </html>

@@ -5,11 +5,10 @@ export const searchHotels = async (
   location: string,
   check_in: string,
   check_out: string,
-  guests: number,
   rooms: number,
+  adults: number,
+  child?: number,
 ) => {
-  const guestsPerRoom = Math.ceil(guests / rooms);
-
   const [rows] = await db.query<RowDataPacket[]>(
     `
 SELECT
@@ -18,8 +17,15 @@ SELECT
     h.city,
     h.state,
     h.country,
-    MIN(rt.base_price) AS starting_price,
-    COUNT(DISTINCT r.room_id) AS available_rooms
+
+    rt.room_type_id,
+    rt.type_name,
+    rt.base_price,
+
+    rt.max_adults,
+    rt.max_children,
+
+    r.room_id
 
 FROM hotels h
 
@@ -29,56 +35,30 @@ JOIN room_types rt
 JOIN rooms r
     ON r.room_type_id = rt.room_type_id
 
-JOIN (
-    SELECT
-        ra.room_id
-    FROM room_availability ra
-    WHERE
-        ra.availability_status_id = 1
-        AND ra.date >= ?
-        AND ra.date < ?
-    GROUP BY ra.room_id
-    HAVING COUNT(*) = DATEDIFF(?, ?)
-) available_rooms
-    ON available_rooms.room_id = r.room_id
-
 WHERE
 (
     LOWER(h.city) LIKE LOWER(CONCAT('%', ?, '%'))
     OR LOWER(h.state) LIKE LOWER(CONCAT('%', ?, '%'))
     OR LOWER(h.country) LIKE LOWER(CONCAT('%', ?, '%'))
 )
-AND rt.max_occupancy >= ?
 
-GROUP BY
-    h.hotel_id,
-    h.name,
-    h.city,
-    h.state,
-    h.country
+AND r.room_id NOT IN
+(
+    SELECT br.room_id
 
-HAVING
-    COUNT(DISTINCT r.room_id) >= ?
+    FROM booking_rooms br
 
-ORDER BY
-    starting_price ASC
-`,
-    [
-      check_in, 
-      check_out, 
+    JOIN bookings b
+        ON b.booking_id = br.booking_id
 
-      check_out, 
-      check_in,
+    WHERE
+        b.booking_status_id IN (1,2,3)
 
-      location, 
-      location, 
-      location, 
-
-      guestsPerRoom, 
-      
-      rooms, 
-    ],
+        AND b.checkin_date < ?
+        AND b.checkout_date > ?
+);`,
+    [location, location, location, check_out, check_in],
   );
-
+// console.log('62',rows);
   return rows;
 };

@@ -46,18 +46,21 @@ form.addEventListener("submit", async (e) => {
     const checkinInput = document.getElementById("checkin-input");
     const checkoutInput = document.getElementById("checkout-input");
     const roomsInput = document.getElementById("rooms-input");
-    const guestsInput = document.getElementById("guests-input");
+    const adultsInput = document.getElementById("adults-input");
+    const childInput = document.getElementById("child-input");
 
     const locationVal = locationInput.value.trim();
     const checkinVal = checkinInput.value;
     const checkoutVal = checkoutInput.value;
     const roomsVal = parseInt(roomsInput.value, 10);
-    const guestsVal = parseInt(guestsInput.value, 10);
+    const adultsVal = parseInt(adultsInput.value, 10);
+    const childVal = parseInt(childInput.value, 10);
 
     if (!locationVal) { addError("location-input", "Required field"); hasErrors = true; }
     if (!checkoutVal) { addError("checkout-input", "Select check-out"); hasErrors = true; }
     if (isNaN(roomsVal)) { addError("rooms-input", "Enter rooms count"); hasErrors = true; }
-    if (isNaN(guestsVal)) { addError("guests-input", "Enter guests count"); hasErrors = true; }
+    if (isNaN(adultsVal)) { addError("adults-input", "Enter adults count"); hasErrors = true; }
+    if (isNaN(childVal)) { addError("child-input", "Enter childs count"); hasErrors = true; }
 
     if (locationVal) {
         const locationRegex = /^[A-Za-z\s,\-]*$/;
@@ -98,7 +101,8 @@ form.addEventListener("submit", async (e) => {
         }
     }
     if (!isNaN(roomsVal) && roomsVal < 1) { addError("rooms-input", "Minimum 1 room required"); hasErrors = true; }
-    if (!isNaN(guestsVal) && guestsVal < 1) { addError("guests-input", "Minimum 1 guest required"); hasErrors = true; }
+    if (!isNaN(adultsVal) && adultsVal < 1) { addError("adults-input", "Minimum 1 adult required"); hasErrors = true; }
+    // if (!isNaN(childVal) && childVal < 1) { addError("child-input", "Minimum 1 child required"); hasErrors = true; }
 
     if (hasErrors) {
         e.preventDefault();
@@ -130,6 +134,7 @@ window.onload = async () => {
             const opt = document.createElement("option");
             opt.textContent = location.city;
             opt.value = location.city;
+            opt.classList.add('bg-black')
             dropdown.appendChild(opt);
         })
 
