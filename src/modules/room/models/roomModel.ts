@@ -33,6 +33,7 @@ JOIN rooms r
     ON r.room_type_id = rt.room_type_id
 
 WHERE
+h.tenant_status_id=1 and
 (
     LOWER(h.city) LIKE LOWER(CONCAT('%', ?, '%'))
     OR LOWER(h.state) LIKE LOWER(CONCAT('%', ?, '%'))
@@ -111,6 +112,7 @@ LEFT JOIN amenities a
 
 WHERE
     h.hotel_id = ?
+    AND h.tenant_status_id=1
 
     AND r.room_id NOT IN
     (

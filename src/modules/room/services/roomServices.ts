@@ -107,7 +107,6 @@ export const hotelDetails=async (hotelId:number,check_in:string,check_out:string
       amenities:element.amenities.split(',').map((item:string)=>item.trim())
     })
   }
-  console.log(hotel,room_type);
 
   return {hotel,room_type};
 }
