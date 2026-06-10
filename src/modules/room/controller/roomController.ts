@@ -13,7 +13,7 @@ export const searchHotels = async (req: Request, res: Response) => {
             check_out: data.check_out,
             rooms: data.rooms,
             adults: data.adults,
-            child:data.child
+            children:data.children
         };
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
@@ -29,3 +29,30 @@ export const searchHotels = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const hotelDetails=async(req:Request,res:Response)=>{
+    try {
+        const hotelId=req.params['hotelId'] as string;
+        const {location,checkIn,checkOut,hotelName,rooms,adults,children}=req.query;
+
+        const parsedHotelId=parseInt(hotelId || '-1',10);
+
+        if(isNaN(parsedHotelId) || parsedHotelId<=0)
+        {
+            return res.status(400).json({ error: "Invalid or missing Hotel ID" });
+        }
+
+        const {hotel,room_type}=await roomService.hotelDetails(parsedHotelId,String(checkIn || ''),String(checkOut || ''));
+
+        const query={
+            location,check_in:checkIn,check_out:checkOut,hotelName,rooms,adults,children
+        }
+
+        res.render('roomsFrontend/hotelDetails',{
+            hotel,room_type,query
+        })
+
+    } catch (error) {
+        
+    }
+}
