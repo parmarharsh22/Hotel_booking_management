@@ -146,38 +146,20 @@
                         or expanding your filter choices!
                     </p>
                 </div>
-<<<<<<< HEAD
                 <% } else { %>
                     <div class="space-y-6">
                         <% hotels.forEach(hotel=> { %>
-                            <div
-                                class="bg-white rounded-3xl overflow-hidden border border-gray-200 hover:border-amber-300 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 md:flex">
-                                <div class="w-full md:w-2/5 h-72 md:h-auto relative bg-gray-100 shrink-0">
-                                    <div class="overflow-hidden h-full">
-                                        <img src="<%= hotel.image_url || 'https://img.magnific.com/free-photo/beautiful-luxury-outdoor-swimming-pool-hotel-resort_74190-7433.jpg?semt=ais_hybrid&w=740&q=80 '%>"
-                                        alt="<%= hotel.name %>" class="w-full h-full object-cover hover:scale-110 transition duration-700">
-                                    </div>
+                            <div data-hotel-id="<%= hotel.hotel_id %>"
+                                class="view-hotel-details bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
+
+                                <div class="w-full md:w-2/5 h-56 md:h-auto relative bg-gray-100 shrink-0">
+                                    <img src="<%= hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80' %>"
+                                        alt="<%= hotel.name %>" class="w-full h-full object-cover">
                                     <span
                                         class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded">
                                         Top Rated
                                     </span>
                                 </div>
-=======
-            <% } else { %>
-                <div class="space-y-6">
-                    <% hotels.forEach(hotel => { %>
-                        <div data-hotel-id="<%= hotel.hotel_id %>" class="view-hotel-details bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
-                            
-                            <div class="w-full md:w-2/5 h-56 md:h-auto relative bg-gray-100 shrink-0">
-                                <img src="<%= hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80' %>" 
-                                     alt="<%= hotel.name %>" 
-                                     class="w-full h-full object-cover">
-                                <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded">
-                                    Top Rated
-                                </span>
-                            </div>
->>>>>>> b8ecabf2549e87aac8b4b5ddd1d0c59f31544817
-
                                 <div class="w-full md:w-3/5 p-6 flex flex-col justify-between">
                                     <div>
                                         <div class="flex items-start justify-between gap-2 mb-1">
@@ -212,51 +194,38 @@
 
                                     <div
                                         class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
-                                        <div>
-                                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">
-                                                Starting
-                                                From</p>
-                                            <p class="text-2xl font-black text-slate-900">
-                                                $<%= Math.floor(hotel.starting_price) %> <span
-                                                        class="text-sm font-medium text-gray-500">/night</span>
-                                            </p>
-                                        </div>
+                                        <div
+                                            class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
+                                            <div>
+                                                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                                                    Starting From
+                                                </p>
+                                                <p class="text-2xl font-black text-slate-900">
+                                                    $<%= Math.floor(hotel.starting_price) %>
+                                                        <span class="text-sm font-medium text-gray-500">
+                                                            /night
+                                                        </span>
+                                                </p>
+                                            </div>
 
-                                        <div class="flex items-center gap-2">
-                                            <a href="/rooms/details/<%= hotel.hotel_id %>"
-                                                class="border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
-                                                View Details
-                                            </a>
-                                            <a href="/checkout?hotel_id=<%= hotel.hotel_id %>"
-                                                class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
-                                                Book Now
-                                            </a>
+                                            <div class="flex items-center gap-2">
+                                                <div data-hotel-id="<%= hotel.hotel_id %>"
+                                                    class="view-hotel-details border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200 cursor-pointer">
+                                                    View Details
+                                                </div>
+
+                                                <a href="/checkout?hotel_id=<%= hotel.hotel_id %>"
+                                                    class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
+                                                    Book Now
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
 
                                 </div>
-<<<<<<< HEAD
-=======
 
-                                <div class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
-                                    <div>
-                                        <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">Starting From</p>
-                                        <p class="text-2xl font-black text-slate-900">
-                                            $<%= Math.floor(hotel.starting_price) %> <span class="text-sm font-medium text-gray-500">/night</span>
-                                        </p>
-                                    </div>
 
-                                    <div class="flex items-center gap-2">
-                                        <div data-hotel-id="<%= hotel.hotel_id %>" class="view-hotel-details border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
-                                            View Details
-                                        </div>
-                                        <a href="/checkout?hotel_id=<%= hotel.hotel_id %>" class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
-                                            Book Now
-                                        </a>
-                                    </div>
-                                </div>
 
->>>>>>> b8ecabf2549e87aac8b4b5ddd1d0c59f31544817
                             </div>
                             <% }) %>
                     </div>
