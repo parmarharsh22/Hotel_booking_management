@@ -2,6 +2,29 @@ import { Request, Response } from "express";
 import * as authServices from "../services/authServices";
 import { storeToken } from "../../../common/utils/jwt_token";
 
+interface LoginBody {
+    role: "ADMIN" | "FRONT_DESK" | "GUEST";
+    email: string;
+    password: string;
+}
+
+interface RegisterBody {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    state: string;
+    city: string;
+    dob: string;
+    gender: "Male" | "Female" | "Other";
+    address: string;
+    password: string;
+    confirmPassword: string;
+    terms: string;
+    "g-recaptcha-response"?: string;
+}
+
+
 //Render the homePage
 export const showMainPage = (req: Request, res: Response) => {
     const currentUser = res.locals.user;
@@ -9,11 +32,11 @@ export const showMainPage = (req: Request, res: Response) => {
     //get the sessionFlash message and delte the session
     const profileEdited = (req.session as any).profileEdited;
     delete (req.session as any).profileEdited;
-    
+
     if (currentUser) {
-        return res.render("index", { welcome: " Welcome again !",edited:profileEdited});
+        return res.render("index", { welcome: " Welcome again !", edited: profileEdited });
     }
-    return res.render("index", { welcome: "",edited: ""});
+    return res.render("index", { welcome: "", edited: "" });
 }
 
 //Render the login page
@@ -68,12 +91,20 @@ export const checkEmailUniq = async (req: Request, res: Response) => {
 };
 
 //login a user
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response) => {
     try {
         const { role, email, password } = req.body;
         const result = await authServices.loginUser(role, email, password);
         storeToken(result.token, res);
-        res.redirect("/");
+        if (role === "ADMIN") {
+            res.redirect("/hotelAdmin/rooms")
+        }
+        else if (role === "FRONT_DESK") {
+
+        }
+        else {
+            res.redirect("/");
+        }
     } catch (err: any) {
         (req.session as any).failureMessage = err.message;
         res.redirect("/login")
@@ -82,7 +113,7 @@ export const loginUser = async (req: Request, res: Response) => {
 }
 
 //get All locations to render in the select dropDown
-export const getAllLocations = async (req: Request, res: Response) => {
+export const getAllLocations = async (req: Request<{},{},RegisterBody>, res: Response) => {
     try {
         const result = await authServices.getAllLocations();
         return res.status(200).send({ result });
