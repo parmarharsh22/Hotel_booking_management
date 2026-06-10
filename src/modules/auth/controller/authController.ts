@@ -2,6 +2,30 @@ import { Request, Response } from "express";
 import * as authServices from "../services/authServices";
 import { storeToken } from "../../../common/utils/jwt_token";
 
+interface LoginBody {
+    role: "ADMIN" | "FRONT_DESK" | "GUEST";
+    email: string;
+    password: string;
+}
+
+interface RegisterBody {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    state: string;
+    city: string;
+    dob: string;
+    gender: "Male" | "Female" | "Other";
+    photo?: string;
+    address: string;
+    password: string;
+    confirmPassword: string;
+    terms: string;
+    "g-recaptcha-response"?: string;
+}
+
+
 //Render the homePage
 export const showMainPage = (req: Request, res: Response) => {
     const currentUser = res.locals.user;
@@ -9,11 +33,26 @@ export const showMainPage = (req: Request, res: Response) => {
     //get the sessionFlash message and delte the session
     const profileEdited = (req.session as any).profileEdited;
     delete (req.session as any).profileEdited;
-    
-    if (currentUser) {
-        return res.render("index", { welcome: " Welcome again !",edited:profileEdited});
+
+    if (currentUser?.roleId === "GUEST") {
+        return res.render("index", {
+            welcome: " Welcome again !",
+            edited: profileEdited
+        });
     }
-    return res.render("index", { welcome: "",edited: ""});
+
+    if (currentUser?.roleId === "ADMIN") {
+        return res.redirect("/hotelAdmin/rooms");
+    }
+
+    if (currentUser?.roleId === "FRONT_DESK") {
+        return res.redirect("/frontDesk/dashboard");
+    }
+
+    return res.render("index", {
+        welcome: "",
+        edited: ""
+    });
 }
 
 //Render the login page
@@ -40,7 +79,7 @@ export const showRegistrationPage = (req: Request, res: Response) => {
 }
 
 //Register a new user
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request<{}, {}, RegisterBody>, res: Response) => {
     try {
         await authServices.registerUser(req.body, req.file?.filename);
         (req.session as any).successMessage = "Registration successful";
@@ -68,12 +107,20 @@ export const checkEmailUniq = async (req: Request, res: Response) => {
 };
 
 //login a user
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response) => {
     try {
         const { role, email, password } = req.body;
         const result = await authServices.loginUser(role, email, password);
         storeToken(result.token, res);
-        res.redirect("/");
+        if (role === "ADMIN") {
+            res.redirect("/hotelAdmin/rooms")
+        }
+        else if (role === "FRONT_DESK") {
+
+        }
+        else {
+            res.redirect("/");
+        }
     } catch (err: any) {
         (req.session as any).failureMessage = err.message;
         res.redirect("/login")
