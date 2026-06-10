@@ -41,7 +41,7 @@ export class StaffService{
       // always FRONT_DESK role
       const staffData: StaffInterface = {
         ...staff,
-        user_role_id: 2,
+        user_role_id: 3,
         password_hash,
       };
 
