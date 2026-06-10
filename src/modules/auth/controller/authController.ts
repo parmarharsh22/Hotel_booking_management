@@ -17,6 +17,7 @@ interface RegisterBody {
     city: string;
     dob: string;
     gender: "Male" | "Female" | "Other";
+    photo?: string;
     address: string;
     password: string;
     confirmPassword: string;
@@ -33,10 +34,25 @@ export const showMainPage = (req: Request, res: Response) => {
     const profileEdited = (req.session as any).profileEdited;
     delete (req.session as any).profileEdited;
 
-    if (currentUser) {
-        return res.render("index", { welcome: " Welcome again !", edited: profileEdited });
+    if (currentUser?.roleId === "GUEST") {
+        return res.render("index", {
+            welcome: " Welcome again !",
+            edited: profileEdited
+        });
     }
-    return res.render("index", { welcome: "", edited: "" });
+
+    if (currentUser?.roleId === "ADMIN") {
+        return res.redirect("/hotelAdmin/rooms");
+    }
+
+    if (currentUser?.roleId === "FRONT_DESK") {
+        return res.redirect("/frontDesk/dashboard");
+    }
+
+    return res.render("index", {
+        welcome: "",
+        edited: ""
+    });
 }
 
 //Render the login page
@@ -63,7 +79,7 @@ export const showRegistrationPage = (req: Request, res: Response) => {
 }
 
 //Register a new user
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request<{}, {}, RegisterBody>, res: Response) => {
     try {
         await authServices.registerUser(req.body, req.file?.filename);
         (req.session as any).successMessage = "Registration successful";
@@ -113,7 +129,7 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response) 
 }
 
 //get All locations to render in the select dropDown
-export const getAllLocations = async (req: Request<{},{},RegisterBody>, res: Response) => {
+export const getAllLocations = async (req: Request, res: Response) => {
     try {
         const result = await authServices.getAllLocations();
         return res.status(200).send({ result });

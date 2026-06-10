@@ -8,7 +8,6 @@ export interface UserTokenPayload extends JwtPayload {
     roleId: string;
 
 }
-
 export const validToken = async(
     req :Request,
     res : Response,
