@@ -30,7 +30,7 @@ export class RoomModel {
            r.hotel_id,
            r.room_number,
            r.floor,
-           r.photo_url,
+           rt.photo_url,
            r.notes,
            r.created_at,
            rt.type_name,
