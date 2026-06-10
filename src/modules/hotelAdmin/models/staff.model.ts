@@ -82,7 +82,7 @@ export class StaffModel{
   }
 
 
- 
+
   // POST /admin/staff  →  createStaff
   // always creates as FRONT_DESK — role_id comes from lookupIds constant
   static async createStaff(staff: StaffInterface): Promise<StaffInterface> {
@@ -150,12 +150,12 @@ export class StaffModel{
   // DELETE /admin/staff/:userId  →  deleteStaff
   static async deactivateStaff(userId: number, hotelId: number): Promise<boolean> {
     try {
+      console.log(userId);
+      console.log(hotelId);
       const [result]: any = await db.query(
-        `UPDATE users
-         SET is_active = 0
-         WHERE user_id = ? AND hotel_id = ?`,
-        [userId, hotelId]
+        `delete from users where user_id = ${userId} AND hotel_id = ${hotelId}`,
       );
+      console.log(result);
       return result.affectedRows > 0;
     } catch (err: any) {
       throw err;
