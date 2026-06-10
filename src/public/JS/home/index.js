@@ -143,21 +143,26 @@ window.onload = async () => {
     }
 };
 
-document.querySelectorAll('input, select').forEach(element => {
+document.querySelectorAll('input, select, textarea').forEach(element => {
+
     element.addEventListener('focus', () => {
-        element.closest('.group').classList.add('bg-primary-container/5');
+        element.parentElement.classList.add('ring-1', 'ring-amber-500');
     });
+
     element.addEventListener('blur', () => {
-        element.closest('.group').classList.remove('bg-primary-container/5');
+        element.parentElement.classList.remove('ring-1', 'ring-amber-500');
     });
+
 });
+
 async function openProfileModal() {
     const modal = document.getElementById("profileModal");
-    try{
+    try {
         const response = await fetch("/authen/fetchUserDetails");
         const data = await response.json();
+
         console.log(data);
-        
+
         const imgInput = document.getElementById("avatarPreview");
         const first_name = document.getElementById("first_name");
         const last_name = document.getElementById("last_name");
@@ -172,18 +177,19 @@ async function openProfileModal() {
         imgInput.src = `/uploads/profile-photos/${data.photo_url}`;
         first_name.value = `${data.first_name}`;
         last_name.value = `${data.last_name}`;
-        inpemail.value =`${data.email}`;
+        inpemail.value = `${data.email}`;
         dob.value = new Date(data.dob).toISOString().split("T")[0];
         phone.value = `${data.phone}`;
         gender.value = `${data.gender}`;
-        state.value = `${data.state}`;
-        city.value = `${data.city}`;
+        // state.innerHTML = `<option>${data.state}</option>`;
+        // city.innerHTML = `<option>${data.city}</option>`;
+        state.value = data.state;
+        await loadCities();
+        city.value = data.city;
         address.value = `${data.address}`;
-        
 
-    
-    }catch(err){
-        console.log("error occured ",err);
+    } catch (err) {
+        console.log("error occured ", err);
     }
     modal.classList.remove("hidden");
     modal.classList.add("flex");
@@ -191,10 +197,121 @@ async function openProfileModal() {
     document.body.style.overflow = "hidden";
 }
 
-function closeProfileModal() {
+window.closeProfileModal = function () {
     const modal = document.getElementById("profileModal");
+
     modal.classList.remove("flex");
     modal.classList.add("hidden");
 
     document.body.style.overflow = "auto";
+};
+
+const stateSelect = document.getElementById("state");
+const citySelect = document.getElementById("city");
+
+window.addEventListener("DOMContentLoaded", loadStates);
+
+async function loadStates() {
+
+    try {
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/states",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    country: "India"
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        data.data.states.forEach(state => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = state.name;
+            option.textContent = state.name;
+
+            stateSelect.appendChild(option);
+        });
+
+    } catch (err) {
+        console.error(err);
+    }
 }
+
+stateSelect.addEventListener(
+    "change",
+    loadCities
+);
+
+async function loadCities() {
+
+    citySelect.innerHTML =
+        '<option value="">Loading...</option>';
+
+    try {
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/state/cities",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    country: "India",
+                    state: stateSelect.value
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        citySelect.innerHTML =
+            '<option value="">Select City</option>';
+
+        data.data.forEach(city => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = city;
+            option.textContent = city;
+
+            citySelect.appendChild(option);
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        citySelect.innerHTML =
+            '<option value="">Unable to load cities</option>';
+    }
+}
+
+const avatarInput =
+    document.getElementById("avatarInput");
+
+const avatarPreview =
+    document.getElementById("avatarPreview");
+
+avatarInput.addEventListener(
+    "change",
+    function () {
+
+        const file = this.files[0];
+
+        if (!file) return;
+
+        avatarPreview.src =
+            URL.createObjectURL(file);
+    }
+);
