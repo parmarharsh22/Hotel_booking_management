@@ -28,8 +28,7 @@ export class AdminPolicyController {
   // POST /admin/policies
   async createPolicy(req: Request, res: Response) {
     try {
-    //   const hotelId = (req as any).hotelId as number;
-      const hotelId = 1;
+      const hotelId = (req as any).hotelId as number;
       const policy = {
         hotel_id:                hotelId,
         room_type_id:            parseInt(req.body.room_type_id),
@@ -60,8 +59,7 @@ export class AdminPolicyController {
   // PUT /admin/policies/:policyId
   async updatePolicy(req: Request, res: Response) {
     try {
-    //   const hotelId  = (req as any).hotelId as number;
-        const hotelId = 1;
+    const hotelId  = (req as any).hotelId as number;
     const policyId = parseInt(req.params.policyId as any);
 
       const data = {
