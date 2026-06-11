@@ -8,10 +8,13 @@ export interface StaffInterface {
   last_name?: string;
   email: string;
   phone?: string;
+  dob?: Date;
+  gender?: string;
   password_hash?: string;
   photo_url?: string;
   state ?: string;
   city ?: string;
+  address?: string;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -22,6 +25,7 @@ export interface StaffUpdateInterface {
   email?:      string;
   phone?:      string | null;
   photo_url?:  string | null;
+  address?:    string | null;
 }
 
 export class StaffModel{
@@ -40,6 +44,9 @@ export class StaffModel{
            u.photo_url,
            u.state,
            u.city,
+           u.dob,
+           u.gender,
+           u.address,
            u.created_at,
            ur.role_name
          FROM users u
@@ -69,6 +76,9 @@ export class StaffModel{
            u.photo_url,
            u.state,
            u.city,
+           u.dob,
+           u.gender,
+           u.address,
            ur.role_name
          FROM users u
          INNER JOIN user_roles ur ON u.user_role_id = ur.user_role_id
@@ -88,8 +98,8 @@ export class StaffModel{
   static async createStaff(staff: StaffInterface): Promise<StaffInterface> {
     try {
       const [data]: any = await db.query(
-        `INSERT INTO users (hotel_id, user_role_id, first_name, last_name, email, phone, password_hash, photo_url, state, city)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO users (hotel_id, user_role_id, first_name, last_name, email, phone, dob, gender, password_hash, photo_url, state, city, address)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           staff.hotel_id,
           staff.user_role_id,
@@ -97,10 +107,13 @@ export class StaffModel{
           staff.last_name,
           staff.email,
           staff.phone    ?? null,
+          staff.dob,
+          staff.gender,
           staff.password_hash,
           staff.photo_url ?? null,
           staff.state,
           staff.city,
+          staff.address
         ]
       );
       return { user_id: data.insertId, ...staff };
@@ -124,8 +137,7 @@ export class StaffModel{
              email      = ?,
              phone      = ?,
              photo_url  = ?,
-             state      = ?,
-             city       = ?,
+             address    = ?,
          WHERE user_id = ? AND hotel_id = ?`,
         [
           data.first_name,
@@ -133,6 +145,7 @@ export class StaffModel{
           data.email,
           data.phone     ?? null,
           data.photo_url ?? null,
+          data.address   ?? null,
           userId,
           hotelId,
         ]

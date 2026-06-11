@@ -26,23 +26,23 @@
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
+                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
                         <i class="fa-solid fa-bed w-5"></i>
-                        <span>Room Status</span>
+                        <span>Rooms</span>
                     </a>
                     <a href="/hotelAdmin/room-types/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-calendar-days w-5 text-slate-400"></i>
                         <span>Room Types</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/staff" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
-                        <span>Guest Folios</span>
+                        <span>Staff</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/Analytics" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
                         <span>Analytics</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-gear w-5 text-slate-400"></i>
                         <span>Settings</span>
                     </a>
@@ -198,8 +198,9 @@
                                 </tr>
                             </thead>
                             <tbody id="roomContainer" class="divide-y divide-slate-100 text-sm text-slate-700">
-
+                                
                                 <% rooms.forEach(room => { %>
+                                    
                                     <tr class="hover:bg-slate-50/70 transition">
                                         <td class="py-4 px-6 flex items-center space-x-4">
                                             <img src="<%= room.photo_url || 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=200&q=80' %>" alt="Room Thumbnail" class="w-12 h-12 object-cover rounded-lg bg-slate-100 shrink-0 border border-slate-200">
