@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LuxeStay Password Reset</title>
+</head>
+
+<body style="
+    margin:0;
+    padding:0;
+    background:#f6f8fc;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#202124;
+">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td align="center" style="padding:40px 16px;">
+
+                <table width="600" cellpadding="0" cellspacing="0" border="0" style="
+                    max-width:600px;
+                    background:#ffffff;
+                    border:1px solid #dadce0;
+                    border-radius:12px;
+                    overflow:hidden;
+                ">
+
+                    <tr>
+                        <td style="
+                            background:#031632;
+                            padding:24px;
+                            text-align:center;
+                        ">
+                            <h1 style="
+                                margin:0;
+                                color:#ffffff;
+                                font-size:28px;
+                                font-weight:700;
+                                letter-spacing:1px;
+                            ">
+                                LuxeStay
+                            </h1>
+
+                            <p style="
+                                margin:8px 0 0;
+                                color:#ffdea5;
+                                font-size:12px;
+                                letter-spacing:2px;
+                                text-transform:uppercase;
+                            ">
+                                Hospitality Business Management System
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding:32px;">
+
+                            <h2 style="
+                                margin:0 0 16px;
+                                font-size:24px;
+                                font-weight:600;
+                                color:#202124;
+                            ">
+                                Password Reset Request
+                            </h2>
+
+                            <p style="
+                                margin:0 0 20px;
+                                color:#5f6368;
+                                line-height:1.6;
+                            ">
+                                We received a request to reset the password for your account:
+                            </p>
+
+                            <div style="
+                                background:#f8f9fa;
+                                border:1px solid #e8eaed;
+                                border-radius:8px;
+                                padding:12px 16px;
+                                margin-bottom:24px;
+                                font-weight:600;
+                                color:#202124;
+                            ">
+                                <%= currentemail %>
+                            </div>
+
+                            <div style="
+                                background:#fff8eb;
+                                border-left:4px solid #775a19;
+                                padding:14px 16px;
+                                border-radius:6px;
+                                margin-bottom:24px;
+                            ">
+                                <strong>Important:</strong>
+                                This OTP will expire in 2 minutes.
+                            </div>
+
+                            <div style="
+                                text-align:center;
+                                padding:28px;
+                                background:#f8f9fa;
+                                border:2px dashed #dadce0;
+                                border-radius:10px;
+                            ">
+                                <p style="
+                                    margin:0 0 12px;
+                                    color:#5f6368;
+                                    font-size:14px;
+                                ">
+                                    Your Verification Code
+                                </p>
+
+                                <div style="
+                                    font-size:40px;
+                                    font-weight:700;
+                                    letter-spacing:10px;
+                                    color:#031632;
+                                ">
+                                    <%= otp %>
+                                </div>
+                            </div>
+
+                            <p style="
+                                margin:28px 0 20px;
+                                color:#5f6368;
+                                line-height:1.6;
+                            ">
+                                Enter this code on the password reset page to continue.
+                            </p>
+
+                            <div style="text-align:center;">
+                                <a href="/resetPassword" style="
+                                    display:inline-block;
+                                    background:#775a19;
+                                    color:#ffffff;
+                                    text-decoration:none;
+                                    padding:14px 28px;
+                                    border-radius:8px;
+                                    font-weight:600;
+                                ">
+                                    Reset Password
+                                </a>
+                            </div>
+
+                            <p style="
+                                margin-top:32px;
+                                color:#5f6368;
+                                line-height:1.6;
+                                font-size:14px;
+                            ">
+                                If you didn't request a password reset, you can safely ignore this email.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="
+                            border-top:1px solid #e8eaed;
+                            padding:20px;
+                            text-align:center;
+                            color:#80868b;
+                            font-size:12px;
+                        ">
+                            © 2026 LuxeStay Hospitality Management System
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>

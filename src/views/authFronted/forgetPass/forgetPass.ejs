@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password | LuxeStay</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .luxury-gradient {
+            background: radial-gradient(circle at top right,
+                    #1a2b48 0%,
+                    #031632 100%);
+        }
+
+        .gold-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gold-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                linear-gradient(45deg,
+                    transparent,
+                    rgba(255, 222, 165, 0.08),
+                    transparent);
+            animation: shimmer 6s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4 luxury-gradient relative">
+
+    <!-- Background Effects -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-yellow-400 opacity-5 blur-3xl">
+        </div>
+
+        <div class="absolute top-1/2 -left-48 w-80 h-80 rounded-full bg-blue-300 opacity-10 blur-3xl">
+        </div>
+    </div>
+
+    <main class="w-full max-w-6xl mx-auto grid lg:grid-cols-12 gap-8 items-center relative z-10">
+
+        <!-- LEFT SECTION -->
+        <div class="lg:col-span-6 flex flex-col items-center lg:items-start">
+
+            <!-- Branding -->
+            <div class="text-center lg:text-left mb-10">
+
+                <h1 class="text-3xl md:text-4xl font-bold uppercase text-blue-100">
+                    <a href="/">LuxeStay</a>
+                </h1>
+
+                <p class="uppercase tracking-widest text-xs text-yellow-200 mt-2">
+                    Hospitality Business Management System
+                </p>
+
+            </div>
+
+            <!-- Forgot Password Card -->
+            <div class="w-full max-w-[500px] glass-panel rounded-xl overflow-hidden shadow-2xl border border-white/20">
+
+                <!-- Header -->
+                <div class="bg-gray-100 border-b px-8 py-6">
+
+                    <h2 class="text-2xl font-semibold text-[#031632]">
+                        Forgot Password
+                    </h2>
+
+                    <p class="text-sm text-gray-600 mt-2">
+                        Enter your registered email address and we'll send
+                        a secure OTP to reset your password.
+                    </p>
+
+                </div>
+
+                <!-- Form -->
+                <div class="p-8">
+
+                    <form action="/emailSim" method="post" id="forgotPasswordForm" class="space-y-6">
+
+                        <div>
+
+                            <label
+                                class="uppercase tracking-wider text-xs font-semibold text-gray-500 flex items-center gap-2 mb-2">
+
+                                <span class="material-symbols-outlined text-base">
+                                    mail
+                                </span>
+
+                                Email Address
+
+                            </label>
+
+                            <input type="text" id="email" name="email" placeholder="name@example.com"
+                                class="w-full h-12 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#031632] focus:border-[#031632] outline-none transition">
+
+                        </div>
+
+                        <button type="submit" id="sendOtp"
+                            class="w-full h-14 bg-[#775a19] hover:bg-[#5d4201] text-white uppercase tracking-wider font-semibold rounded-lg flex items-center justify-center gap-3 gold-shimmer transition-all">
+
+                            Send OTP
+
+                            <span class="material-symbols-outlined">
+                                arrow_forward
+                            </span>
+
+                        </button>
+
+                    </form>
+
+                    <!-- Links -->
+                    <div class="mt-8 pt-6 border-t flex flex-col items-center gap-4">
+
+                        <a href="/login" class="text-[#031632] font-semibold hover:underline">
+
+                            ← Back to Login
+
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div
+                class="mt-6 w-full max-w-[500px] p-4 rounded-lg bg-white/10 border border-white/10 flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse">
+                    </span>
+
+                    <span class="text-xs uppercase tracking-wider text-blue-100">
+
+                        HBMS Cloud Service: Operational
+
+                    </span>
+
+                </div>
+
+                <span class="text-xs text-blue-100 opacity-70">
+                    v2.4.0-LX
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT IMAGE PANEL -->
+        <div class="hidden lg:block lg:col-span-6 h-[650px] rounded-2xl overflow-hidden shadow-2xl relative">
+
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAn3DlULXk718lahlzez1e4S9jCbQ3fI-Zghxf_ZfEmKOSLUvYyRssDV8Rzirx9hHIRm2JUDQuwPxzo9ncIGzHsLlZN5PiCTlhmFD_t5j-rWWc9QIOF5mlaYfGOLjcNHnW1yNcQoFG2bfttSHTjKDUKA6Ev12R_0e4jRAmvfsbdTfKxiClJoxHhUUZIpxhPyAa9zodbao6AgxeQYe0swX-yoyjNsoZaGdn4H8N6eXbScscKV3zIox_dTfpH6g-bUv73mkvwfk3HqyL"
+                alt="Luxury Hotel" class="w-full h-full object-cover">
+
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-[#031632]/90 via-[#031632]/20 to-transparent flex flex-col justify-end p-10">
+
+                <p class="uppercase tracking-[0.2em] text-yellow-200 text-xs mb-2">
+
+                    ACCOUNT RECOVERY
+
+                </p>
+
+                <h3 class="text-white text-3xl font-semibold leading-relaxed">
+
+                    Secure access to your hospitality experience.
+
+                </h3>
+
+                <div class="w-12 h-[2px] bg-yellow-200 mt-4 opacity-60">
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="/JS/toastmessage.js"></script>
+    <script src="/JS/auth/forgetPass/validationForgetPass.js"></script>
+    <% if( error ) { %>
+    <script>
+        showToast("<%= error %>","error");
+    </script>
+    <% } %>
+</body>
+
+</html>
