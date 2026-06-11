@@ -9,8 +9,8 @@ export class AdminRoomController {
   // hotelId comes from session (injected by tenant.middleware.ts into req.hotelId)
   async listRooms(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
-     
+      // const hotelId = (req as any).hotelId as number;
+     const hotelId = 1;
       const rooms = await roomService.getAllRoomsByHotel(hotelId);
       // EJS: render the rooms list page
       return res.status(200).render("admin/rooms", { rooms });
