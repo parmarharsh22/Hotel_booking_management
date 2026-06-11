@@ -40,9 +40,12 @@ export class AdminStaffController{
         last_name:   req.body.last_name,
         email:       req.body.email,
         phone:       req.body.phone || null,
+        dob:         req.body.dob,
+        gender:      req.body.gender,
         photo_url,
         state: req.body.state,
         city: req.body.city,
+        address: req.body.address
       };
 
       await staffService.createStaff(staff, req.body.password);
@@ -78,6 +81,7 @@ export class AdminStaffController{
         last_name:  req.body.last_name,
         email:      req.body.email,
         phone:      req.body.phone || null,
+        address:    req.body.address,
         photo_url,
       };
       await staffService.updateStaff(userId, hotelId, data);
