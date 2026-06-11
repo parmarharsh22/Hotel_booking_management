@@ -5,6 +5,9 @@ import {
   Hotel,
 } from "../interfaces/room.avalibaleHotel.interface";
 import { HotelDetails, RoomType } from "../interfaces/room.hotelDetails.interface";
+import { BookigData } from "../interfaces/room.selectedRoomType.interface";
+import { db } from "../../../config/db";
+import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 
 export const searchHotels = async (params: searchHotelReqBody) => {
   const { location, check_in, check_out, rooms, adults, children } = params;
@@ -109,4 +112,42 @@ export const hotelDetails=async (hotelId:number,check_in:string,check_out:string
   }
 
   return {hotel,room_type};
+} 
+
+export const createHold=async (bookingData:BookigData,userId:number)=>{
+   const connection = await db.getConnection();
+
+   try {
+    await connection.beginTransaction();
+    const heldRooms:RoomRow[]=[];
+
+    for(const selection of bookingData.selections)
+    {
+      const rooms=await roomModel.getAvailableRooms(
+        connection,bookingData.hotelId,selection.roomTypeId,bookingData.checkIn,bookingData.checkOut,selection.quantity
+      )
+
+      if(rooms.length<selection.quantity)
+      {
+        throw new Error(`${selection.quantity} rooms are occupied by someone else`)
+      }
+
+      heldRooms.push(...rooms);
+    }
+
+    await roomModel.insertRoomHolds(connection,heldRooms,userId,bookingData.checkIn,bookingData.checkOut,bookingData.adults,bookingData.children);
+
+    await connection.commit();
+
+    return {success:true};
+
+   } catch (error) {
+    await connection.rollback();
+
+    throw error;
+   }
+   finally
+   {
+    connection.release();
+   }
 }
