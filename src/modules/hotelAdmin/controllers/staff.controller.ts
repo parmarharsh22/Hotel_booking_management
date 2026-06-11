@@ -35,7 +35,7 @@ export class AdminStaffController{
       const photo_url = files?.staff_photo ? files.staff_photo[0].path : null;
       const staff = {
         hotel_id:    hotelId,
-        user_role_id: 3,          
+        user_role_id: 3,            
         first_name:  req.body.first_name,
         last_name:   req.body.last_name,
         email:       req.body.email,
