@@ -9,6 +9,8 @@ import authenRoute from "./modules/Authen_Guest/router/guestRoutes";
 import cookie from "cookie-parser";
 import roomRouter from "./modules/room/routes/roomRoute";
 import hotelAdminRoutes from "./modules/hotelAdmin/hotelAdmin.routes";
+import BookingRoutes from "./modules/booking/routes/booking.routes";
+
 
 const app = express();
 
@@ -35,6 +37,7 @@ app.use(express.json());
 app.use("/authen",authenRoute);
 app.use("/superadmin", superadminRoutes);
 app.use("/hotelAdmin",hotelAdminRoutes);
+app.use("/bookings", BookingRoutes)
 
 //All the unproctedRoutes
 app.use("/",authRouter);

@@ -286,7 +286,7 @@
                     </div>
 
                     <!-- Button -->
-                    <button
+                    <button onclick="createHold()"
                         class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
                     >
                         Continue To Book
@@ -303,6 +303,7 @@
 
     const totalPriceEl = document.getElementById("totalPrice");
     const selectedRoomsEl = document.getElementById("selectedRooms");
+    
 
     function updateSummary() {
         let total = 0;
@@ -340,6 +341,52 @@
     roomSelects.forEach(select => {
         select.addEventListener("change", updateSummary);
     });
+
+    async function createHold() {
+    const rooms = [];
+
+    document.querySelectorAll('.room-select').forEach(select => {
+        const qty = parseInt(select.value);
+        if (qty > 0) {
+            rooms.push({
+                room_type_id: parseInt(select.dataset.roomId),
+                qty
+            });
+        }
+    });
+
+    if (rooms.length === 0) {
+        alert('Please select at least one room');
+        return;
+    }
+
+    try {
+        const res = await fetch('/bookings/hold', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                hotel_id:      '<%= hotel.hotel_id %>',
+                checkin_date:  '<%= query.check_in %>',
+                checkout_date: '<%= query.check_out %>',
+                adults:        '<%= query.adults %>',
+                children:      '<%= query.children %>',
+                rooms
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = `/bookings/payment-page?hold_id=${data.hold_id}`;
+        } else {
+            alert(data.error || 'Failed to hold rooms. Please try again.');
+        }
+
+    } catch {
+        alert('Network error. Please try again.');
+    }
+}
+
 
     updateSummary();
 </script>
