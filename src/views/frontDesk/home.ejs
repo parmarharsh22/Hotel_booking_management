@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>LuxeStay - Front Desk Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        .luxury-gradient {
+            background: linear-gradient(135deg, #031632 0%, #1a2b48 100%);
+        }
+
+        #sidebar-toggle:checked~aside {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 1023px) {
+            aside {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#b6c7eb",
+                        "tertiary": "#211400",
+                        "surface-container-high": "#e6e8eb",
+                        "status-available": "#2D8A56",
+                        "outline": "#75777e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef1",
+                        "on-primary-fixed": "#081b38",
+                        "status-dirty": "#64748B",
+                        "on-tertiary-fixed-variant": "#5b4217",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#3c2700",
+                        "tertiary-fixed-dim": "#e5c18a",
+                        "on-secondary-fixed-variant": "#5d4201",
+                        "status-maintenance": "#D97706",
+                        "inverse-primary": "#b6c7eb",
+                        "surface-white": "#FFFFFF",
+                        "primary": "#031632",
+                        "inverse-on-surface": "#eff1f4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ad8d5b",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "primary-container": "#1a2b48",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#e9c176",
+                        "surface-dim": "#d8dadd",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-container": "#fed488",
+                        "tertiary-fixed": "#ffdead",
+                        "on-primary-container": "#8293b5",
+                        "secondary-fixed": "#ffdea5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "on-tertiary-fixed": "#281900",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface-container-low": "#f2f4f7",
+                        "outline-variant": "#c5c6ce",
+                        "on-surface-variant": "#44474d",
+                        "surface-bright": "#f7f9fc",
+                        "on-primary-fixed-variant": "#374765",
+                        "on-secondary-fixed": "#261900",
+                        "on-secondary-container": "#785a1a",
+                        "on-error": "#ffffff",
+                        "status-booked": "#1A2B48",
+                        "background": "#f7f9fc",
+                        "secondary": "#775a19",
+                        "surface-tint": "#4e5f7e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "container-margin-desktop": "32px",
+                        "container-margin-mobile": "16px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background text-on-background">
+
+    <!-- Sidebar Toggle for Mobile -->
+    <input class="hidden peer" id="sidebar-toggle" type="checkbox" />
+
+    <!-- Navbar/Sidebar -->
+    <%- include('../partials/frontDesk/sidebar.ejs') %>
+
+        <!-- Main Content Wrapper -->
+        <div class="lg:ml-[260px] min-h-screen">
+            <!-- Mobile Sidebar Toggle Label -->
+            <label
+                class="lg:hidden fixed top-6 left-4 z-[60] cursor-pointer p-2 bg-white rounded-lg shadow-md border border-outline-variant"
+                for="sidebar-toggle">
+                <span class="material-symbols-outlined">menu</span>
+            </label>
+
+            <!-- Main Content Area -->
+            <main class="min-h-screen">
+                <!-- TopAppBar Context Header -->
+                <header
+                    class="h-auto lg:h-20 bg-white border-b border-outline-variant flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 lg:px-container-margin-desktop py-4 lg:py-0 sticky top-0 z-40">
+                    <div class="flex items-center gap-4 ml-12 lg:ml-0">
+                        <div class="hidden sm:block p-2 bg-primary-container rounded-lg">
+                            <span class="material-symbols-outlined text-on-primary-container"
+                                data-icon="apartment">apartment</span>
+                        </div>
+                        <div>
+                            <h2
+                                class="font-headline-md text-headline-md text-primary tracking-tight leading-tight lg:leading-normal">
+                                <%= hotelname %>
+                            </h2>
+                            <p class="text-body-sm text-on-surface-variant">Operational Workspace • Shift: <%= shift %></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 lg:gap-6 mt-4 lg:mt-0 w-full lg:w-auto justify-end">
+                        <div class="relative">
+                            <span class="material-symbols-outlined text-on-surface-variant cursor-pointer"
+                                data-icon="notifications">notifications</span>
+                            <span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+                        </div>
+                        <div
+                            class="flex items-center gap-2 px-3 lg:px-4 py-2 bg-surface-container rounded-full border border-outline-variant cursor-pointer">
+
+                            <img src="/uploads/profile-photos/<%= photo %>" alt="Profile"
+                                class="w-10 h-9 rounded-full object-cover border border-gray-300">
+
+                            <span class="font-body-sm font-medium text-primary whitespace-nowrap">
+                                <%= first_name + " " + last_name %>
+                            </span>
+
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Content Grid -->
+                <div class="p-4 lg:p-container-margin-desktop max-w-[1440px] mx-auto space-y-8">
+                    <!-- KPI Widgets (Bento Grid) -->
+                    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div
+                            class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Today's Check-ins
+                            </p>
+                            <h3 class="font-display-lg text-display-lg text-primary"><%= checkincount %></h3>
+                            <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl" data-icon="login">login</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Check-outs</p>
+                            <h3 class="font-display-lg text-display-lg text-primary">28</h3>
+                            <p class="mt-4 text-[12px] font-medium text-on-surface-variant">14 Pending Departure</p>
+                            <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl" data-icon="logout">logout</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Total Occupancy</p>
+                            <h3 class="font-display-lg text-display-lg text-primary">94.2%</h3>
+                            <div class="mt-4 h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                <div class="h-full bg-status-available rounded-full" style="width: 94.2%"></div>
+                            </div>
+                            <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl" data-icon="bed">bed</span>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-primary text-white p-6 rounded-lg relative overflow-hidden group hover:bg-primary-container transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-primary-fixed-dim mb-2">Pending Requests</p>
+                            <h3 class="font-display-lg text-display-lg text-secondary-fixed">08</h3>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+                                <span class="text-[12px] font-medium text-surface-variant">Critical: 2 Late
+                                    Checkout</span>
+                            </div>
+                            <div class="absolute bottom-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl"
+                                    data-icon="concierge_bell">doorbell</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Operational Layout -->
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                        <!-- Upcoming Arrivals (Main View) -->
+                        <section class="xl:col-span-2 space-y-6">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <h4 class="font-title-sm text-title-sm text-primary">Upcoming Arrivals</h4>
+                                <div class="flex gap-2 w-full sm:w-auto">
+                                    <button
+                                        class="flex-1 sm:flex-none px-4 py-2 border border-outline-variant rounded font-label-caps text-label-caps hover:bg-surface-container transition-colors">Filter</button>
+                                    <button
+                                        class="flex-1 sm:flex-none px-4 py-2 bg-secondary text-white rounded font-label-caps text-label-caps hover:opacity-90 transition-opacity">Pre-Check
+                                        All</button>
+                                </div>
+                            </div>
+                            <div class="bg-white border border-outline-variant rounded-lg overflow-x-auto">
+                                <table class="w-full text-left min-w-[600px]">
+                                    <thead class="bg-surface-container-low border-b border-outline-variant">
+                                        <tr>
+                                            <th
+                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                Guest</th>
+                                            <th
+                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                Room Type</th>
+                                            <th
+                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                ETA</th>
+                                            <th
+                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                Status</th>
+                                            <th
+                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-right">
+                                                Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-outline-variant">
+                                        <tr class="hover:bg-surface-bright transition-colors">
+                                            <td class="px-6 py-5">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container font-bold">
+                                                        SM</div>
+                                                    <div>
+                                                        <p class="font-body-md font-semibold text-primary">Sophia
+                                                            Martinez</p>
+                                                        <p class="text-[12px] text-on-surface-variant">VIP • Loyalty
+                                                            Tier 4</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-5">
+                                                <p class="font-body-md text-primary">Penthouse Suite</p>
+                                                <p class="text-[12px] text-on-surface-variant">Room 1402</p>
+                                            </td>
+                                            <td class="px-6 py-5 text-primary font-medium">13:45</td>
+                                            <td class="px-6 py-5">
+                                                <span
+                                                    class="inline-block px-3 py-1 rounded-full bg-[#E8F5E9] text-status-available font-label-caps text-[10px] uppercase">Room
+                                                    Ready</span>
+                                            </td>
+                                            <td class="px-6 py-5 text-right">
+                                                <button
+                                                    class="text-secondary hover:underline font-label-caps text-label-caps">Check
+                                                    In</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-bright transition-colors">
+                                            <td class="px-6 py-5">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container font-bold">
+                                                        JD</div>
+                                                    <div>
+                                                        <p class="font-body-md font-semibold text-primary">Julian Drake
+                                                        </p>
+                                                        <p class="text-[12px] text-on-surface-variant">Standard Booking
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-5">
+                                                <p class="font-body-md text-primary">Deluxe King</p>
+                                                <p class="text-[12px] text-on-surface-variant">Pending Assign</p>
+                                            </td>
+                                            <td class="px-6 py-5 text-primary font-medium">14:15</td>
+                                            <td class="px-6 py-5">
+                                                <span
+                                                    class="inline-block px-3 py-1 rounded-full bg-[#ECEFF1] text-status-dirty font-label-caps text-[10px] uppercase">Cleaning</span>
+                                            </td>
+                                            <td class="px-6 py-5 text-right">
+                                                <button
+                                                    class="text-on-surface-variant cursor-not-allowed font-label-caps text-label-caps opacity-50">Assign
+                                                    Room</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-bright transition-colors">
+                                            <td class="px-6 py-5">
+                                                <div class="flex items-center gap-3">
+                                                    <div
+                                                        class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container font-bold">
+                                                        EK</div>
+                                                    <div>
+                                                        <p class="font-body-md font-semibold text-primary">Elena
+                                                            Kuznetsova</p>
+                                                        <p class="text-[12px] text-on-surface-variant">Corp: Gold-Man
+                                                            Sachs</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-5">
+                                                <p class="font-body-md text-primary">Executive Studio</p>
+                                                <p class="text-[12px] text-on-surface-variant">Room 804</p>
+                                            </td>
+                                            <td class="px-6 py-5 text-primary font-medium">15:00</td>
+                                            <td class="px-6 py-5">
+                                                <span
+                                                    class="inline-block px-3 py-1 rounded-full bg-[#E8F5E9] text-status-available font-label-caps text-[10px] uppercase">Room
+                                                    Ready</span>
+                                            </td>
+                                            <td class="px-6 py-5 text-right">
+                                                <button
+                                                    class="text-secondary hover:underline font-label-caps text-label-caps">Check
+                                                    In</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="p-4 bg-surface-container-low border-t border-outline-variant text-center">
+                                    <button class="font-label-caps text-label-caps text-primary hover:underline">View
+                                        All Arrivals (24 Remaining)</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Operations Sidebar (Requests & Housekeeping) -->
+                        <section class="space-y-6">
+                            <h4 class="font-title-sm text-title-sm text-primary">Immediate Attention</h4>
+                            <div class="space-y-4">
+                                <div
+                                    class="bg-white border-l-4 border-secondary p-5 rounded shadow-sm flex gap-4 hover:translate-x-1 transition-transform cursor-pointer">
+                                    <div class="text-secondary">
+                                        <span class="material-symbols-outlined"
+                                            data-icon="cleaning_services">cleaning_services</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <p class="font-body-md font-bold text-primary">Room 402 - Extra Towels</p>
+                                            <span class="text-[10px] font-bold text-error">URGENT</span>
+                                        </div>
+                                        <p class="text-body-sm text-on-surface-variant mt-1">Requested via App • 8 mins
+                                            ago</p>
+                                        <div class="mt-3 flex gap-2">
+                                            <button
+                                                class="flex-1 py-1.5 bg-primary text-white text-[12px] font-bold rounded">Assign</button>
+                                            <button
+                                                class="flex-1 py-1.5 border border-outline-variant text-primary text-[12px] font-bold rounded">Dismiss</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-white border-l-4 border-status-maintenance p-5 rounded shadow-sm flex gap-4 hover:translate-x-1 transition-transform cursor-pointer">
+                                    <div class="text-status-maintenance">
+                                        <span class="material-symbols-outlined" data-icon="build">build</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <p class="font-body-md font-bold text-primary">Room 110 - AC Leak</p>
+                                            <span class="text-[10px] font-bold text-on-surface-variant">NEW</span>
+                                        </div>
+                                        <p class="text-body-sm text-on-surface-variant mt-1">Reported by Housekeeping
+                                        </p>
+                                        <div class="mt-3 flex gap-2">
+                                            <button
+                                                class="flex-1 py-1.5 bg-primary text-white text-[12px] font-bold rounded">Dispatch</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-white border border-outline-variant p-5 rounded shadow-sm hover:border-secondary transition-colors cursor-pointer">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <span class="material-symbols-outlined text-secondary"
+                                            data-icon="cake">cake</span>
+                                        <p class="font-label-caps text-label-caps text-primary">Anniversary Setup</p>
+                                    </div>
+                                    <p class="text-body-sm text-on-surface-variant">Guest in Room 204 requests champagne
+                                        and flowers by 18:00 tonight.</p>
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <div class="flex -space-x-2">
+                                            <img alt="Staff" class="w-6 h-6 rounded-full border-2 border-white"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQVP2MXpESAIyMfoPUAEBAnn_Nq6eTGM56-_3q1NIoSQ1W365hJ4RN4Rv4btjqTEROACaKcEVKiXaOSUK1YeaenFlyIDBZmh-AQZ2Tpz2e82tQf2kG_c6w8MBFxjGN8lc8TsMtK3-ditXsh2cdHEdhNSZ2wLnCmV6wSzlraLhhpWQj6_a5ccOul3JE7reZY9cOBLNxU1LL1ueESk4qAOuJGf6nvWOF2BWy7DMQKMFxY92g_0siXJYxOQKAN8DLsDl45lVM9DLpsRIj" />
+                                            <img alt="Staff" class="w-6 h-6 rounded-full border-2 border-white"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb6YfEVLr1MlG9460YjHXcppzb9HB_qFklCIfS59lRKWbJRvVWuQgCMn_cvsQ-6fzhlkm-jMEmWFeczQDfnhoDzVijKTcbhrfMsok6m1IwJsYE3KIPeOMsHib433tsp3qUfFvroMaiFPRQVrISSvMytbVfB9WsiDpaKg9LkyupYSyhKRbOwHc60qWeXFSRCtJfYWtzqsj5GBhnc9mHvdBItBVHJsDpfbT6zS_A2vwDTONJ9VYYF6KQ3IpOKYAh-rxMNqPJCeiqlnnZ" />
+                                        </div>
+                                        <span class="text-[12px] font-medium text-on-surface-variant">2 Staff
+                                            Assigned</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                class="w-full py-4 border-2 border-dashed border-outline-variant rounded-lg text-on-surface-variant font-label-caps text-label-caps hover:bg-surface-container hover:border-primary transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                                Create Manual Ticket
+                            </button>
+                        </section>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer
+                class="mb-6 md:mb-0 bg-white border-t border-outline-variant px-4 lg:px-container-margin-desktop py-4">
+                <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-center md:text-left">
+                        <h5 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">LuxeStay
+                        </h5>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">© 2024 LuxeStay Hospitality
+                            Group. All rights reserved.</p>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4 md:gap-8">
+                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
+                            href="#">Privacy Policy</a>
+                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
+                            href="#">Terms of Service</a>
+                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
+                            href="#">Cookie Policy</a>
+                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
+                            href="#">Accessibility</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <script src="/JS/toastmessage.js"></script>
+        <script src="/JS/frontDesk/homepage.js"></script>
+        <script>
+                <% if (error) {%>
+                    showToast("<% error %>", "error");
+        <% } %>
+        </script>
+</body>
+
+</html>
