@@ -1,5 +1,6 @@
-import { RowDataPacket } from "mysql2";
 import { db } from "../../../config/db";
+import { PoolConnection,RowDataPacket } from "mysql2/promise";
+import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 
 export const searchHotels = async (
   location: string,
@@ -54,8 +55,21 @@ AND r.room_id NOT IN
 
         AND b.checkin_date < ?
         AND b.checkout_date > ?
-);`,
-    [location, location, location, check_out, check_in],
+)
+   AND r.room_id NOT IN
+            (
+                SELECT bh.room_id
+
+                FROM booking_holds bh
+
+                WHERE
+                    bh.expires_at > NOW()
+
+                    AND bh.checkin_date < ?
+                    AND bh.checkout_date > ?
+            )
+;`,
+    [location, location, location, check_out, check_in,check_out, check_in],
   );
   // console.log('62',rows);
   return rows;
@@ -128,7 +142,18 @@ WHERE
 
             AND b.checkin_date < ?
             AND b.checkout_date > ?
-    )
+    ) AND r.room_id NOT IN
+            (
+                SELECT bh.room_id
+
+                FROM booking_holds bh
+
+                WHERE
+                    bh.expires_at > NOW()
+
+                    AND bh.checkin_date < ?
+                    AND bh.checkout_date > ?
+            )
 
 GROUP BY
     h.hotel_id,
@@ -140,8 +165,125 @@ HAVING
 ORDER BY
     rt.base_price;
         `,
-    [hotelId, check_out, check_in],
+    [hotelId, check_out, check_in,check_out, check_in],
   );
 
   return rows;
+};
+
+
+export const getAvailableRooms=async(  connection:PoolConnection,hotelId:number,roomTypeId:number,checkIn:string,checkOut:string,quantity:number)=>{
+    const [rows]=await connection.query<RoomRow[]>(`
+         SELECT
+            r.room_id
+
+        FROM rooms r
+
+        WHERE
+            r.hotel_id = ?
+
+            AND r.room_type_id = ?
+
+            AND r.room_id NOT IN
+            (
+                SELECT br.room_id
+
+                FROM booking_rooms br
+
+                JOIN bookings b
+                    ON b.booking_id = br.booking_id
+
+                WHERE
+                    b.booking_status_id IN (1,2,3)
+
+                    AND b.checkin_date < ?
+                    AND b.checkout_date > ?
+            )
+
+            AND r.room_id NOT IN
+            (
+                SELECT bh.room_id
+
+                FROM booking_holds bh
+
+                WHERE
+                    bh.expires_at > NOW()
+
+                    AND bh.checkin_date < ?
+                    AND bh.checkout_date > ?
+            )
+
+        LIMIT ?
+        `,[hotelId,roomTypeId,checkOut,checkIn,checkOut,checkIn,quantity]);
+
+        return rows;
+}
+
+export const insertRoomHolds = async (
+    connection:PoolConnection,
+
+    rooms:RoomRow[],
+
+    userId:number,
+
+    checkIn:string,
+
+    checkOut:string,
+
+    adults:number,
+    children:number
+) => {
+
+    for (const room of rooms) {
+
+        await connection.query(
+            `
+            INSERT INTO booking_holds
+            (
+                room_id,
+
+                user_id,
+
+                adults,
+
+                children,
+
+                checkin_date,
+
+                checkout_date,
+
+                expires_at
+            )
+
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+
+                ?,
+
+                ?,
+
+                ?,
+
+                DATE_ADD(NOW(), INTERVAL 10 MINUTE)
+            )
+            `,
+            [
+                room.room_id,
+
+                userId,
+
+                adults,
+
+                children,
+
+                checkIn,
+
+                checkOut
+            ]
+        );
+
+    }
 };
