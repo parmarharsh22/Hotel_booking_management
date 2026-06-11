@@ -130,7 +130,7 @@
                             </div>
                         </div>
 
-                        <!-- Amenities -->
+                        <!-- Amenities -->  
                         <div class="mb-5">
                             <h4 class="font-semibold mb-2 text-gray-700">
                                 Amenities
@@ -158,7 +158,7 @@
                                 </p>
                                 <p class="font-semibold">
                                     <i class="fa-solid fa-users text-gray-800"></i>
-                                    <%= room.max_adults %>
+                                    <span id="<%=room.type%>-adults-count"><%= room.max_adults %></span>
                                 </p>
                             </div>
 
@@ -168,7 +168,7 @@
                                 </p>
                                 <p class="font-semibold">
                                     <i class="fa-solid fa-children text-gray-800"></i>
-                                    <%= room.max_children %>
+                                    <span id="<%=room.type%>-children-count"><%= room.max_children %></span>
                                 </p>
                             </div>
 
@@ -189,7 +189,8 @@
                                 <select
                                     class="border rounded-lg px-2 py-1 w-full room-select"
                                     data-price="<%= room.price %>"
-                                    data-room-id="<%= room.room_type_id %>"
+                                    data-room-type-id="<%= room.room_type_id %>"
+                                    data-room-type="<%=room.type%>"
                                 >
                                     <% for(let i=0; i<=room.available_rooms; i++){ %>
                                         <option value="<%= i %>">
@@ -211,9 +212,12 @@
                 <div
                     class="bg-white rounded-2xl shadow-lg border p-6 sticky top-24"
                 >
-                    <h3 class="text-2xl font-bold mb-5">
+                <div class="mb-5">
+                    <h3 class="text-2xl font-bold">
                         Booking Summary
                     </h3>
+                    <p class="text-sm">(Based on rooms you have selected)</p>
+                </div>
 
                     <!-- Dates -->
                     <div class="space-y-4">
@@ -243,7 +247,7 @@
                                 <i class="fa-solid fa-users text-gray-800"></i> Adults
                             </label>
 
-                            <span><strong><%=query.adults%></strong></span>
+                            <span><strong id="show-adults"></strong></span>
                         </div>
 
                         <div>
@@ -251,7 +255,7 @@
                                 <i class="fa-solid fa-children text-gray-800"></i> Children
                             </label>
 
-                            <span><strong><%=query.children%></strong></span>
+                            <span><strong id="show-children"></strong></span>
                         </div>
                     </div>
 
@@ -286,11 +290,12 @@
                     </div>
 
                     <!-- Button -->
-                    <button
-                        class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+                    <p
+                        class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition flex justify-center"
+                        id="continue-to-book-btn"
                     >
                         Continue To Book
-                    </button>
+                    </p>
                 </div>
 
             </div>
@@ -298,50 +303,22 @@
     </div>
 </div>
 
-<script>
-    const roomSelects = document.querySelectorAll(".room-select");
-
-    const totalPriceEl = document.getElementById("totalPrice");
-    const selectedRoomsEl = document.getElementById("selectedRooms");
-
-    function updateSummary() {
-        let total = 0;
-        let html = "";
-
-        roomSelects.forEach(select => {
-            const qty = parseInt(select.value);
-            const price = parseFloat(select.dataset.price);
-
-            if (qty > 0) {
-                const roomCard =
-                    select.closest(".bg-white");
-
-                const roomName =
-                    roomCard.querySelector("h3").innerText;
-
-                total += qty * price;
-
-                html += `
-                    <div class="flex justify-between mb-2">
-                        <span>${roomName} x ${qty}</span>
-                        <span>₹${qty * price}</span>
-                    </div>
-                `;
-            }
-        });
-
-        selectedRoomsEl.innerHTML =
-            html || "No rooms selected";
-
-        totalPriceEl.innerText =
-            `₹${total.toLocaleString()}`;
-    }
-
-    roomSelects.forEach(select => {
-        select.addEventListener("change", updateSummary);
-    });
-
-    updateSummary();
+<script type="application/json" id="server-payload">
+    <%-
+    JSON.stringify({
+        hotel_name:hotel.name,
+        address:hotel.address,
+        city:hotel.city,
+        state:hotel.state,
+        country:hotel.country,
+        hotelId:query.hotel_id,
+        checkIn:query.check_in,
+        checkOut:query.check_out,
+        adults:query.adults,
+        children:query.children
+    })
+    %>
 </script>
+<script src="/JS/rooms/hotelDetails.js"></script>
 </body>
 </html>

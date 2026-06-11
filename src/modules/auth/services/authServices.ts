@@ -29,7 +29,7 @@ export const loginUser = async(role:string,email: string,password:string) =>{
     if(!passmatch){
         throw new Error("Invalid Credentials!");
     }
-    const token = generateToken(result.user_id,result.role_name,result.hotel_id ? result.hotel_id : "GUEST");
+    const token = generateToken(result.user_id,result.role_name,result.hotel_id);
     return{token:token}
 }
 

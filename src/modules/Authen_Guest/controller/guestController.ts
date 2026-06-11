@@ -3,6 +3,18 @@ import { getJwtTokenValue } from "../../../common/utils/getRequestVariables";
 import * as guestServices from "../services/guestServices";
 import { deleteOldPhoto } from "../../../common/utils/deleteOldProfilePic";
 
+interface UpdateProfileBody {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    state: string;
+    city: string;
+    dob: string;
+    gender: "Male" | "Female" | "Other";
+    address: string;
+}
+
 //Get the user details
 export const getUserDetails = async(req:Request,res:Response) =>{
     try{
@@ -15,7 +27,7 @@ export const getUserDetails = async(req:Request,res:Response) =>{
 }
 
 //Update the user Profile
-export const updateProfile = async(req:Request,res:Response)=>{
+export const updateProfile = async(req: Request<{}, {}, UpdateProfileBody>,res:Response)=>{
     try{
         const id = getJwtTokenValue("userId",req);
         const data = await guestServices.getUserData(id);
