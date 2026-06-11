@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeStay - Room Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <div class="flex flex-1 flex-col md:flex-row">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-4 shrink-0">
+            <div>
+                <div class="text-2xl font-bold text-[#0f172a] tracking-tight px-3 py-4">
+                    LuxeStay
+                </div>
+                
+                <nav class="mt-4 space-y-1">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-bed w-5"></i>
+                        <span>Rooms</span>
+                    </a>
+                    <a href="/hotelAdmin/room-types/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-calendar-days w-5 text-slate-400"></i>
+                        <span>Room Types</span>
+                    </a>
+                    <a href="/hotelAdmin/staff" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white  transition">
+                        <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
+                        <span>Staff</span>
+                    </a>
+                    <a href="/hotelAdmin/Analytics" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-slate-100 space-y-1">
+                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                    <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
+                    <span>Help Center</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 flex flex-col">
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8">
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">Room Categories</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Global Management System</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-slate-100 transition">
+                        <div class="w-7 h-7 bg-slate-800 rounded-md flex items-center justify-center text-white text-xs font-bold">LS</div>
+                        <div class="text-left hidden sm:block">
+                            <p class="text-xs font-semibold text-slate-800 leading-tight">LuxeStay Signature</p>
+                            <p class="text-[10px] text-slate-500 leading-none">London, UK</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                    </div>
+                    <button class="p-2 text-slate-400 hover:text-slate-600 relative">
+                        <i class="fa-regular fa-bell text-lg"></i>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-sm font-medium cursor-pointer">
+                        A
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6 md:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
+                
+                <!-- Controls and Actions Header -->
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Inventory Overview</h2>
+                        <p class="text-sm text-slate-500">Manage property room types, base pricing strategies, and amenity bundles.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 relative self-end lg:self-auto">
+                        <button onclick="toggleFilterDropdown()" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium px-4 py-2 rounded-md border border-slate-300 transition">
+                            <i class="fa-solid fa-sliders text-xs"></i>
+                            <span>Filter</span>
+                        </button>
+                        <a href="/hoteladmin/rooms/new">
+                        <button class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-md shadow-sm transition">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Add Rooms</span>
+                        </button>
+                        </a>
+                        <!-- Filter Dropdown Drawer -->
+                        <div id="filterDropdown" class="hidden absolute right-0 top-12 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-50 transition-all duration-200">
+                            <h4 class="text-sm font-bold text-slate-900 mb-3 border-b pb-2">Filter Rooms</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Room Type ID</label>
+                                    <select id="filterRoomType" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2 outline-none focus:border-slate-400">
+                                        <option value="">All Types</option>
+                                        <option value="12">Deluxe King Suite (12)</option>
+                                        <option value="15">Presidential Royal (15)</option>
+                                        <option value="8">Executive Twin (8)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Status ID</label>
+                                    <select id="filterStatus" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2 outline-none focus:border-slate-400">
+                                        <option value="">All Statuses</option>
+                                        <option value="1">Available (1)</option>
+                                        <option value="2">Occupied (2)</option>
+                                        <option value="3">Maintenance (3)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Floor</label>
+                                    <input type="number" id="filterFloor" placeholder="e.g. 4" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2 outline-none focus:border-slate-400">
+                                </div>
+                                <div class="flex items-center justify-end gap-2 pt-2">
+                                    <button onclick="resetFilters()" class="text-xs text-slate-500 hover:text-slate-800 font-medium px-3 py-1.5 rounded">Reset</button>
+                                    <button onclick="applyFilters()" class="text-xs bg-[#0f172a] text-white font-medium px-3 py-1.5 rounded hover:bg-slate-800">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Metric Row -->
+                
+
+                <!-- Inventory Data Sheet -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    
+
+   <main class="flex-1 flex flex-col">
+    <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8">
+        <div>
+            <h1 class="text-xl font-bold text-slate-900">Add Staff Account</h1>
+            <p class="text-xs text-slate-500 hidden sm:block">Register a new administrative account within this perimeter hub.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <a href="/hotelAdmin/staff" class="flex items-center space-x-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-2 rounded-md border border-slate-300 transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Listings</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="p-6 md:p-8 space-y-6 w-full mx-auto">
+        
+        <div id="formAlert" class="hidden p-4 rounded-lg text-xs font-medium border"></div>
+
+        <form id="createStaffForm" onsubmit="submitStaffCreation(event)" enctype="multipart/form-data" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            
+            <div class="p-5 border-b border-slate-200 bg-slate-50/50">
+                <h3 class="font-bold text-slate-900">Onboarding Matrix</h3>
+                <p class="text-xs text-slate-500 mt-0.5">All created records default automatically to the FRONT_DESK access control role profile tier.</p>
+            </div>
+
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">First Name <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-regular fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="first_name" required placeholder="e.g. Jane" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Last Name <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-regular fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="last_name" required placeholder="e.g. Smith" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Unique Email Space <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" name="email" required placeholder="jane.smith@luxestay.com" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+                
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Password <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="password" required placeholder="xxxxx" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Password <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="date" name="dob" required placeholder="" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+<div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Gender <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <i class="fa-regular fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <select type="gender" name="gender" required placeholder="" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+<option>Male</option>
+
+<option>Female</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Mobile Contact Vector</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-phone absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="tel" name="phone" placeholder="+1 (555) 000-0000" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Staff Profile Image Resource</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 bg-slate-50 rounded-lg cursor-pointer hover:bg-slate-100/70 hover:border-slate-300 transition group">
+                            <div class="flex flex-col items-center justify-center pt-4 pb-4 text-center px-4">
+                                <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xl group-hover:text-slate-500 transition mb-2"></i>
+                                <p class="text-xs text-slate-600 font-medium mb-0.5"><span class="font-bold text-[#0f172a]">Click to select file</span> or drag & drop</p>
+                                <p class="text-[10px] text-slate-400">PNG, JPG, or WEBP binary formats accepted (Mapped to field key: <span class="font-mono text-slate-500">staff_photo</span>)</p>
+                            </div>
+                            <input type="file" id="staff_photo" name="staff_photo" accept="image/*" onchange="updateUploadIndicator(this)" class="hidden" />
+                        </label>
+                    </div>
+                    <div id="uploadFeedback" class="hidden mt-2 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-md py-1.5 px-3 items-center space-x-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="feedbackText">No file staging indicators</span>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 my-1 border-t border-slate-100"></div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Primary Station City</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-city absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="city" placeholder="e.g. Manchester" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Administrative Region / State</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-map-location-dot absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="state" placeholder="e.g. Greater Manchester" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 outline-none focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-400 transition">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50/50 flex items-center justify-end space-x-3">
+                <a href="/hotelAdmin/staff" class="text-xs text-slate-600 hover:text-slate-800 font-medium px-4 py-2 rounded-lg transition">
+                    Discard Entry
+                </a>
+                <button type="submit" id="submitFormBtn" class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-medium px-5 py-2 rounded-lg shadow-sm transition">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Provision Account</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</main>
+
+    <div class="p-4 border-t border-slate-200 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-500 bg-slate-50/50">
+        <span id="showingIndicator">
+            Showing 1-<%= (typeof staff !== 'undefined') ? staff.length : 0 %> of <%= (typeof staff !== 'undefined') ? staff.length : 0 %> records
+        </span>
+        <div class="flex items-center space-x-1">
+            <button class="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-400 cursor-not-allowed text-[11px]" disabled>Prev</button>
+            <button class="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-400 cursor-not-allowed text-[11px]" disabled>Next</button>
+        </div>
+    </div>
+</div>
+    </div>
+
+   
+
+            </div>
+
+            <!-- Page Footer -->
+            <footer class="mt-auto bg-white border-t border-slate-200 py-6 px-6 md:px-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <div>
+                    <span class="font-semibold text-slate-700">LuxeStay</span> &copy; 2026 LuxeStay Hospitality Group. All rights reserved.
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="hover:text-slate-800 transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-800 transition">Terms of Service</a>
+                    <a href="#" class="hover:text-slate-800 transition">Cookie Policy</a>
+                    <a href="#" class="hover:text-slate-800 transition">Accessibility</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Interface Event Control Scripts -->
+    <script>
+// Dynamically adjusts UI metrics when a user stages a local binary image asset
+function updateUploadIndicator(input) {
+    const feedback = document.getElementById('uploadFeedback');
+    const txt = document.getElementById('feedbackText');
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        txt.innerText = `Asset ready: "${file.name}" (${(file.size / 1024).toFixed(1)} KB)`;
+        feedback.className = "flex mt-2 text-[11px] font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded-md py-1.5 px-3 items-center space-x-2";
+    } else {
+        feedback.classList.add('hidden');
+    }
+}
+
+// Submits data dynamically while maintaining standard multipart payload states
+async function submitStaffCreation(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const alertBox = document.getElementById('formAlert');
+    const submitBtn = document.getElementById('submitFormBtn');
+    
+    // Package standard inputs along with file fields natively 
+    const payload = new FormData(form);
+
+    // Apply interactive UI loading hooks
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-70');
+    
+    try {
+        const response = await fetch('/hotelAdmin/staff', {
+            method: 'POST',
+            body: payload // Sent directly without manual headers to allow proper Boundary Generation
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.success === false) {
+            throw new Error(result.message || 'An upstream fault occurred during staff initialization provisioning pipeline.');
+        }
+
+        // Show Success confirmation alert
+        alertBox.className = "p-4 rounded-lg text-xs font-medium border bg-emerald-50 text-emerald-800 border-emerald-200 mb-6";
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-check mr-2"></i> Operational staff account provisioned securely! Redirecting to index list...`;
+        alertBox.classList.remove('hidden');
+        
+        setTimeout(() => {
+            window.location.href = '/hotelAdmin/staff';
+        }, 1500);
+
+    } catch (error) {
+        // Output localized application faults
+        alertBox.className = "p-4 rounded-lg text-xs font-medium border bg-rose-50 text-rose-800 border-rose-200 mb-6";
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-2"></i> ${error.message}`;
+        alertBox.classList.remove('hidden');
+        
+        // Re-enable interactive element targets
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-70');
+    }
+}
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

@@ -20,6 +20,6 @@ router.put("/staff/:userId",
   uploadProfilePhoto.fields([{ name: "staff_photo", maxCount: 1 }]),
   staffController.updateStaff.bind(staffController)
 );
-router.delete("/staff/:userId",     staffController.deleteStaff.bind(staffController));
+router.delete("/staff/:userId",staffController.deleteStaff.bind(staffController));
 
 export default router;
