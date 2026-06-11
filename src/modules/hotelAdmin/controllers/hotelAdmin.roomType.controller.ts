@@ -7,7 +7,8 @@ export class AdminRoomTypeController {
 
  async listRoomTypes(req: Request, res: Response) {
     try {
-      const hotelId  = (req as any).hotelId as number;
+      // const hotelId  = (req as any).hotelId as number;
+      const hotelId = 1;
      
       const roomTypes = await roomTypeService.getAllRoomTypes(hotelId);
       return res.status(200).json({ roomTypes });
@@ -50,7 +51,8 @@ export class AdminRoomTypeController {
 
   async showEditRoomType(req: Request, res: Response) {
     try {
-      const hotelId   = (req as any).hotelId as number;
+      // const hotelId   = (req as any).hotelId as number;
+      const hotelId = 1;
       const typeId    = parseInt(req.params.typeId as any);
       const roomType  = await roomTypeService.getRoomTypeById(typeId, hotelId);
       const amenities = await roomTypeService.getAllAmenities();

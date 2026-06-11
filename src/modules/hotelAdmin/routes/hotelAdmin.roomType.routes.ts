@@ -11,12 +11,17 @@ router.get("/room-types", adminRoomTypeController.listRoomTypes.bind(adminRoomTy
 // show new room type form  ← must be BEFORE /:typeId routes
 router.get("/room-types/new", adminRoomTypeController.showNewRoomType.bind(adminRoomTypeController));
 
+// room-type update rendering
+
+router.get("/room-type/edit/:typeId",adminRoomTypeController.showEditRoomType.bind(adminRoomTypeController))
+
 // create room type (with optional photo)
 router.post(
   "/room-types",
   uploadRoomPhoto.fields([{ name: "type_photo", maxCount: 1 }]),
   adminRoomTypeController.createRoomType.bind(adminRoomTypeController)
 );
+
 
 // update room type
 router.put(
