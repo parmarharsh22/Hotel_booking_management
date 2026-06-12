@@ -9,8 +9,8 @@ export class AdminRoomController {
   // hotelId comes from session (injected by tenant.middleware.ts into req.hotelId)
   async listRooms(req: Request, res: Response) {
     try {
-      // const hotelId = (req as any).hotelId as number;
-     const hotelId = 1;
+       const hotelId = (req as any).hotelId as number;
+    //  const hotelId = 1;
       const rooms = await roomService.getAllRoomsByHotel(hotelId);
       // EJS: render the rooms list page
       return res.status(200).render("admin/rooms", { rooms });
@@ -46,7 +46,6 @@ export class AdminRoomController {
         room_status_id: req.body.room_status_id,
         room_number:    req.body.room_number,
         floor:          req.body.floor ? parseInt(req.body.floor) : null,
-        photo_url,
         notes:          req.body.notes || null,
       };
       
@@ -106,8 +105,8 @@ export class AdminRoomController {
   // method-override converts the form's POST into DELETE
   async deleteRoom(req: Request, res: Response) {
     try {
-      // const hotelId = (req as any).hotelId as number;
-      const hotelId = 1;
+      const hotelId = (req as any).hotelId as number;
+      // const hotelId = 1;
       const roomId  = parseInt(req.params.roomId as any);
 
       await roomService.deleteRoom(roomId, hotelId);
