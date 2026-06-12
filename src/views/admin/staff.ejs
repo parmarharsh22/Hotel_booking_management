@@ -21,12 +21,12 @@
                     LuxeStay
                 </div>
                 
-              <nav class="mt-4 space-y-1">
+                <nav class="mt-4 space-y-1">
                     <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
+                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-bed w-5"></i>
                         <span>Rooms</span>
                     </a>
@@ -34,7 +34,7 @@
                         <i class="fa-solid fa-calendar-days w-5 text-slate-400"></i>
                         <span>Room Types</span>
                     </a>
-                    <a href="hotelAdmin/staff" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/staff" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white  transition">
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
                         <span>Staff</span>
                     </a>
@@ -89,7 +89,57 @@
             <div class="p-6 md:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
                 
                 <!-- Controls and Actions Header -->
-             
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Inventory Overview</h2>
+                        <p class="text-sm text-slate-500">Manage property room types, base pricing strategies, and amenity bundles.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 relative self-end lg:self-auto">
+                        <button onclick="toggleFilterDropdown()" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium px-4 py-2 rounded-md border border-slate-300 transition">
+                            <i class="fa-solid fa-sliders text-xs"></i>
+                            <span>Filter</span>
+                        </button>
+                        <a href="/hoteladmin/staff/new">
+                        <button class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-md shadow-sm transition">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>Add Staff</span>
+                        </button>
+                        </a>
+                        <!-- Filter Dropdown Drawer -->
+                        <div id="filterDropdown" class="hidden absolute right-0 top-12 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-50 transition-all duration-200">
+                            <h4 class="text-sm font-bold text-slate-900 mb-3 border-b pb-2">Filter Rooms</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Room Type ID</label>
+                                    <select id="filterRoomType" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2 outline-none focus:border-slate-400">
+                                        <option value="">All Types</option>
+                                        <option value="12">Deluxe King Suite (12)</option>
+                                        <option value="15">Presidential Royal (15)</option>
+                                        <option value="8">Executive Twin (8)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Status ID</label>
+                                    <select id="filterStatus" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2 outline-none focus:border-slate-400">
+                                        <option value="">All Statuses</option>
+                                        <option value="1">Available (1)</option>
+                                        <option value="2">Occupied (2)</option>
+                                        <option value="3">Maintenance (3)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Floor</label>
+                                    <input type="number" id="filterFloor" placeholder="e.g. 4" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2 outline-none focus:border-slate-400">
+                                </div>
+                                <div class="flex items-center justify-end gap-2 pt-2">
+                                    <button onclick="resetFilters()" class="text-xs text-slate-500 hover:text-slate-800 font-medium px-3 py-1.5 rounded">Reset</button>
+                                    <button onclick="applyFilters()" class="text-xs bg-[#0f172a] text-white font-medium px-3 py-1.5 rounded hover:bg-slate-800">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- KPI Metric Row -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -126,168 +176,97 @@
                 <!-- Inventory Data Sheet -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
     <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-            <h3 class="font-bold text-slate-900">Modify Property Room Configuration</h3>
-            <p class="text-xs text-slate-500">Update specific room definitions, pricing maps, and live status conditions.</p>
+        <div class="flex items-baseline space-x-3">
+            <h3 class="font-bold text-slate-900">Hotel Staff</h3>
+            <span id="visibleCounter" class="text-xs text-slate-400 font-medium">0 active members</span>
         </div>
-        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold border border-slate-200 uppercase tracking-wider">
-            Room ID: <%= room.room_id %>
-        </span>
+        <div class="relative w-full sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="tableSearch" oninput="searchTable()" placeholder="Search staff members..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-slate-400 transition">
+        </div>
     </div>
 
-    <form id="editRoomForm" onsubmit="handleFormSubmission(event, '<%= room.room_id %>')" class="p-6 md:p-8 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Room Number</label>
-                    <input type="text" name="room_number" value="<%= room.room_number %>" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-400 uppercase text-[10px] tracking-wider font-semibold">
+                    <th class="py-3 px-6">Staff Member</th>
+                    <th class="py-3 px-6">Contact Info</th>
+                    <th class="py-3 px-6">Role & Permissions</th>
+                    <th class="py-3 px-6">Location</th>
+                    <th class="py-3 px-6 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="staffTableBody" class="divide-y divide-slate-100 text-sm">
+                <% if (staff && staff.length > 0) { %>
+                    <% staff.forEach(member => { %>
+                       
+                        <tr class="hover:bg-slate-50/70 transition">
+                            <td class="py-4 px-6 flex items-center space-x-3">
+                                <% if (member.photo_url) { %>
+                                    <img src="<%= imagekitUrl %>/<%= member.photo_url %>" alt="Staff Profile" class="w-9 h-9 rounded-full object-cover bg-slate-100 border border-slate-200 shrink-0">
+                                <% } else { %>
+                                    <div class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center font-semibold text-xs shrink-0">
+                                        <%= member.first_name[0] %><%= member.last_name[0] %>
+                                    </div>
+                                <% } %>
+                                <div>
+                                    <div class="font-semibold text-slate-900"><%= member.first_name %> <%= member.last_name %></div>
+                                    <div class="text-[11px] text-slate-400">ID: #<%= member.user_id %></div>
+                                </div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="text-xs font-medium text-slate-700"><%= member.email %></div>
+                                <div class="text-[11px] text-slate-400 mt-0.5"><%= member.phone || 'No phone attached' %></div>
+                            </td>
+                            <td class="py-4 px-6">
+                                <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold border border-slate-200 uppercase tracking-wide">
+                                    <%= member.role_name.replace('_', ' ') %>
+                                </span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <div class="text-xs text-slate-700 font-medium"><%= member.city || 'N/A' %></div>
+                                <div class="text-[11px] text-slate-400"><%= member.state || '' %></div>
+                            </td>
+                            <td class="py-4 px-6 text-right">
+                                <div class="flex items-center justify-end space-x-1.5 text-slate-400">
+                                    <a href="/hotelAdmin/staff/<%= member.user_id %>/edit/" class="p-1.5 hover:text-slate-700 hover:bg-slate-100 rounded-md transition" title="Edit Profile">
+                                        <i class="fa-regular fa-pen-to-square text-sm"></i>
+                                    </a>
+                                    <button onclick="handleStaffDelete('<%= member.user_id %>')" class="p-1.5 hover:text-rose-600 hover:bg-rose-50 rounded-md transition" title="Delete Account">
+                                        <i class="fa-regular fa-trash-can text-sm"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5" class="py-12 text-center">
+                            <div class="flex flex-col items-center justify-center space-y-2">
+                                <div class="w-12 h-12 bg-slate-50 border border-slate-200 text-slate-400 rounded-full flex items-center justify-center">
+                                    <i class="fa-solid fa-users-slash text-base"></i>
+                                </div>
+                                <h4 class="text-sm font-semibold text-slate-800">No staff accounts found</h4>
+                                <p class="text-xs text-slate-400 max-w-xs mx-auto">There are currently no staff accounts assigned under the FRONT_DESK administrative role group for this location.</p>
+                            </div>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Floor Level</label>
-                    <input type="number" name="floor" value="<%= room.floor %>" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Room Category Fleet Map</label>
-                    <select name="room_type_id" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                        <option value="1" <%= room.room_type_id == 1 ? 'selected' : '' %>>Deluxe King Suite (12)</option>
-                        <option value="2" <%= room.room_type_id == 2 ? 'selected' : '' %>>Presidential Royal (15)</option>
-                        <option value="3" <%= room.room_type_id == 3 ? 'selected' : '' %>>Executive Twin (8)</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Operational Condition Status</label>
-                    <select name="room_status_id" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                        <option value="1" <%= room.room_status_id == 1 ? 'selected' : '' %>>Available (1)</option>
-                        <option value="2" <%= room.room_status_id == 2 ? 'selected' : '' %>>Occupied (2)</option>
-                        <option value="3" <%= room.room_status_id == 3 ? 'selected' : '' %>>Maintenance (3)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="space-y-4 flex flex-col justify-between">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Internal Operations Notes</label>
-                    <textarea name="notes" rows="4" placeholder="Housekeeping conditions, hardware leaks or client profiles changes..."
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 h-[114px] outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition resize-none"><%= room.notes %></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Property Spatial Image</label>
-                    <div class="flex items-center space-x-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                        <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-200 bg-white shrink-0">
-                            <img id="roomPhotoPreview" 
-                                 src="<%= room.photo_url || 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=200&q=80' %>" 
-                                 data-default-src="<%= room.photo_url || 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=200&q=80' %>"
-                                 alt="Live Preview Frame" 
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex-1 space-y-1">
-                            <input type="file" id="roomPhotoInput" name="room_photo" accept="image/*" onchange="previewSelectedPhoto(this)" class="hidden">
-                            <button type="button" onclick="document.getElementById('roomPhotoInput').click()" 
-                                class="text-xs bg-white text-slate-700 font-medium px-3 py-2 rounded border border-slate-200 shadow-sm hover:bg-slate-100 transition">
-                                <i class="fa-solid fa-cloud-arrow-up mr-1.5 text-slate-400"></i>Upload Image File
-                            </button>
-                            <p class="text-[10px] text-slate-400 leading-tight">Accepts PNG, JPG assets up to 5MB.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="p-4 border-t border-slate-200 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-500 bg-slate-50/50">
+        <span id="showingIndicator">
+            Showing 1-<%= (typeof staff !== 'undefined') ? staff.length : 0 %> of <%= (typeof staff !== 'undefined') ? staff.length : 0 %> records
+        </span>
+        <div class="flex items-center space-x-1">
+            <button class="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-400 cursor-not-allowed text-[11px]" disabled>Prev</button>
+            <button class="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-400 cursor-not-allowed text-[11px]" disabled>Next</button>
         </div>
-
-        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-            <button type="button" onclick="resetFormState()" 
-                class="flex items-center space-x-2 text-xs text-slate-500 hover:text-slate-800 font-medium px-4 py-2.5 rounded transition">
-                <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
-                <span>Reset Modifications</span>
-            </button>
-            <button type="submit" 
-                class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-medium px-5 py-2.5 rounded-md shadow-sm transition">
-                <i class="fa-regular fa-floppy-disk text-[11px]"></i>
-                <span>Save Parameters</span>
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
-
-<script>
-    /**
-     * Intercepts file select events to safely push blob streams 
-     * directly into the image element interface for real-time validation.
-     */
-    function previewSelectedPhoto(inputElement) {
-        const previewImg = document.getElementById('roomPhotoPreview');
-        const selectedFile = inputElement.files[0];
-
-        if (selectedFile) {
-            const objectUrlStream = URL.createObjectURL(selectedFile);
-            previewImg.src = objectUrlStream;
-
-            // Optional: Free up performance garbage collections once object finishes drawing
-            previewImg.onload = function() {
-                URL.revokeObjectURL(previewImg.src); 
-            }
-        }
-    }
-
-    /**
-     * Resets input nodes back to original data properties and restores base asset frames
-     */
-    function resetFormState() {
-        const structuralForm = document.getElementById('editRoomForm');
-        const previewImg = document.getElementById('roomPhotoPreview');
-        
-        structuralForm.reset();
-        // Restore pristine image context from default tracker parameter
-        previewImg.src = previewImg.getAttribute('data-default-src');
-    }
-
-    /**
-     * Asynchronous fetch request router targeting your administrative put pipeline.
-     */
-    async function handleFormSubmission(event, roomId) {
-        event.preventDefault();
-        const targetedForm = event.target;
-        
-        // Packaging components inside a FormData engine to process active file buffers cleanly
-        const transmissionPayload = new FormData(targetedForm);
-        console.log(transmissionPayload);
-        
-        try {
-            const apiResultResponse = await fetch(`/hotelAdmin/rooms/${roomId}`, {
-                method: 'PUT',
-                body: transmissionPayload
-            });
-
-            if (apiResultResponse.ok) {
-                alert('Room specifications configuration applied successfully.');
-                // Route user context back to tracking views or refresh data layout maps
-                window.location.reload();
-            } else {
-                const faultData = await apiResultResponse.json();
-                alert(`Configuration Exception Encountered: ${faultData.message || 'System fault validation failed.'}`);
-            }
-        } catch (networkFault) {
-            console.error('API Pipeline Breakdown Context: ', networkFault);
-            alert('A network exception interrupted data synchronization operations.');
-        }
-    }
-</script>
-
-                    <!-- Pagination / Footer Indicators -->
-                    <div class="p-4 border-t border-slate-200 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-500">
-                        
-                        <div class="flex items-center space-x-1">
-                        </div>
-                    </div>
-                </div>
 
             </div>
 
@@ -310,9 +289,7 @@
     <script>
         // Safely parse the EJS variables directly into a client-side database matrix 
         // to keep search/filter features working completely without extra API hits!
-        let mockRoomsDatabase = <%- JSON.stringify(room) %>;
-        console.log(mockRoomsDatabase);
-        
+     
         // Toggle Filter UI Popup Card
         function toggleFilterDropdown() {
             const dropdown = document.getElementById('filterDropdown');
@@ -326,6 +303,21 @@
                 dropdown.classList.add('hidden');
             }
         });
+
+
+async function HandleRoomDelete(room_id){
+
+    const response = await fetch(`/hotelAdmin/rooms/${room_id}` , {
+        method:"DELETE"
+
+    })
+    
+    console.log(response.json());
+    alert(response)
+
+
+}
+
 
         // Dynamic table structural redraw client side for sorting/filtering mechanisms
         function renderRoomCards(dataset) {

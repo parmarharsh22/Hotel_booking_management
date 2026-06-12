@@ -189,8 +189,8 @@
                                 <select
                                     class="border rounded-lg px-2 py-1 w-full room-select"
                                     data-price="<%= room.price %>"
-                                    data-room-id="<%= room.room_type_id %>"
-                                    id="<%=room.type%>"
+                                    data-room-type-id="<%= room.room_type_id %>"
+                                    data-room-type="<%=room.type%>"
                                 >
                                     <% for(let i=0; i<=room.available_rooms; i++){ %>
                                         <option value="<%= i %>">
@@ -306,6 +306,12 @@
 <script type="application/json" id="server-payload">
     <%-
     JSON.stringify({
+        hotel_name:hotel.name,
+        address:hotel.address,
+        city:hotel.city,
+        state:hotel.state,
+        country:hotel.country,
+        hotelId:query.hotel_id,
         checkIn:query.check_in,
         checkOut:query.check_out,
         adults:query.adults,

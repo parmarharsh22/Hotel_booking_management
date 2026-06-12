@@ -25,17 +25,17 @@
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
+                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-bed w-5"></i>
-                        <span>Room Status</span>
+                        <span>Rooms</span>
                     </a>
-                    <a href="/hotelAdmin/room-types/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/room-types/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white text-sm bg-[#1e293b]  font-medium  text-slate-600  transition">
                         <i class="fa-solid fa-calendar-days w-5 text-slate-400"></i>
-                        <span>Reservations</span>
+                        <span>Rooms Types </span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/staff" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
-                        <span>Guest Folios</span>
+                        <span>Staff</span>
                     </a>
                     <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
@@ -456,7 +456,7 @@
      */
     function launchEditCategoryView(roomTypeId) {
         // Routes client directly toward your specific server-side rendering setup
-        window.location.href = `/room-types/${roomTypeId}/edit`;
+        window.location.href = `/hotelAdmin/room-type/edit/${roomTypeId}`;
     }
 
     /**

@@ -134,6 +134,27 @@
             },
         }
     </script>
+    <!-- Socket for live updates -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        const socket = io();
+
+        socket.on("connect", () => {
+
+        });
+        
+        socket.on(
+            "verification_completed",
+            () => {
+
+                location.reload();
+
+            }
+        );
+
+    </script>
+
 </head>
 
 <body class="bg-background text-on-background">
@@ -145,7 +166,7 @@
     <%- include('../partials/frontDesk/sidebar.ejs') %>
 
         <!-- Main Content Wrapper -->
-        <div class="lg:ml-[260px] min-h-screen">
+        <div class="lg:ml-[260px] h-screen overflow-hidden">
             <!-- Mobile Sidebar Toggle Label -->
             <label
                 class="lg:hidden fixed top-6 left-4 z-[60] cursor-pointer p-2 bg-white rounded-lg shadow-md border border-outline-variant"
@@ -154,7 +175,7 @@
             </label>
 
             <!-- Main Content Area -->
-            <main class="min-h-screen">
+            <main class="h-full overflow-hidden">
                 <!-- TopAppBar Context Header -->
                 <header
                     class="h-auto lg:h-20 bg-white border-b border-outline-variant flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 lg:px-container-margin-desktop py-4 lg:py-0 sticky top-0 z-40">
@@ -168,7 +189,8 @@
                                 class="font-headline-md text-headline-md text-primary tracking-tight leading-tight lg:leading-normal">
                                 <%= hotelname %>
                             </h2>
-                            <p class="text-body-sm text-on-surface-variant">Operational Workspace • Shift: <%= shift %></p>
+                            <p class="text-body-sm text-on-surface-variant">Operational Workspace • Shift: <%= shift %>
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 lg:gap-6 mt-4 lg:mt-0 w-full lg:w-auto justify-end">
@@ -192,14 +214,17 @@
                 </header>
 
                 <!-- Content Grid -->
-                <div class="p-4 lg:p-container-margin-desktop max-w-[1440px] mx-auto space-y-8">
+                <div
+                    class="p-4 lg:p-container-margin-desktop max-w-[1440px] mx-auto space-y-8 h-[calc(100vh-80px)] overflow-hidden">
                     <!-- KPI Widgets (Bento Grid) -->
                     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div
                             class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
                             <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Today's Check-ins
                             </p>
-                            <h3 class="font-display-lg text-display-lg text-primary"><%= checkincount %></h3>
+                            <h3 class="font-display-lg text-display-lg text-primary">
+                                <%= checkincount %>
+                            </h3>
                             <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <span class="material-symbols-outlined text-5xl" data-icon="login">login</span>
                             </div>
@@ -207,8 +232,10 @@
                         <div
                             class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
                             <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Check-outs</p>
-                            <h3 class="font-display-lg text-display-lg text-primary">28</h3>
-                            <p class="mt-4 text-[12px] font-medium text-on-surface-variant">14 Pending Departure</p>
+                            <h3 class="font-display-lg text-display-lg text-primary">
+                                <%= checkoutcount %>
+                            </h3>
+                            <!-- <p class="mt-4 text-[12px] font-medium text-on-surface-variant">14 Pending Departure</p> -->
                             <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <span class="material-symbols-outlined text-5xl" data-icon="logout">logout</span>
                             </div>
@@ -216,11 +243,20 @@
                         <div
                             class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
                             <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Total Occupancy</p>
-                            <h3 class="font-display-lg text-display-lg text-primary">94.2%</h3>
+                            <h3 class="font-display-lg text-display-lg text-primary">
+                                <%= occupancy %>%
+                            </h3>
                             <div class="mt-4 h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
-                                <div class="h-full bg-status-available rounded-full" style="width: 94.2%"></div>
+                                <div class="h-full rounded-full
+        <%= occupancy >= 80
+            ? 'bg-red-500'
+            : occupancy >= 50
+            ? 'bg-yellow-500'
+            : 'bg-green-500' %>" style="width: <%= occupancy %>%">
+                                </div>
                             </div>
-                            <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <div
+                                class="absolute bottom-10 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <span class="material-symbols-outlined text-5xl" data-icon="bed">bed</span>
                             </div>
                         </div>
@@ -244,132 +280,159 @@
                     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                         <!-- Upcoming Arrivals (Main View) -->
                         <section class="xl:col-span-2 space-y-6">
+
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <h4 class="font-title-sm text-title-sm text-primary">Upcoming Arrivals</h4>
+                                <h4 class="font-title-sm text-title-sm text-primary">
+                                    Upcoming Arrivals
+                                </h4>
+
                                 <div class="flex gap-2 w-full sm:w-auto">
                                     <button
-                                        class="flex-1 sm:flex-none px-4 py-2 border border-outline-variant rounded font-label-caps text-label-caps hover:bg-surface-container transition-colors">Filter</button>
+                                        class="flex-1 sm:flex-none px-4 py-2 border border-outline-variant rounded font-label-caps text-label-caps hover:bg-surface-container transition-colors">
+                                        Filter
+                                    </button>
+
                                     <button
-                                        class="flex-1 sm:flex-none px-4 py-2 bg-secondary text-white rounded font-label-caps text-label-caps hover:opacity-90 transition-opacity">Pre-Check
-                                        All</button>
+                                        class="flex-1 sm:flex-none px-4 py-2 bg-secondary text-white rounded font-label-caps text-label-caps hover:opacity-90 transition-opacity">
+                                        Pre-Check All
+                                    </button>
                                 </div>
                             </div>
-                            <div class="bg-white border border-outline-variant rounded-lg overflow-x-auto">
-                                <table class="w-full text-left min-w-[600px]">
-                                    <thead class="bg-surface-container-low border-b border-outline-variant">
-                                        <tr>
-                                            <th
-                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
-                                                Guest</th>
-                                            <th
-                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
-                                                Room Type</th>
-                                            <th
-                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
-                                                ETA</th>
-                                            <th
-                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
-                                                Status</th>
-                                            <th
-                                                class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-right">
-                                                Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-outline-variant">
-                                        <tr class="hover:bg-surface-bright transition-colors">
-                                            <td class="px-6 py-5">
-                                                <div class="flex items-center gap-3">
-                                                    <div
-                                                        class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container font-bold">
-                                                        SM</div>
-                                                    <div>
-                                                        <p class="font-body-md font-semibold text-primary">Sophia
-                                                            Martinez</p>
-                                                        <p class="text-[12px] text-on-surface-variant">VIP • Loyalty
-                                                            Tier 4</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-5">
-                                                <p class="font-body-md text-primary">Penthouse Suite</p>
-                                                <p class="text-[12px] text-on-surface-variant">Room 1402</p>
-                                            </td>
-                                            <td class="px-6 py-5 text-primary font-medium">13:45</td>
-                                            <td class="px-6 py-5">
-                                                <span
-                                                    class="inline-block px-3 py-1 rounded-full bg-[#E8F5E9] text-status-available font-label-caps text-[10px] uppercase">Room
-                                                    Ready</span>
-                                            </td>
-                                            <td class="px-6 py-5 text-right">
-                                                <button
-                                                    class="text-secondary hover:underline font-label-caps text-label-caps">Check
-                                                    In</button>
-                                            </td>
-                                        </tr>
-                                        <tr class="hover:bg-surface-bright transition-colors">
-                                            <td class="px-6 py-5">
-                                                <div class="flex items-center gap-3">
-                                                    <div
-                                                        class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container font-bold">
-                                                        JD</div>
-                                                    <div>
-                                                        <p class="font-body-md font-semibold text-primary">Julian Drake
+
+                            <div class="bg-white border border-outline-variant rounded-lg overflow-hidden">
+
+                                <!-- scrollable area -->
+                                <div class="h-[300px] overflow-y-auto">
+
+                                    <table class="w-full text-left">
+
+                                        <!-- sticky header -->
+                                        <thead
+                                            class="sticky top-0 bg-surface-container-low border-b border-outline-variant z-20">
+
+                                            <tr>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Guest
+                                                </th>
+
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Name
+                                                </th>
+
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Reference_number
+                                                </th>
+
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Rooms
+                                                </th>
+
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    ETA
+                                                </th>
+
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Status
+                                                </th>
+
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-right">
+                                                    Action
+                                                </th>
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody class="divide-y divide-outline-variant">
+
+                                            <% arrivals.forEach((arrival)=> { %>
+
+                                                <tr class="hover:bg-surface-bright transition-colors">
+
+                                                    <td class="px-6 py-5">
+
+                                                        <div class="flex items-center gap-3">
+
+                                                            <div
+                                                                class="w-10 h-10 rounded-full overflow-hidden bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold shrink-0">
+
+                                                                <% if (!arrival.photo_url) { %>
+
+                                                                    <%= arrival.first_name.charAt(0).toUpperCase() %>
+                                                                        <%= arrival.last_name.charAt(0).toUpperCase() %>
+
+                                                                            <% } else { %>
+
+                                                                                <img class="w-full h-full object-cover"
+                                                                                    src="/uploads/profile-photos/<%= arrival.photo_url %>"
+                                                                                    alt="<%= arrival.first_name %>">
+
+                                                                                <% } %>
+
+                                                            </div>
+                                                        </div>
+
+                                                    </td>
+                                                    <td class="px-6 py-5">
+                                                        <p class="font-body-md font-semibold text-primary">
+                                                            <%= arrival.first_name %>
+                                                                <%= arrival.last_name %>
                                                         </p>
-                                                        <p class="text-[12px] text-on-surface-variant">Standard Booking
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+
+                                                        <p class="font-body-md text-primary">
+                                                            <%= arrival.booking_reference %>
                                                         </p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-5">
-                                                <p class="font-body-md text-primary">Deluxe King</p>
-                                                <p class="text-[12px] text-on-surface-variant">Pending Assign</p>
-                                            </td>
-                                            <td class="px-6 py-5 text-primary font-medium">14:15</td>
-                                            <td class="px-6 py-5">
-                                                <span
-                                                    class="inline-block px-3 py-1 rounded-full bg-[#ECEFF1] text-status-dirty font-label-caps text-[10px] uppercase">Cleaning</span>
-                                            </td>
-                                            <td class="px-6 py-5 text-right">
-                                                <button
-                                                    class="text-on-surface-variant cursor-not-allowed font-label-caps text-label-caps opacity-50">Assign
-                                                    Room</button>
-                                            </td>
-                                        </tr>
-                                        <tr class="hover:bg-surface-bright transition-colors">
-                                            <td class="px-6 py-5">
-                                                <div class="flex items-center gap-3">
-                                                    <div
-                                                        class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center text-on-secondary-container font-bold">
-                                                        EK</div>
-                                                    <div>
-                                                        <p class="font-body-md font-semibold text-primary">Elena
-                                                            Kuznetsova</p>
-                                                        <p class="text-[12px] text-on-surface-variant">Corp: Gold-Man
-                                                            Sachs</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-5">
-                                                <p class="font-body-md text-primary">Executive Studio</p>
-                                                <p class="text-[12px] text-on-surface-variant">Room 804</p>
-                                            </td>
-                                            <td class="px-6 py-5 text-primary font-medium">15:00</td>
-                                            <td class="px-6 py-5">
-                                                <span
-                                                    class="inline-block px-3 py-1 rounded-full bg-[#E8F5E9] text-status-available font-label-caps text-[10px] uppercase">Room
-                                                    Ready</span>
-                                            </td>
-                                            <td class="px-6 py-5 text-right">
-                                                <button
-                                                    class="text-secondary hover:underline font-label-caps text-label-caps">Check
-                                                    In</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <div class="p-4 bg-surface-container-low border-t border-outline-variant text-center">
-                                    <button class="font-label-caps text-label-caps text-primary hover:underline">View
-                                        All Arrivals (24 Remaining)</button>
+
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+
+                                                        <p class="font-body-md text-primary">
+                                                            <%= arrival.type_name %>
+                                                        </p>
+
+                                                        <p class="text-[12px] text-on-surface-variant">
+                                                            Room <%= arrival.room_numbers %>
+                                                        </p>
+
+                                                    </td>
+
+                                                    <td class="px-6 py-5 text-primary font-medium">
+
+                                                        <%= new Date(arrival.checkin_date).toLocaleTimeString([], {
+                                                            hour: "2-digit" , minute: "2-digit" }) %>
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+
+                                                        <span
+                                                            class="inline-block px-3 py-1 rounded-full bg-[#E8F5E9] text-status-available font-label-caps text-[10px] uppercase">
+                                                            Room Ready
+                                                        </span>
+
+                                                    </td>
+
+                                                    <td class="px-6 py-5 text-right">
+
+                                                        <a href="/frontDesk/checkIn/<%= arrival.booking_reference %>"
+                                                            class="text-secondary hover:underline font-label-caps text-label-caps">
+                                                            Check In
+                                                        </a>
+
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </section>
@@ -447,37 +510,22 @@
                     </div>
                 </div>
             </main>
-
-            <!-- Footer -->
-            <footer
-                class="mb-6 md:mb-0 bg-white border-t border-outline-variant px-4 lg:px-container-margin-desktop py-4">
-                <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="text-center md:text-left">
-                        <h5 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">LuxeStay
-                        </h5>
-                        <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">© 2024 LuxeStay Hospitality
-                            Group. All rights reserved.</p>
-                    </div>
-                    <div class="flex flex-wrap justify-center gap-4 md:gap-8">
-                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
-                            href="#">Privacy Policy</a>
-                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
-                            href="#">Terms of Service</a>
-                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
-                            href="#">Cookie Policy</a>
-                        <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors underline-offset-4 hover:underline"
-                            href="#">Accessibility</a>
-                    </div>
-                </div>
-            </footer>
         </div>
 
         <script src="/JS/toastmessage.js"></script>
         <script src="/JS/frontDesk/homepage.js"></script>
         <script>
                 <% if (error) {%>
-                    showToast("<% error %>", "error");
+                showToast("<% error %>", "error");
         <% } %>
+        </script>
+        <!-- Live change the data -->
+        <script>
+                socket.on("dashboardUpdate", (data) => {
+                    document.getElementById("checkins").textContent = data.checkins;
+                    document.getElementById("checkouts").textContent = data.checkouts;
+                    document.getElementById("occupancy").textContent = data.occupancy + "%";
+                });
         </script>
 </body>
 
