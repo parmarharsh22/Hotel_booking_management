@@ -3,6 +3,7 @@ import { AdminRoomTypeController } from "../controllers/hotelAdmin.roomType.cont
 import { uploadRoomPhoto } from "../../../common/middlewares/multer";
 import { validToken } from "../../../common/middlewares/verifyJWTToken";
 import { allowRoles } from "../../../common/middlewares/allowedRoles";
+import { upload } from "../../../common/middlewares/multerCloud";
 
 const adminRoomTypeController = new AdminRoomTypeController();
 
@@ -20,7 +21,11 @@ router.get("/room-type/edit/:typeId",adminRoomTypeController.showEditRoomType.bi
 // create room type (with optional photo)
 router.post(
   "/room-types",validToken,allowRoles("ADMIN"),
-  uploadRoomPhoto.fields([{ name: "type_photo", maxCount: 1 }]),
+  // uploadRoomPhoto.fields([{ name: "type_photo", maxCount: 1 }]),
+      upload.fields([
+          { name: "type_photo",  maxCount: 1 },
+        
+      ]),
   adminRoomTypeController.createRoomType.bind(adminRoomTypeController)
 );
 

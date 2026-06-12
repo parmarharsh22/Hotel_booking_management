@@ -1,0 +1,197 @@
+<%
+  const inr = n => "₹" + Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtDate = d => d ? new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+  const b = invoice.booking;
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice · <%= b.booking_reference %></title>
+  <style>
+    :root{
+      --ink:#1f2430; --muted:#8a8f99; --line:#ececea;
+      --bg:#f4f3ef; --card:#ffffff; --accent:#2f3a4a; --balance:#b0472f;
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg); color:var(--ink); padding:32px 16px; line-height:1.5;
+    }
+    .page{ max-width:820px; margin:0 auto; }
+    .toolbar{ display:flex; justify-content:flex-end; margin-bottom:16px; }
+    .btn{
+      border:1px solid var(--accent); background:var(--accent); color:#fff;
+      padding:10px 20px; border-radius:8px; font-size:14px; cursor:pointer; letter-spacing:.02em;
+    }
+    .btn:hover{ opacity:.9; }
+
+    .invoice{
+      background:var(--card); border:1px solid var(--line); border-radius:14px;
+      padding:44px; box-shadow:0 8px 30px rgba(31,36,48,.06);
+    }
+    .inv-header{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
+    .brand{ display:flex; gap:16px; align-items:flex-start; }
+    .logo{ height:56px; width:auto; border-radius:8px; object-fit:contain; }
+    .brand h1{ font-size:20px; font-weight:600; }
+    .inv-meta{ text-align:right; }
+    .inv-meta h2{ font-size:24px; letter-spacing:.22em; font-weight:600; color:var(--accent); }
+    .inv-meta p{ font-size:13px; margin-top:4px; }
+    .muted{ color:var(--muted); font-size:13px; }
+    .strong{ font-weight:600; }
+
+    .badge{
+      display:inline-block; margin-top:8px; padding:4px 12px; border-radius:999px;
+      font-size:12px; font-weight:600; letter-spacing:.04em; background:#eef0f3; color:var(--accent);
+    }
+    .badge-confirmed{ background:#e7f1ec; color:#2f7d57; }
+    .badge-checked_in{ background:#e8eef7; color:#2f5da4; }
+    .badge-checked_out{ background:#eef0f3; color:#5b6472; }
+    .badge-cancelled{ background:#f7e9e7; color:#b0472f; }
+    .badge-pending{ background:#f7f2e7; color:#a07d2f; }
+
+    .cols{ display:flex; gap:48px; margin:36px 0 8px; }
+    .cols > div{ flex:1; }
+    h3{ font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:28px 0 12px; }
+    .cols h3{ margin-top:0; }
+    .cols p{ font-size:14px; margin-top:2px; }
+
+    table.lines{ width:100%; border-collapse:collapse; font-size:14px; }
+    table.lines th{
+      text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+      color:var(--muted); font-weight:600; padding:8px 0; border-bottom:1px solid var(--line);
+    }
+    table.lines td{ padding:11px 0; border-bottom:1px solid var(--line); }
+.r{ font-variant-numeric:tabular-nums; }
+table.lines th.r, table.lines td.r{ text-align:right; }
+    .pbadge{ padding:2px 9px; border-radius:999px; font-size:11px; font-weight:600; }
+    .p-success{ background:#e7f1ec; color:#2f7d57; }
+    .p-bypassed{ background:#eef0f3; color:#5b6472; }
+    .p-pending{ background:#f7f2e7; color:#a07d2f; }
+    .p-failed{ background:#f7e9e7; color:#b0472f; }
+
+    .summary{ margin:28px 0 8px; margin-left:auto; max-width:360px; }
+    .srow{ display:flex; justify-content:space-between; padding:9px 0; font-size:14px; }
+    .srow span:last-child{ font-variant-numeric:tabular-nums; }
+    .srow.total{
+      border-top:2px solid var(--ink); margin-top:6px; padding-top:14px;
+      font-size:16px; font-weight:700;
+    }
+    .srow.balance{
+      background:#faf3f1; border-radius:8px; padding:14px; margin-top:10px;
+      font-size:16px; font-weight:700; color:var(--balance);
+    }
+    .inv-footer{ margin-top:40px; padding-top:20px; border-top:1px solid var(--line); text-align:center; }
+
+    @media print{
+      body{ background:#fff; padding:0; }
+      .toolbar{ display:none; }
+      .invoice{ border:none; box-shadow:none; border-radius:0; padding:0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="toolbar">
+      <button class="btn" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <div class="invoice">
+      <header class="inv-header">
+        <div class="brand">
+          <% if (b.hotel_logo) { %>
+            <img class="logo" src="<%= b.hotel_logo %>" alt="<%= b.hotel_name %>" onerror="this.style.display='none'" />
+          <% } %>
+          <div>
+            <h1><%= b.hotel_name %></h1>
+            <p class="muted"><%= [b.hotel_address, b.hotel_city, b.hotel_state].filter(Boolean).join(", ") %></p>
+            <p class="muted"><%= [b.hotel_phone, b.hotel_email].filter(Boolean).join("  ·  ") %></p>
+          </div>
+        </div>
+        <div class="inv-meta">
+          <h2>INVOICE</h2>
+          <p><span class="muted">Ref</span> &nbsp;<strong><%= b.booking_reference %></strong></p>
+          <p><span class="muted">Generated</span> &nbsp;<%= fmtDate(new Date()) %></p>
+          <span class="badge badge-<%= b.status_name.toLowerCase() %>"><%= b.status_name %></span>
+        </div>
+      </header>
+
+      <section class="cols">
+        <div>
+          <h3>Billed To</h3>
+          <p class="strong"><%= b.first_name %> <%= b.last_name %></p>
+          <p class="muted"><%= b.email %></p>
+        </div>
+        <div>
+          <h3>Stay Details</h3>
+          <p><span class="muted">Check-in</span> &nbsp;<%= fmtDate(b.checkin_date) %></p>
+          <p><span class="muted">Check-out</span> &nbsp;<%= fmtDate(b.checkout_date) %></p>
+          <p><span class="muted">Nights</span> <%= invoice.nights %> &nbsp;·&nbsp; <span class="muted">Guests</span> <%= b.adults %> adult(s), <%= b.children %> child(ren)</p>
+        </div>
+      </section>
+
+      <h3>Rooms</h3>
+      <table class="lines">
+        <thead><tr>
+          <th>Room</th><th>Type</th>
+          <th class="r">Rate / night</th><th class="r">Nights</th><th class="r">Subtotal</th>
+        </tr></thead>
+        <tbody>
+          <% invoice.lineItems.forEach(li => {
+               const rate = parseFloat(li.rate_per_night);
+               const sub  = rate * invoice.nights; %>
+            <tr>
+              <td>Room <%= li.room_number %></td>
+              <td><%= li.type_name %></td>
+              <td class="r"><%= inr(rate) %></td>
+              <td class="r"><%= invoice.nights %></td>
+              <td class="r"><%= inr(sub) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <% if (invoice.incidentals.length) { %>
+        <h3>Incidental Charges</h3>
+        <table class="lines">
+          <thead><tr><th>Description</th><th class="r">Amount</th></tr></thead>
+          <tbody>
+            <% invoice.incidentals.forEach(i => { %>
+              <tr><td><%= i.description %></td><td class="r"><%= inr(i.amount) %></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+
+      <div class="summary">
+        <div class="srow"><span>Room Charges</span><span><%= inr(invoice.room_charges) %></span></div>
+        <div class="srow"><span>Incidentals</span><span><%= inr(invoice.incidentals_total) %></span></div>
+        <div class="srow"><span>Tax (<%= Math.round(invoice.tax_rate * 100) %>%)</span><span><%= inr(invoice.tax_amount) %></span></div>
+        <div class="srow total"><span>Total</span><span><%= inr(invoice.total_amount) %></span></div>
+        <div class="srow"><span>Amount Paid</span><span>− <%= inr(invoice.amount_paid) %></span></div>
+        <div class="srow balance"><span>Balance Due</span><span><%= inr(invoice.balance_due) %></span></div>
+      </div>
+
+      <% if (invoice.payments.length) { %>
+        <h3>Payments Received</h3>
+        <table class="lines">
+          <thead><tr><th>Date</th><th>Method</th><th>Status</th><th class="r">Amount</th></tr></thead>
+          <tbody>
+            <% invoice.payments.forEach(p => { %>
+              <tr>
+                <td><%= fmtDate(p.paid_at || p.created_at) %></td>
+                <td><%= p.method_name %></td>
+                <td><span class="pbadge p-<%= p.status_name.toLowerCase() %>"><%= p.status_name %></span></td>
+                <td class="r"><%= inr(p.amount) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } %>
+
+      <footer class="inv-footer muted">Thank you for staying with us.</footer>
+    </div>
+  </div>
+</body>
+</html>
