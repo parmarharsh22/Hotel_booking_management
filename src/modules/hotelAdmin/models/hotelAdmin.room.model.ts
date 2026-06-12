@@ -7,7 +7,6 @@ export interface RoomInterface {
   room_status_id:  number;
   room_number:     string;
   floor?:          number | null;
-  photo_url?:      string | null;
   notes?:          string | null;
   created_at?:     Date;
 }
@@ -73,7 +72,7 @@ export class RoomModel {
    static async createRoom(room: RoomInterface): Promise<RoomInterface> {
     try {
       const [data]: any = await db.query(
-        `INSERT INTO rooms (hotel_id, room_type_id, room_status_id, room_number, floor, photo_url, notes)
+        `INSERT INTO rooms (hotel_id, room_type_id, room_status_id, room_number, floor, notes)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           room.hotel_id,
@@ -81,7 +80,6 @@ export class RoomModel {
           room.room_status_id,
           room.room_number,
           room.floor    ?? null,
-          room.photo_url ?? null,
           room.notes    ?? null,
         ]
       );
@@ -100,14 +98,12 @@ export class RoomModel {
          SET room_type_id = ?,
              room_number  = ?,
              floor        = ?,
-             photo_url    = ?,
              notes        = ?
          WHERE room_id = ? AND hotel_id = ?`,
         [
           data.room_type_id,
           data.room_number,
           data.floor     ?? null,
-          data.photo_url ?? null,
           data.notes     ?? null,
           roomId,
           hotelId,

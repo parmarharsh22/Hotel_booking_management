@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as tenantService from "../services/tenant.service";
+import { uploadImage } from "../services/imagekit.service";
+
 
 /**
  * LIST HOTELS
@@ -51,7 +53,6 @@ export const showNewHotel = (req: Request, res: Response) => {
 //         res.status(500).send(err.message || "Failed to create hotel");
 //     }
 // };
-import { uploadImage } from "../services/imagekit.service";
 
 export const createHotel = async (req: Request, res: Response) => {
   try {

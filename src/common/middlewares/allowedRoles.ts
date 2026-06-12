@@ -7,7 +7,7 @@ export const allowRoles = (...allowedRoles: string[]) => {
         next: NextFunction
     ) => {
         const user = (req as any).user;
-
+        console.log(user);
         // check if user data exists
         if (!user) {
             (req.session as any).failureMessage = "Login first";
