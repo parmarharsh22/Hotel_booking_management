@@ -31,3 +31,9 @@ export const getAllLocations = async()=>{
     const [rows]: any = await db.query("SELECT distinct(city) from hotels");
     return rows.length > 0 ? rows : null
 }
+
+
+export const updatePass = async(email:string,password:string)=>{
+    const [rows]:any = await db.query("UPDATE users set password_hash = ? where email = ?",[password,email]);
+    return rows.changedRows > 0 ? 1 : null
+}

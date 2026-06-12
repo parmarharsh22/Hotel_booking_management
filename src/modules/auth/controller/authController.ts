@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as authServices from "../services/authServices";
 import { storeToken } from "../../../common/utils/jwt_token";
+import { redisClient } from "../../../config/pass_redis";
 
 interface LoginBody {
     role: "ADMIN" | "FRONT_DESK" | "GUEST";
@@ -46,7 +47,7 @@ export const showMainPage = (req: Request, res: Response) => {
     }
 
     if (currentUser?.roleId === "FRONT_DESK") {
-        return res.redirect("/frontDesk/dashboard");
+        return res.redirect("/frontDesk/home");
     }
 
     return res.render("index", {
@@ -83,7 +84,8 @@ export const registerUser = async (req: Request<{}, {}, RegisterBody>, res: Resp
     try {
         await authServices.registerUser(req.body, req.file?.filename);
         (req.session as any).successMessage = "Registration successful";
-        res.redirect("/login");
+        delete (req.session as any).successMessage;
+        return res.redirect("/login");
     } catch (err: any) {
         console.log("error", err);
     }
@@ -113,17 +115,17 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response) 
         const result = await authServices.loginUser(role, email, password);
         storeToken(result.token, res);
         if (role === "ADMIN") {
-            res.redirect("/hotelAdmin/rooms")
+            return res.redirect("/hotelAdmin/rooms")
         }
         else if (role === "FRONT_DESK") {
-
+            return res.redirect("/frontDesk/home");
         }
         else {
-            res.redirect("/");
+            return res.redirect("/");
         }
     } catch (err: any) {
         (req.session as any).failureMessage = err.message;
-        res.redirect("/login")
+        return res.redirect("/login")
     }
 
 }
@@ -135,6 +137,63 @@ export const getAllLocations = async (req: Request, res: Response) => {
         return res.status(200).send({ result });
     } catch (err: any) {
         (req.session as any).failureMessage = err.message;
-        res.redirect("/");
+        return res.redirect("/");
+    }
+}
+
+//render the forget Password page
+export const forgetPassword = (req: Request, res: Response) => {
+    const error = (req.session as any).failureMessage;
+    delete (req.session as any).failureMessage;
+
+    res.render("authFronted/forgetPass/forgetPass", { error: error });
+}
+
+//set the reset password session and generate the otp
+export const setResetPassSession = async (req: Request, res: Response) => {
+    const email = req.body.email;
+
+    //random 4 digit otp
+    const otp = Math.floor(1000 + Math.random() * 9000);
+
+    //2 min valid otp
+    await redisClient.set(`reset-password:${email}`, otp.toString(), { EX: 120 });
+
+    //sessionSet
+    (req.session as any).email = email;
+
+    res.render("authFronted/forgetPass/emailSimulation", { otp, currentemail: email });
+};
+
+//render the password reset page
+export const showPasswordResetPage = async (req: Request, res: Response) => {
+    const email = (req.session as any).email;
+    const ttl = await redisClient.ttl(`reset-password:${email}`);
+    res.render("authFronted/forgetPass/resetPassword.ejs", { email: email, ttl });
+}
+
+//validate the otp give from the reset_pass
+export const validateOtp = async (req: Request, res: Response) => {
+    try {
+        const email: string = (req.session as any).email;
+        const userOtp: number = req.body.otp
+        const result = await authServices.checkOtp(userOtp, email)
+        return res.status(200).send("valid OTP");
+    } catch (err: any) {
+        return res.status(500).send(err.message);
+    }
+}
+
+//Update the password 
+export const updatePassword = async (req:Request,res:Response)=>{
+    try{
+        const{email,password} = req.body;
+        delete (req.session as any).email;
+        await authServices.updatePassword(email,password);
+        (req.session as any).successMessage = "Password Reset Successfull"
+        res.redirect("/login");
+    }catch(err:any){
+        (req.session as any).failureMessage = err.message;
+        return res.redirect("/forgetPassword");
     }
 }
