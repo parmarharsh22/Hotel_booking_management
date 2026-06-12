@@ -3,48 +3,56 @@ import { db }    from "../../../config/db";
 import * as bookingModel from "../models/booking.model";
 import { v4 as uuidv4 }  from "uuid";
 
-const HOLD_TTL = Number(process.env.HOLD_TTL_SECONDS) || 600;
+const HOLD_TTL = Number(process.env.HOLD_TTL_SECONDS) || 600; // 10 minutes
 
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SMALL HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
 
+// Make a short human-readable booking code like "HBMS-A3X9K2"
 const generateReference = (): string => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let ref = "";
-    for (let i = 0; i < 6; i++) ref += chars[Math.floor(Math.random() * chars.length)];
+    for (let i = 0; i < 6; i++) {
+        ref += chars[Math.floor(Math.random() * chars.length)];
+    }
     return `HBMS-${ref}`;
 };
 
+// How many nights between two dates
 const calcNights = (checkin: string, checkout: string): number => {
-    const nights = Math.ceil(
-        (new Date(checkout).getTime() - new Date(checkin).getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const ms     = new Date(checkout).getTime() - new Date(checkin).getTime();
+    const nights = Math.ceil(ms / (1000 * 60 * 60 * 24));
     if (nights <= 0) throw new Error("Check-out must be after check-in");
     return nights;
 };
 
-/**
- * GET REDIS-HELD ROOM IDs
- * Returns room_ids currently held by OTHER holds
- */
-const getHeldRoomIds = async (excludeHoldId?: string): Promise<number[]> => {
+// Get room IDs that OTHER users are currently holding in Redis
+// Pass your own hold_id to skip your own rooms
+const getRoomsHeldByOthers = async (skipHoldId?: string): Promise<number[]> => {
     const keys = await redis.keys("room_held:*");
     if (!keys.length) return [];
 
-    const roomIds: number[] = [];
+    const heldRoomIds: number[] = [];
+
     for (const key of keys) {
-        const holdId = await redis.get(key);
-        if (excludeHoldId && holdId === excludeHoldId) continue;
-        const roomId = Number(key.split(":")[1]);
-        if (!isNaN(roomId)) roomIds.push(roomId);
+        const ownerHoldId = await redis.get(key);
+
+        // skip rooms that belong to our own hold
+        if (skipHoldId && ownerHoldId === skipHoldId) continue;
+
+        const roomId = Number(key.split(":")[1]); // "room_held:96" → 96
+        if (!isNaN(roomId)) heldRoomIds.push(roomId);
     }
-    return roomIds;
+
+    return heldRoomIds;
 };
 
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // HOLD BOOKING
-// ─────────────────────────────────────────────
+// Picks available rooms, locks them in Redis for 10 minutes.
+// No DB writes yet — that only happens when user confirms payment.
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const holdBooking = async (data: {
     hotel_id: number;
@@ -57,17 +65,18 @@ export const holdBooking = async (data: {
     special_requests?: string;
 }) => {
     const nights = calcNights(data.checkin_date, data.checkout_date);
-    
-// add this at the start of holdBooking, after calcNights:
-const [[hotelRow]]: any = await db.query(
-    `SELECT name FROM hotels WHERE hotel_id = ?`,
-    [data.hotel_id]
-);
-const hotel_name = hotelRow?.name || '';
 
+    // Get hotel name for the payment page summary
+    const [[hotelRow]]: any = await db.query(
+        `SELECT name FROM hotels WHERE hotel_id = ?`,
+        [data.hotel_id]
+    );
+    const hotel_name: string = hotelRow?.name || "";
 
-    const currentlyHeldIds = await getHeldRoomIds();
+    // Rooms currently held by other users in Redis
+    const roomsHeldByOthers = await getRoomsHeldByOthers();
 
+    // We'll build this list as we loop over each requested room type
     const resolvedRooms: {
         room_id: number;
         room_type_id: number;
@@ -77,53 +86,59 @@ const hotel_name = hotelRow?.name || '';
 
     let total_amount = 0;
 
+    // Loop each room type the guest wants (e.g. 1 Deluxe + 2 Standard)
     for (const item of data.rooms) {
         if (item.qty <= 0) continue;
 
-        // fetch extra rooms to account for Redis-held ones
-        let available = await bookingModel.getAvailableRooms(
+        // Fetch more than needed from DB to account for Redis-held rooms
+        // e.g. guest wants 2, but 3 are held → fetch 5, filter 3, keep 2
+        const fetchQty = item.qty + roomsHeldByOthers.length;
+
+        let availableRooms = await bookingModel.getAvailableRooms(
             data.hotel_id,
             item.room_type_id,
             data.checkin_date,
             data.checkout_date,
-            item.qty + currentlyHeldIds.length
+            fetchQty
         );
 
-        // filter out Redis-held rooms
-        if (currentlyHeldIds.length > 0) {
-            available = available.filter(
-                (r: any) => !currentlyHeldIds.includes(r.room_id)
-            );
+        // Remove rooms that are locked by other active holds in Redis
+        availableRooms = availableRooms.filter(
+            (room: any) => !roomsHeldByOthers.includes(room.room_id)
+        );
+
+        // Take only how many the guest needs
+        availableRooms = availableRooms.slice(0, item.qty);
+
+        // Not enough rooms → stop and tell the user
+        if (availableRooms.length < item.qty) {
+            const typeName = availableRooms[0]?.type_name || `type #${item.room_type_id}`;
+            throw new Error(`Only ${availableRooms.length} room(s) available for "${typeName}"`);
         }
 
-        // take only what guest needs
-        available = available.slice(0, item.qty);
-
-        if (available.length < item.qty) {
-            throw new Error(
-                `Only ${available.length} room(s) available for "${available[0]?.type_name || `type #${item.room_type_id}`}"`
-            );
-        }
-
-        for (const room of available) {
+        // Add each room to our resolved list
+        for (const room of availableRooms) {
+            const rate = Number(room.rate_per_night); // MySQL DECIMAL comes as string
             resolvedRooms.push({
                 room_id:        room.room_id,
                 room_type_id:   item.room_type_id,
                 type_name:      room.type_name,
-                rate_per_night: room.rate_per_night,
+                rate_per_night: rate,
             });
-            total_amount += room.rate_per_night * nights;
+            total_amount += rate * nights;
         }
     }
 
     if (resolvedRooms.length === 0) throw new Error("No rooms selected");
 
+    // Create a unique hold ID
     const hold_id = uuidv4();
 
+    // Everything the payment page needs, stored in Redis
     const holdPayload = {
         hold_id,
-        hotel_name,
         hotel_id:         data.hotel_id,
+        hotel_name,
         user_id:          data.user_id,
         checkin_date:     data.checkin_date,
         checkout_date:    data.checkout_date,
@@ -136,10 +151,10 @@ const hotel_name = hotelRow?.name || '';
         created_at:       new Date().toISOString(),
     };
 
-    // save hold
+    // Save hold in Redis — auto-deletes after 10 minutes
     await redis.set(`hold:${hold_id}`, JSON.stringify(holdPayload), "EX", HOLD_TTL);
 
-    // lock each room in Redis so other users can't hold them
+    // Lock each room so no other user can hold the same rooms
     for (const room of resolvedRooms) {
         await redis.set(`room_held:${room.room_id}`, hold_id, "EX", HOLD_TTL);
     }
@@ -154,55 +169,64 @@ const hotel_name = hotelRow?.name || '';
     };
 };
 
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // GET HOLD
-// ─────────────────────────────────────────────
+// Reads the hold from Redis and returns it with remaining seconds.
+// Used by the payment page to show the booking summary.
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const getHold = async (hold_id: string) => {
     const raw = await redis.get(`hold:${hold_id}`);
+
     if (!raw) throw new Error("Hold expired or not found. Please search again.");
 
-    const hold = JSON.parse(raw);
-    const ttl  = await redis.ttl(`hold:${hold_id}`);
+    const hold           = JSON.parse(raw);
+    const secondsLeft    = await redis.ttl(`hold:${hold_id}`);
 
-    return { success: true, ...hold, expires_in_seconds: ttl };
+    return {
+        success:            true,
+        ...hold,
+        expires_in_seconds: secondsLeft,
+    };
 };
 
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // CONFIRM BOOKING
-// ─────────────────────────────────────────────
+// Called when user clicks Pay. Writes booking to DB, cleans up Redis.
+// All DB inserts happen inside one transaction — if anything fails,
+// everything rolls back and no partial data is saved.
+// ─────────────────────────────────────────────────────────────────────────────
 
-export const confirmBooking = async (
-    hold_id: string,
-    payment_method_id: number
-) => {
-    // get hold from Redis
+export const confirmBooking = async (hold_id: string, payment_method_id: number) => {
+
+    // 1. Get hold from Redis — throws if expired
     const raw = await redis.get(`hold:${hold_id}`);
     if (!raw) throw new Error("Hold expired or not found. Please start again.");
-
     const hold = JSON.parse(raw);
 
-    // safety check — make sure no other hold has claimed our rooms
-    const currentlyHeldIds = await getHeldRoomIds(hold_id);
-    const ourRoomIds = hold.rooms.map((r: any) => r.room_id);
+    // 2. Double check none of our rooms were grabbed by someone else
+    const roomsHeldByOthers = await getRoomsHeldByOthers(hold_id);
+    const ourRoomIds         = hold.rooms.map((r: any) => r.room_id);
 
     for (const roomId of ourRoomIds) {
-        if (currentlyHeldIds.includes(roomId)) {
+        if (roomsHeldByOthers.includes(roomId)) {
             throw new Error("One or more rooms are no longer available. Please search again.");
         }
     }
 
+    // 3. Get a DB connection and start a transaction
     const connection = await db.getConnection();
+
     try {
         await connection.beginTransaction();
 
-        // 1. create booking
+        // 4. Create the booking record
         const booking_reference = generateReference();
         const bookingId = await bookingModel.createBooking(connection, {
             hotel_id:          hold.hotel_id,
             user_id:           hold.user_id,
-            booking_status_id: 2,  // CONFIRMED
-            booking_source_id: 1,  // ONLINE
+            booking_status_id: 2, // CONFIRMED
+            booking_source_id: 1, // ONLINE
             booking_reference,
             checkin_date:      hold.checkin_date,
             checkout_date:     hold.checkout_date,
@@ -212,10 +236,10 @@ export const confirmBooking = async (
             special_requests:  hold.special_requests,
         });
 
-        // 2. attach rooms to booking
+        // 5. Link the rooms to this booking (one row per room)
         await bookingModel.createBookingRooms(connection, bookingId, hold.rooms);
 
-        // 3. create payment as PENDING
+        // 6. Create a PENDING payment record
         await bookingModel.createPayment(connection, {
             hotel_id:          hold.hotel_id,
             booking_id:        bookingId,
@@ -223,10 +247,11 @@ export const confirmBooking = async (
             payment_method_id: payment_method_id,
         });
 
+        // 7. Everything worked — save to DB permanently
         await connection.commit();
         connection.release();
 
-        // 4. clean up Redis
+        // 8. Clean up Redis — hold and room locks are no longer needed
         await redis.del(`hold:${hold_id}`);
         for (const room of hold.rooms) {
             await redis.del(`room_held:${room.room_id}`);
@@ -243,21 +268,23 @@ export const confirmBooking = async (
         };
 
     } catch (err) {
+        // Something went wrong — undo all DB writes, keep Redis hold alive
         await connection.rollback();
         connection.release();
         throw err;
     }
 };
 
-// ─────────────────────────────────────────────
-// PAYMENT STATUS UPDATES
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// PAYMENT STATUS
+// In production these are called from a payment gateway webhook.
+// In dev, the frontend calls them directly after confirm.
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const markPaymentSuccess = async (booking_id: number) => {
-    await bookingModel.updatePaymentStatus(booking_id, 2); // SUCCESS
+    await bookingModel.updatePaymentStatus(booking_id, 2); // 2 = SUCCESS
 };
 
 export const markPaymentFailed = async (booking_id: number) => {
-    await bookingModel.updatePaymentStatus(booking_id, 3); // FAILED
+    await bookingModel.updatePaymentStatus(booking_id, 3); // 3 = FAILED
 };
-

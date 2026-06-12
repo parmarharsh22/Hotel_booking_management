@@ -1,24 +1,34 @@
 import { Request, Response } from "express";
 import * as bookingService from "../services/booking.service";
 
-/**
- * GET /bookings/payment-page
- * Renders the payment EJS page
- */
-export const paymentPage = (req: Request, res: Response) => {
+// ─── GET /bookings/payment-page ───────────────────────────────────────────────
+// Renders the payment page. Fetches hold data from Redis so the
+// page loads fully populated — no client-side fetch needed.
+export const paymentPage = async (req: Request, res: Response) => {
     const hold_id = req.query.hold_id as string;
+
+    // No hold_id in URL → send back to home
     if (!hold_id) return res.redirect("/");
-    res.render("booking/payment", { hold_id });
+
+    try {
+        // Fetch hold from Redis and pass it directly to the EJS template
+        const holdData = await bookingService.getHold(hold_id);
+        res.render("booking/payment", { hold_id, holdData });
+    } catch {
+        // Hold expired or invalid → send back to search
+        return res.redirect("/");
+    }
 };
 
-/**
- * POST /bookings/hold
- * Creates a 10-min Redis hold and locks rooms
- */
+// ─── POST /bookings/hold ──────────────────────────────────────────────────────
+// Creates a 10-minute Redis hold on the selected rooms.
+// Requires the user to be logged in (validToken middleware).
 export const holdBooking = async (req: Request, res: Response) => {
     try {
         const user = (req as any).user;
-        if (!user) return res.status(401).json({ success: false, error: "Login required" });
+        if (!user) {
+            return res.status(401).json({ success: false, error: "Login required" });
+        }
 
         const { hotel_id, checkin_date, checkout_date, adults, children, rooms, special_requests } = req.body;
 
@@ -45,10 +55,8 @@ export const holdBooking = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * GET /bookings/hold/:hold_id
- * Returns hold data for payment page to populate summary
- */
+// ─── GET /bookings/hold/:hold_id ──────────────────────────────────────────────
+// Returns hold data (used by payment page if it needs to re-fetch).
 export const getHold = async (req: Request, res: Response) => {
     try {
         const data = await bookingService.getHold(req.params.hold_id as string);
@@ -58,10 +66,9 @@ export const getHold = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * POST /bookings/confirm
- * Confirms booking + creates payment record as PENDING
- */
+// ─── POST /bookings/confirm ───────────────────────────────────────────────────
+// Writes the booking to the database and clears the Redis hold.
+// Called when user clicks Pay on the payment page.
 export const confirmBooking = async (req: Request, res: Response) => {
     try {
         const { hold_id, payment_method_id } = req.body;
@@ -72,7 +79,7 @@ export const confirmBooking = async (req: Request, res: Response) => {
 
         const result = await bookingService.confirmBooking(
             hold_id,
-            Number(payment_method_id) || 2  // default CARD
+            Number(payment_method_id) || 2 // default to CARD
         );
 
         res.json(result);
@@ -83,14 +90,15 @@ export const confirmBooking = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * POST /bookings/payment-success
- * Marks payment as SUCCESS (dummy — real flow uses webhook)
- */
+// ─── POST /bookings/payment-success ──────────────────────────────────────────
+// Marks payment as SUCCESS.
+// Dev: called directly from frontend. Prod: called from payment gateway webhook.
 export const paymentSuccess = async (req: Request, res: Response) => {
     try {
         const { booking_id } = req.body;
-        if (!booking_id) return res.status(400).json({ success: false, error: "booking_id required" });
+        if (!booking_id) {
+            return res.status(400).json({ success: false, error: "booking_id required" });
+        }
 
         await bookingService.markPaymentSuccess(Number(booking_id));
         res.json({ success: true });
@@ -100,14 +108,14 @@ export const paymentSuccess = async (req: Request, res: Response) => {
     }
 };
 
-/**
- * POST /bookings/payment-failed
- * Marks payment as FAILED
- */
+// ─── POST /bookings/payment-failed ───────────────────────────────────────────
+// Marks payment as FAILED.
 export const paymentFailed = async (req: Request, res: Response) => {
     try {
         const { booking_id } = req.body;
-        if (!booking_id) return res.status(400).json({ success: false, error: "booking_id required" });
+        if (!booking_id) {
+            return res.status(400).json({ success: false, error: "booking_id required" });
+        }
 
         await bookingService.markPaymentFailed(Number(booking_id));
         res.json({ success: true });
@@ -116,4 +124,3 @@ export const paymentFailed = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, error: err.message });
     }
 };
-
