@@ -88,4 +88,29 @@ export class RoomService {
       throw err;
     }
   }
+async verifyRoomNumber(room_number:number , hotelId:number):Promise<boolean>{
+
+try{
+
+  
+
+  const isExists  = await RoomModel.VerifyRoomExistence(room_number , hotelId);
+  if(isExists){
+    return true;
+  }
+  return false;
+
+
+}catch(e:any){
+  throw new e;
 }
+
+
+
+
+
+
+}
+
+}
+

@@ -144,4 +144,24 @@ export class RoomModel {
   }
 
 
+static async VerifyRoomExistence(room_number:number ,hotelId:number):Promise<boolean>{
+  try{
+    const [result]:any = await db.query(
+      `
+      SELECT room_id ROOMS where room_number = ? AND hotel_id = ? 
+      `
+      ,[room_number , hotelId]
+    )
+  if(result.affectedRows>0){
+    return true;
+  }
+    return false;
+
+
+  }catch(e:any){
+    throw e;
+    
+  }
+}
+
 }

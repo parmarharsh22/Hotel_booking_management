@@ -132,5 +132,19 @@ export class AdminRoomController {
     }
   }
 
+  async isRoomExists(req:Request , res:Response){
+    try{
+      const hotelId =(req as any).hotelId as number;
+      
+      
+
+
+
+
+
+    }catch(e:any){
+      throw new e;
+    }
+  }
 
 }
