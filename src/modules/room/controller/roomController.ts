@@ -3,12 +3,30 @@ import { searchHotelReqBody } from "../interfaces/room.searchHotelReqBody.interf
 import * as roomService from "../services/roomServices";
 import { BookigData } from "../interfaces/room.selectedRoomType.interface";
 import { getJwtTokenValue } from "../../../common/utils/getRequestVariables";
-import { log } from "node:console";
+import NodeCache from 'node-cache';
+import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
+
+const roomCache=new NodeCache({stdTTL:86400});
 
 export const searchHotels = async (req: Request, res: Response) => {
     try {
+        const applyFilter=req.query['applyFilter'] as string|undefined;
+    
+        const cacheKey = "unique_room_types";
+        let roomTypes:RoomTypeRow[]|undefined = roomCache.get(cacheKey);
+
+        if (!roomTypes) {
+            const rows = await roomService.fetchFilterRoomTypes();
+            roomTypes = rows.sort();
+
+            roomCache.set(cacheKey, roomTypes);
+        } else {
+            console.log("Served directly from CONTROLLER CACHE.");
+        }
+
         const data: searchHotelReqBody = req.body;
-        const hotels = await roomService.searchHotels(data);
+        const hotels = await roomService.searchHotels(data,applyFilter);
+        const amenities=await roomService.fetchAmenities();
 
         const query = {
             location: data.location,
@@ -20,7 +38,12 @@ export const searchHotels = async (req: Request, res: Response) => {
         };
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
+            roomTypes:roomTypes||[],
+            amenities:amenities||[],
             query,
+            price_filter:data.price_filter,
+            roomTypes_filter:data.roomTypes_filter,
+            amenities_filter:data.amenities_filter
         });
     } catch (error) {
         console.error(error);
