@@ -25,17 +25,17 @@
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
+                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-bed w-5"></i>
-                        <span>Room Status</span>
+                        <span>Rooms</span>
                     </a>
-                    <a href="/hotelAdmin/room-types/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/room-types/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-white text-sm bg-[#1e293b]  font-medium  text-slate-600  transition">
                         <i class="fa-solid fa-calendar-days w-5 text-slate-400"></i>
-                        <span>Reservations</span>
+                        <span>Rooms Types </span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/staff" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
-                        <span>Guest Folios</span>
+                        <span>Staff</span>
                     </a>
                     <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
@@ -238,7 +238,7 @@
                             <img id="typePhotoPreview" alt="Category Frame" class="absolute inset-0 w-full h-full object-cover hidden">
                         </div>
                         <div class="flex-1 space-y-1">
-                            <input type="file" id="typePhotoInput" name="room_type_photo" accept="image/*" onchange="previewCategoryPhoto(this)" class="hidden">
+                            <input type="file" id="typePhotoInput" name="type_photo" accept="image/*" onchange="previewCategoryPhoto(this)" class="hidden">
                             <button type="button" onclick="document.getElementById('typePhotoInput').click()" 
                                 class="text-xs bg-white text-slate-700 font-medium px-3 py-2 rounded border border-slate-200 shadow-sm hover:bg-slate-100 transition">
                                 <i class="fa-solid fa-cloud-arrow-up mr-1.5 text-slate-400"></i>Upload Image File
@@ -340,7 +340,7 @@
 
         try {
             // Adjust this string tracking path to perfectly route into your backend router handling execution configurations
-            const destinationResponse = await fetch('/room-types', {
+            const destinationResponse = await fetch('/hotelAdmin/room-types', {
                 method: 'POST',
                 body: multiPartPayload
             });
@@ -456,7 +456,7 @@
      */
     function launchEditCategoryView(roomTypeId) {
         // Routes client directly toward your specific server-side rendering setup
-        window.location.href = `/room-types/${roomTypeId}/edit`;
+        window.location.href = `/hotelAdmin/room-type/edit/${roomTypeId}`;
     }
 
     /**

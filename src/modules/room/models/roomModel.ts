@@ -1,13 +1,50 @@
-import { RowDataPacket } from "mysql2";
 import { db } from "../../../config/db";
+import { PoolConnection, RowDataPacket } from "mysql2/promise";
+import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
+import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
+import { AmenityTypes } from "../interfaces/room.AmenityTypes.inaterface";
 
 export const searchHotels = async (
-  location: string,
-  check_in: string,
-  check_out: string,
+    location: string,
+    check_in: string,
+    check_out: string,
+    price_filter: number | undefined,
+    roomTypes_filter: string[] | undefined,
+    amenities_filter: string[] | undefined
 ) => {
-  const [rows] = await db.query<RowDataPacket[]>(
-    `
+    const paramsArray = [location, location, location, check_out, check_in, check_out, check_in];
+
+    let priceSqlBlock = '';
+    let roomTypeSqlBlock = '';
+    let amenitiesFilterSqlBlock = '';
+
+
+    if (price_filter !== undefined) {
+        priceSqlBlock += 'and rt.base_price<=?';
+        paramsArray.push(price_filter.toString());
+    }
+
+    if (roomTypes_filter !== undefined && roomTypes_filter.length > 0) {
+        roomTypeSqlBlock += `and rt.type_name in (${roomTypes_filter.map(() => '?').join(', ')})`
+        roomTypes_filter.forEach(val => {
+            paramsArray.push(val);
+        })
+    }
+
+    if (amenities_filter !== undefined && amenities_filter.length > 0) {
+        amenitiesFilterSqlBlock += `and rte.amenity_id in (${amenities_filter.map(() => '?').join(', ')}) GROUP BY
+                                    h.hotel_id,
+                                    rt.room_type_id,
+                                    r.room_id
+                                    HAVING COUNT(DISTINCT rte.amenity_id) = ?`;
+        amenities_filter.forEach(val => {
+            paramsArray.push(val);
+        })
+        paramsArray.push(amenities_filter.length.toString());
+    }
+
+    const [rows] = await db.query<RowDataPacket[]>(
+        `
 SELECT
     h.hotel_id,
     h.name,
@@ -32,7 +69,9 @@ JOIN room_types rt
 JOIN rooms r
     ON r.room_type_id = rt.room_type_id
 
-WHERE
+${amenities_filter?.length ? 'JOIN room_type_amenities rte ON rt.room_type_id=rte.room_type_id' : ''}
+
+    WHERE
 h.tenant_status_id=1 and
 (
     LOWER(h.city) LIKE LOWER(CONCAT('%', ?, '%'))
@@ -54,20 +93,37 @@ AND r.room_id NOT IN
 
         AND b.checkin_date < ?
         AND b.checkout_date > ?
-);`,
-    [location, location, location, check_out, check_in],
-  );
-  // console.log('62',rows);
-  return rows;
+)
+   AND r.room_id NOT IN
+            (
+                SELECT bh.room_id
+
+                FROM booking_holds bh
+
+                WHERE
+                    bh.expires_at > NOW()
+
+                    AND bh.checkin_date < ?
+                    AND bh.checkout_date > ?
+            )
+
+    ${priceSqlBlock}
+    ${roomTypeSqlBlock}
+    ${amenitiesFilterSqlBlock}
+;`,
+        paramsArray,
+    );
+    // console.log('62',rows);
+    return rows;
 };
 
 export const hotelDetails = async (
-  hotelId: number,
-  check_in: string,
-  check_out: string,
+    hotelId: number,
+    check_in: string,
+    check_out: string,
 ) => {
-  const [rows] = await db.query<RowDataPacket[]>(
-    `
+    const [rows] = await db.query<RowDataPacket[]>(
+        `
         SELECT
     h.hotel_id,
     h.name,
@@ -128,7 +184,18 @@ WHERE
 
             AND b.checkin_date < ?
             AND b.checkout_date > ?
-    )
+    ) AND r.room_id NOT IN
+            (
+                SELECT bh.room_id
+
+                FROM booking_holds bh
+
+                WHERE
+                    bh.expires_at > NOW()
+
+                    AND bh.checkin_date < ?
+                    AND bh.checkout_date > ?
+            )
 
 GROUP BY
     h.hotel_id,
@@ -140,8 +207,137 @@ HAVING
 ORDER BY
     rt.base_price;
         `,
-    [hotelId, check_out, check_in],
-  );
+        [hotelId, check_out, check_in, check_out, check_in],
+    );
 
-  return rows;
+    return rows;
 };
+
+
+export const getAvailableRooms = async (connection: PoolConnection, hotelId: number, roomTypeId: number, checkIn: string, checkOut: string, quantity: number) => {
+    const [rows] = await connection.query<RoomRow[]>(`
+         SELECT
+            r.room_id
+
+        FROM rooms r
+
+        WHERE
+            r.hotel_id = ?
+
+            AND r.room_type_id = ?
+
+            AND r.room_id NOT IN
+            (
+                SELECT br.room_id
+
+                FROM booking_rooms br
+
+                JOIN bookings b
+                    ON b.booking_id = br.booking_id
+
+                WHERE
+                    b.booking_status_id IN (1,2,3)
+
+                    AND b.checkin_date < ?
+                    AND b.checkout_date > ?
+            )
+
+            AND r.room_id NOT IN
+            (
+                SELECT bh.room_id
+
+                FROM booking_holds bh
+
+                WHERE
+                    bh.expires_at > NOW()
+
+                    AND bh.checkin_date < ?
+                    AND bh.checkout_date > ?
+            )
+
+        LIMIT ?
+        `, [hotelId, roomTypeId, checkOut, checkIn, checkOut, checkIn, quantity]);
+
+    return rows;
+}
+
+export const insertRoomHolds = async (
+    connection: PoolConnection,
+
+    rooms: RoomRow[],
+
+    userId: number,
+
+    checkIn: string,
+
+    checkOut: string,
+
+    adults: number,
+    children: number
+) => {
+
+    for (const room of rooms) {
+
+        await connection.query(
+            `
+            INSERT INTO booking_holds
+            (
+                room_id,
+
+                user_id,
+
+                adults,
+
+                children,
+
+                checkin_date,
+
+                checkout_date,
+
+                expires_at
+            )
+
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+
+                ?,
+
+                ?,
+
+                ?,
+            
+                DATE_ADD(NOW(), INTERVAL 10 MINUTE)
+            )
+            `,
+            [
+                room.room_id,
+
+                userId,
+
+                adults,
+
+                children,
+
+                checkIn,
+
+                checkOut
+            ]
+        );
+
+    }
+};
+
+export const fetchFilterRoomTypes = async () => {
+    const [rows] = await db.query<RoomTypeRow[]>('SELECT DISTINCT type_name FROM room_types ORDER BY type_name ASC');
+    console.log(rows);
+    return rows;
+}
+
+export const fetchAmenities = async () => {
+    const [rows] = await db.query<AmenityTypes[]>('SELECT amenity_id,amenity_name FROM amenities ORDER BY amenity_name ASC');
+    console.log(rows);
+    return rows;
+}
