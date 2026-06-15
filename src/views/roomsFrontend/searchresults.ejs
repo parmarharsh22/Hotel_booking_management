@@ -74,7 +74,7 @@
                 <button class="text-sm text-amber-700 font-medium hover:underline">Clear All</button>
             </div>
 
-            <form action="/rooms/searchHotels/?applyFilter=true" method="POST">
+            <form action="/rooms/searchHotels" method="POST">
                 <input type="hidden" name="location" value="<%= query.location %>">
                 <input type="hidden" name="check_in" value="<%= query.check_in %>">
                 <input type="hidden" name="check_out" value="<%= query.check_out %>">
@@ -94,28 +94,28 @@
 
                     <!-- Added id, value, and oninput attributes -->
                     <input type="range" id="price-slider" name="price_filter" min="500" max="15000"
-                        value="<%= price_filter || 7750%>"
+                        value="<%= query.price_filter || 7750 %>"
                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-700"
                         oninput="updatePrice(this.value)">
 
                     <div class="flex justify-between text-xs text-gray-500 mt-2">
                         <span>₹500</span>
-                        <span>₹15,000</span>
+                        <span>₹15,000+</span>
                     </div>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
                     <div class="space-y-2">
-                        <% const selectedRooms=roomTypes_filter || []; %>
+                        <% const selectedRooms=query.roomTypes_filter || []; %>
                             <%roomTypes.forEach(ele=>{%>
                                 <label class="flex items-center gap-3 text-sm text-gray-600 cursor-pointer">
                                     <input type="checkbox" name="roomTypes_filter[]" value="<%=ele.type_name%>"
                                         class="rounded border-gray-300 text-amber-700 focus:ring-amber-600 h-4 w-4"
-                                    <%= selectedRooms.includes(ele.type_name) ? 'checked' : '' %> >
-                                        <span>
-                                            <%=ele.type_name%>
-                                        </span>
+                                        <%=selectedRooms.includes(ele.type_name) ? 'checked' : '' %> >
+                                    <span>
+                                        <%=ele.type_name%>
+                                    </span>
                                 </label>
                                 <%})%>
                     </div>
@@ -124,12 +124,12 @@
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Room Amenities</label>
                     <div class="space-y-2">
-                        <% const selectedAmenities=amenities_filter || []; %>
+                        <% const selectedAmenities=query.amenities_filter || []; %>
                             <%amenities.forEach(ele=>{%>
                                 <label class="flex items-center gap-3 text-sm text-gray-600 cursor-pointer">
                                     <input type="checkbox" name="amenities_filter[]" value="<%=ele.amenity_id%>"
                                         class="rounded border-gray-300 text-amber-700 focus:ring-amber-600 h-4 w-4"
-                                        <%= selectedAmenities.includes(ele.amenity_id.toString()) ? 'checked' : '' %> >
+                                        <%=selectedAmenities.includes(ele.amenity_id.toString()) ? 'checked' : '' %> >
                                     <span>
                                         <%=ele.amenity_name%>
                                     </span>
@@ -160,8 +160,10 @@
                     </p>
                 </div>
                 <div class="text-sm text-gray-500">
-                    Sort by: <span class="font-medium text-slate-800 cursor-pointer hover:underline">Popularity <i
-                            class="fa-solid fa-chevron-down text-xs"></i></span>
+                    Sort by:
+                    <span id="sortToggle" class="font-medium text-slate-800 cursor-pointer hover:underline">
+                        Price <i id="sortIcon" class="fa-solid fa-chevron-down text-xs"></i>
+                    </span>
                 </div>
             </div>
 
@@ -173,87 +175,102 @@
                     </div>
                     <h3 class="text-lg font-bold text-slate-900 mb-1">No accommodations found</h3>
                     <p class="text-gray-500 text-sm max-w-md mx-auto">
-                        We couldn't find any available properties matching your criteria in <span
-                            class="font-medium text-slate-800">"<%= query.location %>"</span>. Try adjusting your dates
-                        or expanding your filter choices!
+                        We couldn't find any available properties matching your criteria for
+                        <%= query.adults || 1 %> Adults, <%= query.children || 1 %> Children, <%= query.rooms || 1 %>
+                                    Room in
+                                    <span class="font-medium text-slate-800">
+                                        <%= query.location %>
+
+                                            <!-- 1. Check if the array exists and has items -->
+                                            <% if (selectedRooms && selectedRooms.length> 0) { %>
+                                                with
+                                                <!-- 2. Clean loop execution using forEach -->
+                                                <% selectedRooms.forEach((ele, index)=> { %>
+                                                    <%= ele %>
+                                                        <%= index < selectedRooms.length - 1 ? ', ' : '' %>
+                                                            <% }) %>
+                                                                <% } %>
+                                    </span>. Try adjusting your dates or expanding your filter choices!
                     </p>
+
                 </div>
                 <% } else { %>
-                    <div class="space-y-6">
-                        <% hotels.forEach(hotel=> { %>
-                            <div data-hotel-id="<%= hotel.hotel_id %>" data-hotel-name="<%= hotel.name %>"
-                                class="view-hotel-details bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
-
-                                <div class="w-full md:w-2/5 h-56 md:h-auto relative bg-gray-100 shrink-0">
-                                    <img src="<%= hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80' %>"
-                                        alt="<%= hotel.name %>" class="w-full h-full object-cover">
-                                    <span
-                                        class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded">
-                                        Top Rated
-                                    </span>
-                                </div>
-
-                                <div class="w-full md:w-3/5 p-6 flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-start justify-between gap-2 mb-1">
-                                            <h3
-                                                class="text-xl font-bold text-slate-900 hover:text-amber-700 transition cursor-pointer">
-                                                <%= hotel.name %>
-                                            </h3>
-                                            <div
-                                                class="flex items-center gap-1 shrink-0 text-sm font-semibold text-slate-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                                                <span>4.8</span><i class="fa-solid fa-star text-amber-600 text-xs"></i>
-                                            </div>
-                                        </div>
-
-                                        <p class="text-sm text-gray-500 flex items-center gap-1.5 mb-4">
-                                            <i class="fa-solid fa-location-dot text-gray-400"></i>
-                                            <%= hotel.city %>, <%= hotel.state %>, <%= hotel.country %>
-                                        </p>
-
-                                        <div class="mb-4">
-                                            <button
-                                                class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
-                                                <span class="relative flex h-2 w-2">
-                                                    <span
-                                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                    <span
-                                                        class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                                </span>
-                                                <%= hotel.available_rooms %> Rooms Left
-                                            </button>
-                                        </div>
+                    <%hotels=hotels.sort((a,b)=>a.starting_price-b.starting_price)%>
+                        <div  id="hotelContainer" class="space-y-6">
+                            <% hotels.forEach(hotel=> { %>
+                                <div data-hotel-id="<%= hotel.hotel_id %>" data-hotel-name="<%= hotel.name %>" data-price="<%= hotel.starting_price %>"
+                                    class="hotel-card view-hotel-details bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col md:flex-row h-full">
+                                    <div class="w-full md:w-2/5 h-56 md:h-auto relative bg-gray-100 shrink-0">
+                                        <img src="<%= hotel.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80' %>"
+                                            alt="<%= hotel.name %>" class="w-full h-full object-cover">
+                                        <span
+                                            class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded">
+                                            Top Rated
+                                        </span>
                                     </div>
 
-                                    <div
-                                        class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
+                                    <div class="w-full md:w-3/5 p-6 flex flex-col justify-between">
                                         <div>
-                                            <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">
-                                                Starting From</p>
-                                            <p class="text-2xl font-black text-slate-900">
-                                                ₹<%= Math.floor(hotel.starting_price) %> <span
-                                                        class="text-sm font-medium text-gray-500">/night</span>
-                                            </p>
-                                        </div>
-
-                                        <div class="flex items-center gap-2">
-                                            <div data-hotel-id="<%= hotel.hotel_id %>"
-                                                data-hotel-name="<%= hotel.name %>"
-                                                class="view-hotel-details border border-gray-300 hover:bg-gray-50 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200">
-                                                View Details
+                                            <div class="flex items-start justify-between gap-2 mb-1">
+                                                <h3
+                                                    class="text-xl font-bold text-slate-900 hover:text-amber-700 transition cursor-pointer">
+                                                    <%= hotel.name %>
+                                                </h3>
+                                                <div
+                                                    class="flex items-center gap-1 shrink-0 text-sm font-semibold text-slate-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                                    <span>4.8</span><i
+                                                        class="fa-solid fa-star text-amber-600 text-xs"></i>
+                                                </div>
                                             </div>
-                                            <a href="/checkout?hotel_id=<%= hotel.hotel_id %>"
-                                                class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
-                                                Book Now
-                                            </a>
-                                        </div>
-                                    </div>
 
+                                            <p class="text-sm text-gray-500 flex items-center gap-1.5 mb-4">
+                                                <i class="fa-solid fa-location-dot text-gray-400"></i>
+                                                <%= hotel.city %>, <%= hotel.state %>, <%= hotel.country %>
+                                            </p>
+
+                                            <div class="mb-4">
+                                                <button
+                                                    class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
+                                                    <span class="relative flex h-2 w-2">
+                                                        <span
+                                                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                        <span
+                                                            class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                                    </span>
+                                                    <%= hotel.available_rooms %> Rooms Left
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="border-t border-gray-100 pt-4 mt-auto flex items-end justify-between gap-4">
+                                            <div>
+                                                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                                                    Starting From</p>
+                                                <p class="text-2xl font-black text-slate-900">
+                                                    ₹<%= Math.floor(hotel.starting_price) %> <span
+                                                            class="text-sm font-medium text-gray-500">/night</span>
+                                                </p>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <div data-hotel-id="<%= hotel.hotel_id %>"
+                                                    data-hotel-name="<%= hotel.name %>"
+                                                    class="view-hotel-details border border-gray-300 hover:bg-gray-100 hover:text-slate-800 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition duration-200 cursor-pointer">
+                                                    View Details
+                                                </div>
+                                                <a href="/checkout?hotel_id=<%= hotel.hotel_id %>"
+                                                    class="bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition duration-200 shadow-sm">
+                                                    Book Now
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
-                            </div>
-                            <% }) %>
-                    </div>
-                    <% } %>
+                                <% }) %>
+                        </div>
+                        <% } %>
 
         </section>
     </main>
@@ -265,7 +282,10 @@
             checkOut:query.check_out,
             rooms:query.rooms,
             adults:query.adults,
-            children:query.children
+            children:query.children,
+            price_filter:query.price_filter,
+            roomTypes_filter:query.roomTypes_filter,
+            amenities_filter:query.amenities_filter
         })
         %>
     </script>
@@ -280,7 +300,7 @@
             }).format(value);
 
             // Append a "+" sign if the user slides it to the absolute maximum
-            display.textContent = value === "10000" ? `${formattedPrice}+` : formattedPrice;
+            display.textContent = value === "15000" ? `${formattedPrice}+` : formattedPrice;
         }
 
         // Run once on page load to set the initial value correctly
