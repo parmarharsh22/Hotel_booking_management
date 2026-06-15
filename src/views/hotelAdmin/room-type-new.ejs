@@ -238,7 +238,7 @@
                             <img id="typePhotoPreview" alt="Category Frame" class="absolute inset-0 w-full h-full object-cover hidden">
                         </div>
                         <div class="flex-1 space-y-1">
-                            <input type="file" id="typePhotoInput" name="room_type_photo" accept="image/*" onchange="previewCategoryPhoto(this)" class="hidden">
+                            <input type="file" id="typePhotoInput" name="type_photo" accept="image/*" onchange="previewCategoryPhoto(this)" class="hidden">
                             <button type="button" onclick="document.getElementById('typePhotoInput').click()" 
                                 class="text-xs bg-white text-slate-700 font-medium px-3 py-2 rounded border border-slate-200 shadow-sm hover:bg-slate-100 transition">
                                 <i class="fa-solid fa-cloud-arrow-up mr-1.5 text-slate-400"></i>Upload Image File
@@ -340,7 +340,7 @@
 
         try {
             // Adjust this string tracking path to perfectly route into your backend router handling execution configurations
-            const destinationResponse = await fetch('/room-types', {
+            const destinationResponse = await fetch('/hotelAdmin/room-types', {
                 method: 'POST',
                 body: multiPartPayload
             });

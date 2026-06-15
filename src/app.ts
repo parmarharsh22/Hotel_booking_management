@@ -10,6 +10,7 @@ import cookie from "cookie-parser";
 import roomRouter from "./modules/room/routes/roomRoute";
 import hotelAdminRoutes from "./modules/hotelAdmin/hotelAdmin.routes";
 import frontDeskRouter from "./modules/FrontDesk/routes/frontDeskRoutes";
+import invoice from "./modules/invoices/invoiceMain.routes";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/authen",authenRoute);
 app.use("/superadmin", superadminRoutes);
 app.use("/hotelAdmin",hotelAdminRoutes);
 app.use("/frontDesk",frontDeskRouter);
+app.use("/invoices",invoice);
 
 //All the unproctedRoutes
 app.use("/",authRouter);
