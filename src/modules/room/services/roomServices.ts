@@ -9,12 +9,9 @@ import { BookigData } from "../interfaces/room.selectedRoomType.interface";
 import { db } from "../../../config/db";
 import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 
-export const searchHotels = async (params: searchHotelReqBody, applyFilter: string | undefined) => {
+export const searchHotels = async (params: searchHotelReqBody) => {
  const { location, check_in, check_out, rooms, adults, children, price_filter, roomTypes_filter
     , amenities_filter } = params;
-  
-  console.log(price_filter, roomTypes_filter
-  , amenities_filter);
   
     const hotels_data = await roomModel.searchHotels(
     location,
@@ -80,11 +77,13 @@ export const searchHotels = async (params: searchHotelReqBody, applyFilter: stri
     }
   }
 
+  result.sort((a,b)=>a.starting_price-b.starting_price)
+
   return result;
 };
 
-export const hotelDetails = async (hotelId: number, check_in: string, check_out: string) => {
-  const hotelDetails = await roomModel.hotelDetails(hotelId, check_in, check_out);
+export const hotelDetails = async (hotelId: number, check_in: string, check_out: string,price_filter:number|undefined,roomTypes:string[]|undefined,amenities:string[]|undefined) => {
+  const hotelDetails = await roomModel.hotelDetails(hotelId, check_in, check_out,price_filter,roomTypes,amenities);
 
   let hotel: HotelDetails | undefined;
   let room_type: RoomType[] = [];
