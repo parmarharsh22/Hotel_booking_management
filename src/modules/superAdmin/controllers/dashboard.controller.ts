@@ -114,10 +114,10 @@ export const getDashboardStats = async (req: Request, res: Response) => {
     ]
 }
 
-        res.json(dataSeed);
+        res.json(data);
     } catch (err: any) {
         console.error(err.message);
         
         res.status(500).json({ error: "Failed to load dashboard" });
     }
-};
+};  
