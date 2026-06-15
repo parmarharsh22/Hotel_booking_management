@@ -192,16 +192,9 @@
 
                         </div>
 
-
-
-                        <!-- Amenities -->
-
-
-                        <div class="my-5">
-
-
-                            <h4 class="font-semibold mb-2">
-
+                        <!-- Amenities -->  
+                        <div class="mb-5">
+                            <h4 class="font-semibold mb-2 text-gray-700">
                                 Amenities
 
                             </h4>
@@ -545,35 +538,26 @@
 
     </div>
 
-
-    <!-- ================= SERVER DATA ================= -->
-
-
-    <script type="application/json" id="server-payload">
-
-<%- JSON.stringify({
-
-    hotelId: hotel.hotel_id,
-
-    checkIn: query.check_in,
-
-    checkOut: query.check_out,
-
-    adults: query.adults,
-
-    children: query.children
-
-}) %>
-
+<script type="application/json" id="server-payload">
+    <%-
+    JSON.stringify({
+        hotel_name:hotel.name,
+        address:hotel.address,
+        city:hotel.city,
+        state:hotel.state,
+        country:hotel.country,
+        hotelId:query.hotel_id,
+        checkIn:query.check_in,
+        checkOut:query.check_out,
+        adults:query.adults,
+        children:query.children,
+        price_filter:query.price_filter,
+        roomTypes:query.roomTypes,
+        amenities:query.amenities
+    })
+    %>
 </script>
-
-
-    <!-- External JavaScript -->
-
-
-    <script src="/JS/rooms/hotelDetails.js"></script>
-
-
+<script src="/JS/rooms/hotelDetails.js"></script>
 </body>
 
 </html>

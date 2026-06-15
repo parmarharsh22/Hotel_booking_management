@@ -39,10 +39,11 @@ app.use("/authen",authenRoute);
 app.use("/superadmin", superadminRoutes);
 app.use("/hotelAdmin",hotelAdminRoutes);
 app.use("/bookings", BookingRoutes)
+
+
+
 app.use("/frontDesk",frontDeskRouter);
-
 app.use("/invoices",invoice);
-
 
 //All the unproctedRoutes
 app.use("/",authRouter);
