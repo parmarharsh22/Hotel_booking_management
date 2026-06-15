@@ -1,4 +1,4 @@
-# Booking Module — Complete Code Explanation
+# Booking Module — Code Explanation (v2)
 ## Line-by-Line Breakdown & Full Flow
 
 ---
@@ -19,32 +19,32 @@
 
 ## 1. Architecture Overview
 
-The booking module is split into 4 layers. Each layer has one job and talks only to the layer below it:
+The booking module is split into 4 layers. Each layer has one job and only talks to the layer directly below it.
 
 ```
 HTTP Request
      ↓
-  ROUTER         — defines which URL maps to which controller function
+  ROUTER        — maps a URL to a controller function
      ↓
-  CONTROLLER     — validates HTTP input, calls service, sends HTTP response
+  CONTROLLER    — reads the request, calls service, sends response
      ↓
-  SERVICE        — all business logic (Redis holds, availability checks, transactions)
+  SERVICE       — all business logic (Redis holds, availability, transactions)
      ↓
-  MODEL          — raw SQL queries, no logic, just DB operations
+  MODEL         — raw SQL queries only, no logic
      ↓
 MySQL + Redis
 ```
 
 **Why this separation?**
-- If you swap MySQL for PostgreSQL, only the model changes
-- If you change business rules (e.g. hold TTL), only the service changes
-- If you add a mobile API, you reuse the same service/model
+- Swap MySQL for PostgreSQL → only model changes
+- Change business rules (e.g. hold duration) → only service changes
+- Add a mobile API → reuse the same service and model
 
 ---
 
 ## 2. `booking.model.ts` — Database Layer
 
-This file contains **only SQL**. No logic, no Redis, no decisions. Every function takes inputs and returns DB results.
+This file contains **only SQL queries**. No Redis, no business decisions. Every function takes inputs and returns database results.
 
 ---
 
@@ -60,52 +60,52 @@ export const getAvailableRooms = async (
 )
 ```
 
-**Parameters explained:**
+**What each parameter means:**
+
 | Parameter | What it is | Example |
 |-----------|-----------|---------|
-| `hotel_id` | Which hotel we're searching in | `10` |
-| `room_type_id` | Which room category (Deluxe, Suite etc) | `28` |
+| `hotel_id` | Which hotel to search in | `10` |
+| `room_type_id` | Which room category (Standard, Deluxe…) | `28` |
 | `checkin_date` | Guest arrival date | `"2026-06-11"` |
 | `checkout_date` | Guest departure date | `"2026-06-30"` |
 | `qty` | How many rooms to return | `2` |
 
-**The SQL query — broken into 3 parts:**
+**The SQL — broken into 3 parts:**
 
-**Part 1 — SELECT what we need:**
+**Part 1 — What to SELECT:**
 ```sql
 SELECT
-    r.room_id,       -- the unique ID of the physical room
-    r.room_number,   -- "101", "202A" etc — human readable
-    rt.type_name,    -- "Standard", "Deluxe", "Suite"
-    rt.base_price AS rate_per_night  -- price per night for this room type
+    r.room_id,
+    r.room_number,
+    rt.type_name,
+    rt.base_price AS rate_per_night
 FROM rooms r
 JOIN room_types rt ON r.room_type_id = rt.room_type_id
 ```
-We JOIN rooms with room_types to get the type name and price alongside the room.
+Joins `rooms` with `room_types` to get the type name and price alongside each physical room.
 
 **Part 2 — Basic filters:**
 ```sql
-WHERE r.hotel_id       = ?   -- only rooms in THIS hotel
-  AND r.room_type_id   = ?   -- only rooms of THIS type
-  AND r.room_status_id = 1   -- only PHYSICALLY AVAILABLE rooms
-                             -- (1=AVAILABLE, 2=OCCUPIED, 3=DIRTY, 4=MAINTENANCE)
+WHERE r.hotel_id       = ?   -- only rooms in this hotel
+  AND r.room_type_id   = ?   -- only rooms of the requested type
+  AND r.room_status_id = 1   -- only physically available rooms
 ```
-`room_status_id = 1` is the physical state check. A room under maintenance never shows up, even if no booking exists for those dates.
+`room_status_id = 1` means AVAILABLE. Rooms under maintenance (4) or occupied (2) are never shown even if no booking exists for the dates.
 
-**Part 3 — Date overlap exclusion (the important bit):**
+**Part 3 — Date overlap check:**
 ```sql
 AND r.room_id NOT IN (
     SELECT br.room_id
     FROM booking_rooms br
     JOIN bookings b ON br.booking_id = b.booking_id
     WHERE b.hotel_id          = ?
-      AND b.booking_status_id NOT IN (5)   -- 5 = CANCELLED, excluded
-      AND b.checkin_date       < ?          -- existing checkout > our checkin
-      AND b.checkout_date      > ?          -- existing checkin  < our checkout
+      AND b.booking_status_id != 5        -- ignore CANCELLED bookings
+      AND b.checkin_date       < ?        -- existing checkout is after our checkin
+      AND b.checkout_date      > ?        -- existing checkin is before our checkout
 )
 ```
 
-This is a **date overlap check**. Two date ranges overlap when:
+Two date ranges overlap when:
 ```
 existing.checkin  < our.checkout
 AND
@@ -114,18 +114,18 @@ existing.checkout > our.checkin
 
 Visual example:
 ```
-Existing booking:  |---Jun 15 ---- Jun 20---|
-Our request:            |---Jun 17 ---- Jun 25---|
-                              ↑ OVERLAP — room excluded
+Existing booking:   |── Jun 15 ──── Jun 20 ──|
+Our request:                  |── Jun 17 ──── Jun 25 ──|
+                                    ↑ OVERLAP → room excluded
 
-Existing booking:  |---Jun 01 ---- Jun 10---|
-Our request:                                    |---Jun 15 ---- Jun 20---|
-                                                     ↑ NO OVERLAP — room available
+Existing booking:   |── Jun 01 ──── Jun 10 ──|
+Our request:                                      |── Jun 15 ──── Jun 20 ──|
+                                                       ↑ NO OVERLAP → room available
 ```
 
-`NOT IN (5)` means we exclude CANCELLED bookings — a cancelled booking should free the room up for new guests.
+`!= 5` excludes CANCELLED bookings — a cancelled booking should free the room back up.
 
-**`LIMIT ?`** — We only return as many rooms as needed (qty). No point fetching 50 rooms if the guest wants 2.
+**`LIMIT ?`** — only return as many rooms as needed. No point fetching 50 rooms when the guest wants 2.
 
 ---
 
@@ -135,7 +135,8 @@ Our request:                                    |---Jun 15 ---- Jun 20---|
 export const createBooking = async (connection: any, data: { ... })
 ```
 
-Notice it takes a `connection` parameter — **not the pool directly**. This is because `createBooking` is called inside a database transaction. The transaction must use the same connection for all its queries. If each query got its own connection from the pool, they'd be in separate transactions and the rollback wouldn't work.
+**Why it takes `connection` instead of using `db` directly:**
+This function is called inside a database transaction. A transaction must use the **same connection** for all its queries. If each query grabbed its own connection from the pool, they'd be in separate transactions and rollback wouldn't work.
 
 ```sql
 INSERT INTO bookings
@@ -145,13 +146,13 @@ INSERT INTO bookings
 VALUES (?,?,?,?,?,?,?,?,?,?,?)
 ```
 
-**Key values passed in:**
-- `booking_status_id: 2` → CONFIRMED (set by service)
-- `booking_source_id: 1` → ONLINE (set by service)
+**Key values the service passes in:**
+- `booking_status_id: 2` → CONFIRMED
+- `booking_source_id: 1` → ONLINE
 - `booking_reference` → human-readable ID like `HBMS-A3X9K2`
-- `total_amount` → pre-calculated: `rate × nights × rooms`
+- `total_amount` → pre-calculated: `rate × nights × number of rooms`
 
-Returns `result.insertId` — the auto-incremented `booking_id` MySQL assigned to this new row. This ID is then used by all subsequent inserts (`booking_rooms`, `payments`).
+Returns `result.insertId` — the auto-incremented `booking_id` MySQL assigned to this new row. Every subsequent insert (`booking_rooms`, `payments`) uses this ID.
 
 ---
 
@@ -173,33 +174,29 @@ VALUES (?, ?, ?)
 ```
 
 **Why store `rate_per_night` here?**
-This is a **price snapshot**. If the hotel changes its prices next month, this booking should still show the rate the guest agreed to at booking time. If you just JOIN to `room_types.base_price` dynamically, a price change would retroactively alter old invoices. The snapshot prevents that.
+This is a **price snapshot**. If the hotel raises prices next month, old bookings must still show the rate the guest originally agreed to. If you joined `room_types.base_price` dynamically, a price change would silently alter old invoices. Storing the rate at booking time prevents that.
 
-A group booking (3 rooms) creates 3 rows here, all linked to the same `booking_id`.
+A group booking of 3 rooms creates 3 rows here, all linked to the same `booking_id`.
 
 ---
 
 ### `createPayment`
 
 ```ts
-export const createPayment = async (connection: any, data: {
-    hotel_id: number;
-    booking_id: number;
-    amount: number;
-    payment_method_id: number;
-})
+export const createPayment = async (
+    connection: any,
+    data: { hotel_id, booking_id, amount, payment_method_id }
+)
 ```
 
 ```sql
 INSERT INTO payments
 (hotel_id, booking_id, payment_method_id, payment_status_id, amount)
 VALUES (?, ?, ?, 1, ?)
--- payment_status_id = 1 = PENDING
+-- 1 = PENDING
 ```
 
-Created as `PENDING` (status 1) because at this point, the booking is confirmed in our system but actual money movement hasn't been verified yet. The payment gateway (Razorpay, Stripe etc) will later call a webhook which updates this to `SUCCESS (2)` or `FAILED (3)`.
-
-In the current dummy flow, the frontend calls `/payment-success` directly after confirming.
+Created as `PENDING` because at this point money hasn't actually moved yet — the booking is confirmed in our system but the payment gateway hasn't verified receipt. The status gets updated to `SUCCESS (2)` or `FAILED (3)` by `updatePaymentStatus` after the gateway responds.
 
 ---
 
@@ -208,7 +205,7 @@ In the current dummy flow, the frontend calls `/payment-success` directly after 
 ```ts
 export const updatePaymentStatus = async (
     booking_id: number,
-    payment_status_id: number  // 2=SUCCESS, 3=FAILED, 4=REFUNDED
+    payment_status_id: number  // 2=SUCCESS  3=FAILED  4=REFUNDED
 )
 ```
 
@@ -219,7 +216,7 @@ SET payment_status_id = ?,
 WHERE booking_id = ?
 ```
 
-The `CASE WHEN` is clever — `paid_at` is only set to the current timestamp when status is `2` (SUCCESS). For FAILED or REFUNDED, it stays NULL. This gives you an accurate audit trail of exactly when money was received.
+`CASE WHEN ? = 2 THEN NOW() ELSE NULL END` — `paid_at` is only set to the current timestamp when the status is SUCCESS (2). For FAILED or REFUNDED it stays NULL. This gives an accurate audit trail of exactly when money was received.
 
 ---
 
@@ -240,13 +237,13 @@ JOIN users u              ON b.user_id  = u.user_id
 WHERE b.booking_reference = ?
 ```
 
-A single query that JOINs 4 tables to return everything needed to display a booking confirmation page: booking details + status name + hotel info + guest name/email. Used on the "View Booking" page.
+One query that joins 4 tables to return everything needed on a booking confirmation page — booking details, status name, hotel info, and guest name/email. Used on "View Booking".
 
 ---
 
 ## 3. `booking.service.ts` — Business Logic Layer
 
-This is the brain of the booking system. It coordinates Redis + MySQL, handles the hold lifecycle, and ensures atomicity.
+This is the brain of the booking system. It coordinates Redis and MySQL, manages the hold lifecycle, and keeps everything atomic.
 
 ---
 
@@ -256,14 +253,22 @@ This is the brain of the booking system. It coordinates Redis + MySQL, handles t
 const generateReference = (): string => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let ref = "";
-    for (let i = 0; i < 6; i++) ref += chars[Math.floor(Math.random() * chars.length)];
+    for (let i = 0; i < 6; i++) {
+        ref += chars[Math.floor(Math.random() * chars.length)];
+    }
     return `HBMS-${ref}`;
 };
 ```
 
-Generates IDs like `HBMS-A3X9K2`. 36 possible characters × 6 positions = 36^6 = ~2.1 billion combinations. Readable over the phone by front desk staff. Not a UUID because `HBMS-A3X9K2` is easier to read than `f59361f3-2858-482a-bf6f-cb916bef6c2a`.
+Generates codes like `HBMS-A3X9K2`.
 
-> **Note:** In production, add a DB uniqueness check or use a sequence-based approach to prevent the tiny collision risk.
+- 36 possible characters (A-Z + 0-9)
+- 6 positions → 36⁶ = ~2.1 billion combinations
+- Readable over the phone, easy for staff to type
+
+Not a UUID because `HBMS-A3X9K2` is far easier to read aloud than `f59361f3-2858-482a-bf6f-cb916bef6c2a`.
+
+> **Production note:** Add a uniqueness check against the DB or use a sequence-based approach to eliminate the tiny collision risk.
 
 ---
 
@@ -271,57 +276,60 @@ Generates IDs like `HBMS-A3X9K2`. 36 possible characters × 6 positions = 36^6 =
 
 ```ts
 const calcNights = (checkin: string, checkout: string): number => {
-    const nights = Math.ceil(
-        (new Date(checkout).getTime() - new Date(checkin).getTime())
-        / (1000 * 60 * 60 * 24)
-    );
+    const ms     = new Date(checkout).getTime() - new Date(checkin).getTime();
+    const nights = Math.ceil(ms / (1000 * 60 * 60 * 24));
     if (nights <= 0) throw new Error("Check-out must be after check-in");
     return nights;
 };
 ```
 
-**How it works:**
-- `new Date(checkout).getTime()` → milliseconds since epoch
-- Subtract checkin milliseconds → difference in milliseconds
-- Divide by `(1000 × 60 × 60 × 24)` → convert to days
-- `Math.ceil` rounds up — a checkout at noon still counts as a full night
+**How it works step by step:**
+1. `new Date(checkout).getTime()` → milliseconds since epoch (e.g. Jan 1 1970)
+2. Subtract checkin milliseconds → difference in milliseconds
+3. Divide by `1000 × 60 × 60 × 24` → convert ms to days
+4. `Math.ceil` rounds up — a checkout at noon still counts as a full night
 
-**Why throw if `nights <= 0`?**  
-If someone passes `checkin: "2026-06-20"` and `checkout: "2026-06-18"` (checkout before checkin), this would produce a negative total_amount. The throw catches this before any DB writes.
+**Why throw if `nights <= 0`?**
+If someone passes `checkin: "2026-06-20"` and `checkout: "2026-06-18"` (checkout before checkin), this produces a negative total_amount. The throw stops everything before any DB or Redis writes happen.
 
 ---
 
-### Helper: `getHeldRoomIds`
+### Helper: `getRoomsHeldByOthers`
 
 ```ts
-const getHeldRoomIds = async (excludeHoldId?: string): Promise<number[]> => {
+const getRoomsHeldByOthers = async (skipHoldId?: string): Promise<number[]> => {
     const keys = await redis.keys("room_held:*");
     if (!keys.length) return [];
 
-    const roomIds: number[] = [];
+    const heldRoomIds: number[] = [];
+
     for (const key of keys) {
-        const holdId = await redis.get(key);
-        if (excludeHoldId && holdId === excludeHoldId) continue;
-        const roomId = Number(key.split(":")[1]);
-        if (!isNaN(roomId)) roomIds.push(roomId);
+        const ownerHoldId = await redis.get(key);
+
+        // skip rooms that belong to our own hold
+        if (skipHoldId && ownerHoldId === skipHoldId) continue;
+
+        const roomId = Number(key.split(":")[1]); // "room_held:96" → 96
+        if (!isNaN(roomId)) heldRoomIds.push(roomId);
     }
-    return roomIds;
+
+    return heldRoomIds;
 };
 ```
 
 **What it does:**
-Redis stores a key `room_held:{room_id}` → `hold_id` for every room currently being held by any user. This function scans all those keys and returns the room IDs.
+Redis stores a key `room_held:{room_id}` → `hold_id` for every room currently held by any user. This function scans all those keys and returns the room IDs that are locked by OTHER users.
 
 **Step by step:**
-1. `redis.keys("room_held:*")` → get all keys matching pattern e.g. `["room_held:96", "room_held:97"]`
-2. If none, return empty array immediately
-3. For each key, get the value (the hold_id that owns this room)
-4. `if (excludeHoldId && holdId === excludeHoldId) continue` → skip rooms belonging to OUR OWN hold (used during `confirmBooking` re-verification — we don't want to block ourselves)
-5. Parse the room ID from the key: `"room_held:96".split(":")[1]` → `"96"` → `Number("96")` → `96`
-6. `isNaN` check guards against malformed keys
+1. `redis.keys("room_held:*")` → finds all keys matching the pattern, e.g. `["room_held:96", "room_held:97"]`
+2. If none exist, return an empty array immediately
+3. For each key, get its value — the hold_id that owns this room lock
+4. `if (skipHoldId && ownerHoldId === skipHoldId) continue` → skip rooms belonging to **our own** hold. This is needed during `confirmBooking` so we don't accidentally block ourselves
+5. Parse the room ID from the key name: `"room_held:96".split(":")[1]` → `"96"` → `Number("96")` → `96`
+6. `isNaN` guard ignores any malformed keys
 
-**`excludeHoldId` parameter explained:**
-During `confirmBooking`, we call `getHeldRoomIds(hold_id)` — passing our own hold_id. Without this exclusion, our own rooms would appear in the "currently held" list and we'd block ourselves from confirming.
+**The `skipHoldId` parameter:**
+During `confirmBooking`, we call `getRoomsHeldByOthers(hold_id)` — passing our own hold ID. Without this, our own room locks would appear in the "held by others" list and we'd block ourselves from confirming the booking.
 
 ---
 
@@ -334,141 +342,168 @@ export const holdBooking = async (data: {
 })
 ```
 
-**Step 1 — Calculate nights:**
+**Step 1 — Validate dates and calculate nights:**
 ```ts
 const nights = calcNights(data.checkin_date, data.checkout_date);
 ```
-Fails fast if dates are invalid before doing any DB/Redis work.
+Fails fast if dates are invalid before touching Redis or the DB.
 
-**Step 2 — Fetch hotel name:**
+---
+
+**Step 2 — Get hotel name for the payment page:**
 ```ts
 const [[hotelRow]]: any = await db.query(
     `SELECT name FROM hotels WHERE hotel_id = ?`,
     [data.hotel_id]
 );
-const hotel_name = hotelRow?.name || '';
+const hotel_name: string = hotelRow?.name || "";
 ```
-`[[hotelRow]]` — double destructuring: outer `[]` unpacks the mysql2 result tuple (returns `[rows, fields]`), inner `[]` gets the first row. Optional chaining `?.name` handles the case where `hotel_id` doesn't exist.
 
-Fetched here so it's stored in the Redis hold payload. The payment page needs it for the summary display without making an extra DB call.
+`[[hotelRow]]` — double destructuring:
+- Outer `[]` unpacks mysql2's result tuple which is `[rows, fields]` — we only want `rows`
+- Inner `[]` gets the first row from that array
 
-**Step 3 — Get currently held room IDs:**
+`hotelRow?.name` — optional chaining. If `hotel_id` doesn't match any hotel, `hotelRow` is undefined and `?.name` returns undefined instead of throwing. Falls back to empty string.
+
+Fetched here so `hotel_name` is stored inside the Redis hold payload — the payment page needs it for the summary without making an extra DB call.
+
+---
+
+**Step 3 — Find what rooms are already held by other users:**
 ```ts
-const currentlyHeldIds = await getHeldRoomIds();
+const roomsHeldByOthers = await getRoomsHeldByOthers();
 ```
-Gets all rooms other users are currently holding. We'll filter these out from our DB results.
+Gets all room IDs currently locked in Redis by other active holds. We'll filter these out before assigning rooms to this guest.
 
-**Step 4 — Loop over requested room types:**
+---
+
+**Step 4 — Loop over each requested room type:**
 ```ts
 for (const item of data.rooms) {
     if (item.qty <= 0) continue;
 ```
-`data.rooms` is an array like `[{ room_type_id: 28, qty: 2 }]`. We process each room type separately because a guest might request 1 Deluxe + 2 Standard.
+`data.rooms` is an array like `[{ room_type_id: 28, qty: 2 }]`. A guest might request 1 Deluxe AND 2 Standard — we process each type separately.
 
-**Step 5 — Fetch available rooms with buffer:**
+---
+
+**Step 5 — Fetch rooms with a buffer:**
 ```ts
-let available = await bookingModel.getAvailableRooms(
-    data.hotel_id, item.room_type_id,
-    data.checkin_date, data.checkout_date,
-    item.qty + currentlyHeldIds.length   // ← fetch extra
+const fetchQty = item.qty + roomsHeldByOthers.length;
+
+let availableRooms = await bookingModel.getAvailableRooms(
+    data.hotel_id,
+    item.room_type_id,
+    data.checkin_date,
+    data.checkout_date,
+    fetchQty
 );
 ```
-We fetch `qty + heldCount` rooms from DB. Why extra? Because the DB doesn't know about Redis holds — it might return rooms that are currently being held by other users mid-payment. We fetch extra so after filtering we still have enough.
 
-**Example:** Guest wants 2 rooms. 3 rooms are currently Redis-held by other users. We fetch `2 + 3 = 5` rooms from DB, then filter out the 3 held ones, leaving 2 — exactly what the guest needs.
+We fetch more than needed from the DB. Why? The DB query doesn't know about Redis holds — it might return rooms that are currently mid-hold by another user. We fetch extra so after filtering we still have enough.
+
+**Example:**
+```
+Guest wants:        2 rooms
+Other users hold:   3 rooms in Redis
+We fetch from DB:   2 + 3 = 5 rooms
+After filtering:    5 - 3 = 2 rooms  ✓  exactly what the guest needs
+```
+
+---
 
 **Step 6 — Filter out Redis-held rooms:**
 ```ts
-if (currentlyHeldIds.length > 0) {
-    available = available.filter(
-        (r: any) => !currentlyHeldIds.includes(r.room_id)
-    );
+availableRooms = availableRooms.filter(
+    (room: any) => !roomsHeldByOthers.includes(room.room_id)
+);
+```
+The DB query can't see Redis state — so we remove Redis-held rooms in application code after the query returns.
+
+---
+
+**Step 7 — Take only what the guest needs:**
+```ts
+availableRooms = availableRooms.slice(0, item.qty);
+
+if (availableRooms.length < item.qty) {
+    const typeName = availableRooms[0]?.type_name || `type #${item.room_type_id}`;
+    throw new Error(`Only ${availableRooms.length} room(s) available for "${typeName}"`);
 }
 ```
-The DB query couldn't exclude these (Redis state is invisible to MySQL). We filter them here in application code.
+Slice to exact quantity. If we still don't have enough after filtering, throw a descriptive error — the user sees "Only 1 room available for Standard".
 
-**Step 7 — Slice to exact quantity:**
+---
+
+**Step 8 — Build the resolved rooms list:**
 ```ts
-available = available.slice(0, item.qty);
-
-if (available.length < item.qty) {
-    throw new Error(`Only ${available.length} room(s) available...`);
-}
-```
-Take only what was requested. If even after fetching extra we still don't have enough, throw an error — the user sees "Only 1 room available for Standard".
-
-**Step 8 — Build resolved rooms array:**
-```ts
-for (const room of available) {
+for (const room of availableRooms) {
+    const rate = Number(room.rate_per_night); // MySQL DECIMAL comes back as string
     resolvedRooms.push({
         room_id:        room.room_id,
         room_type_id:   item.room_type_id,
         type_name:      room.type_name,
-        rate_per_night: room.rate_per_night,  // MySQL DECIMAL — comes as string
+        rate_per_night: rate,
     });
-    total_amount += room.rate_per_night * nights;
+    total_amount += rate * nights;
 }
 ```
-Accumulates `total_amount` by multiplying each room's rate by nights.
 
-> **Note:** `room.rate_per_night` from MySQL is a string (`"3200.00"`). Multiplying a string by a number in JS coerces it: `"3200.00" * 19 = 60800`. It works but is fragile — the updated service forces `Number()` conversion for safety.
+`Number(room.rate_per_night)` — MySQL `DECIMAL` columns return as strings (`"3200.00"`). Forcing to `Number` ensures arithmetic works correctly and `total_amount` is always a proper number.
 
-**Step 9 — Build hold payload:**
+---
+
+**Step 9 — Build and store the hold payload in Redis:**
 ```ts
-const hold_id = uuidv4();  // e.g. "f59361f3-2858-482a-bf6f-cb916bef6c2a"
+const hold_id = uuidv4(); // e.g. "f59361f3-2858-482a-bf6f-cb916bef6c2a"
 
 const holdPayload = {
     hold_id,
-    hotel_name,          // "Grand Palace Hotel"
-    hotel_id,            // 10
-    user_id,             // 22
-    checkin_date,        // "2026-06-11"
-    checkout_date,       // "2026-06-30"
-    nights,              // 19
-    adults,              // 2
-    children,            // 0
-    rooms: resolvedRooms, // [{ room_id: 96, type_name: "Standard", rate_per_night: 3200 }]
-    total_amount,        // 60800
-    special_requests,    // ""
-    created_at,          // "2026-06-11T10:28:08.466Z"
+    hotel_id, hotel_name,
+    user_id,
+    checkin_date, checkout_date, nights,
+    adults, children,
+    rooms: resolvedRooms,
+    total_amount,
+    special_requests,
+    created_at: new Date().toISOString(),
 };
-```
-Everything the payment page and confirm flow needs, bundled into one object.
 
-**Step 10 — Store in Redis:**
-```ts
 await redis.set(`hold:${hold_id}`, JSON.stringify(holdPayload), "EX", HOLD_TTL);
 ```
-- Key: `hold:f59361f3-2858-482a-bf6f-cb916bef6c2a`
-- Value: the JSON payload above
-- `"EX", 600` → expires in 600 seconds (10 minutes)
 
-After 600 seconds, Redis deletes this key automatically. No cron job needed.
+- Key: `hold:f59361f3-...`
+- Value: JSON string of everything the payment page and confirm flow needs
+- `"EX", 600` → auto-deletes after 600 seconds (10 minutes). No cron job needed
 
-**Step 11 — Lock individual rooms:**
+---
+
+**Step 10 — Lock each room in Redis:**
 ```ts
 for (const room of resolvedRooms) {
     await redis.set(`room_held:${room.room_id}`, hold_id, "EX", HOLD_TTL);
 }
 ```
 - Key: `room_held:96`
-- Value: `"f59361f3-..."` (the hold that owns this room)
-- Same TTL as the hold
+- Value: the hold_id that owns this room
+- Same TTL as the hold itself
 
-This is what `getHeldRoomIds` reads. If a second user tries to book room 96 before the hold expires, step 6 filters it out. When the hold expires, this key also expires and the room becomes available again.
+This is what `getRoomsHeldByOthers` reads. If a second user tries to book room 96 before the 10 minutes expire, step 6 filters it out. When the hold expires, this key also expires and the room becomes available again automatically.
 
-**Step 12 — Return to controller:**
+---
+
+**Step 11 — Return to controller:**
 ```ts
 return {
     success: true,
-    hold_id,        // frontend needs this to redirect to payment page
+    hold_id,        // frontend needs this to build the payment page URL
     total_amount,
     nights,
     rooms: resolvedRooms,
     expires_in_seconds: HOLD_TTL,
 };
 ```
-**Note:** `hotel_name` is NOT in the return value — it's stored in the Redis payload. The return only goes to the search results page, which redirects to `/payment-page?hold_id=...`. The payment page gets the full data via `getHold`.
+
+Note `hotel_name` is NOT returned here — it's stored inside the Redis payload. This return value only goes to the search results page which immediately redirects to `/payment-page?hold_id=...`. The full payload is loaded on the payment page via `getHold`.
 
 ---
 
@@ -477,23 +512,23 @@ return {
 ```ts
 export const getHold = async (hold_id: string) => {
     const raw = await redis.get(`hold:${hold_id}`);
-    if (!raw) throw new Error("Hold expired or not found.");
+    if (!raw) throw new Error("Hold expired or not found. Please search again.");
 
-    const hold = JSON.parse(raw);
-    const ttl  = await redis.ttl(`hold:${hold_id}`);
+    const hold        = JSON.parse(raw);
+    const secondsLeft = await redis.ttl(`hold:${hold_id}`);
 
-    return { success: true, ...hold, expires_in_seconds: ttl };
+    return { success: true, ...hold, expires_in_seconds: secondsLeft };
 };
 ```
 
 `redis.ttl(key)` returns:
-- Positive number → seconds remaining
+- Positive number → seconds remaining on this key
 - `-1` → key exists but has no expiry (shouldn't happen here)
 - `-2` → key doesn't exist (expired or never created)
 
-The `ttl` value is passed to the payment page to start the countdown timer from the actual remaining time, not always from 600. If a user refreshes the payment page 3 minutes in, the timer correctly starts at ~7:00 instead of resetting to 10:00.
+`secondsLeft` is passed to the payment page so the countdown timer starts from the **actual** remaining time. If the user refreshes the payment page 3 minutes in, the timer correctly starts at ~7:00 instead of resetting to 10:00.
 
-`...hold` spread operator unpacks all hold fields into the return object — `hotel_name`, `rooms`, `total_amount`, etc are all available to the caller.
+`...hold` — spread operator unpacks all hold fields (`hotel_name`, `rooms`, `total_amount` etc) directly into the return object so the caller gets everything in one flat object.
 
 ---
 
@@ -503,71 +538,75 @@ The `ttl` value is passed to the payment page to start the countdown timer from 
 export const confirmBooking = async (hold_id: string, payment_method_id: number)
 ```
 
-**Step 1 — Re-fetch hold from Redis:**
+**Step 1 — Fetch hold from Redis:**
 ```ts
 const raw = await redis.get(`hold:${hold_id}`);
-if (!raw) throw new Error("Hold expired or not found.");
+if (!raw) throw new Error("Hold expired or not found. Please start again.");
 const hold = JSON.parse(raw);
 ```
-If 10 minutes have passed since the hold was created, Redis has deleted this key. The user gets an error and is sent back to search. This is the expiry enforcement.
+If 10 minutes have passed since the hold was created, Redis deleted this key. The user gets an error and is redirected back to the search page. This is the expiry enforcement.
+
+---
 
 **Step 2 — Re-verify no room conflicts:**
 ```ts
-const currentlyHeldIds = await getHeldRoomIds(hold_id); // excludes our own
-const ourRoomIds = hold.rooms.map((r: any) => r.room_id);
+const roomsHeldByOthers = await getRoomsHeldByOthers(hold_id);
+const ourRoomIds         = hold.rooms.map((r: any) => r.room_id);
 
 for (const roomId of ourRoomIds) {
-    if (currentlyHeldIds.includes(roomId)) {
+    if (roomsHeldByOthers.includes(roomId)) {
         throw new Error("One or more rooms are no longer available.");
     }
 }
 ```
-Edge case protection: between when we created the hold and when the user confirms, the `room_held:` keys might have been modified (e.g., due to a Redis restart or a race condition). This check re-verifies our rooms are still locked to us.
+Edge case protection: between when we created the hold and when the user confirms, the room locks might have been modified (Redis restart, rare race condition). This re-verifies our rooms are still ours.
 
-`getHeldRoomIds(hold_id)` — passing our own hold_id excludes our rooms from the "held by others" list, so we don't block ourselves.
+`getRoomsHeldByOthers(hold_id)` — passing our own hold_id skips our own room locks so we don't block ourselves.
 
-**Step 3 — Database transaction:**
+---
+
+**Step 3 — Start a database transaction:**
 ```ts
 const connection = await db.getConnection();
-try {
-    await connection.beginTransaction();
+await connection.beginTransaction();
 ```
-`db.getConnection()` pulls a dedicated connection from the pool. `beginTransaction()` means all subsequent queries on this connection are atomic — either ALL succeed, or ALL are rolled back.
+`getConnection()` pulls a dedicated connection from the pool. `beginTransaction()` means all queries on this connection are atomic — ALL succeed together, or ALL are rolled back together if anything fails.
 
-**Step 4 — Insert booking:**
+---
+
+**Steps 4, 5, 6 — The three DB inserts:**
 ```ts
+// 4. Create the booking record
 const booking_reference = generateReference();
 const bookingId = await bookingModel.createBooking(connection, {
-    booking_status_id: 2,  // CONFIRMED — not PENDING
-    booking_source_id: 1,  // ONLINE
+    booking_status_id: 2, // CONFIRMED — not PENDING
+    booking_source_id: 1, // ONLINE
+    ...
+});
+
+// 5. Link the rooms to this booking (one row per room)
+await bookingModel.createBookingRooms(connection, bookingId, hold.rooms);
+
+// 6. Create a PENDING payment record
+await bookingModel.createPayment(connection, {
+    booking_id: bookingId,
+    payment_method_id,
     ...
 });
 ```
-Goes straight to CONFIRMED (2) — not PENDING — because the payment is handled separately. The booking record is the reservation, payment is a separate concern.
 
-**Step 5 — Insert booking rooms:**
-```ts
-await bookingModel.createBookingRooms(connection, bookingId, hold.rooms);
-```
-Creates one `booking_rooms` row per room. Each row stores the rate snapshot.
+The booking goes straight to CONFIRMED (2) because the payment is a separate concern — the booking IS confirmed, we're just waiting for the money to clear. These 3 inserts all use the same `connection` so they're inside the same transaction.
 
-**Step 6 — Insert payment:**
-```ts
-await bookingModel.createPayment(connection, {
-    hotel_id: hold.hotel_id,
-    booking_id: bookingId,
-    amount: hold.total_amount,
-    payment_method_id: payment_method_id,  // 2=CARD, 3=UPI
-});
-```
-Created as PENDING. Will be updated to SUCCESS when `markPaymentSuccess` is called.
+---
 
 **Step 7 — Commit:**
 ```ts
 await connection.commit();
 connection.release();
 ```
-`commit()` makes all 3 inserts permanent simultaneously. `release()` returns the connection to the pool so other requests can use it.
+`commit()` makes all 3 inserts permanent at the same moment. `release()` returns the connection to the pool so other requests can use it.
+
+---
 
 **Step 8 — Clean up Redis:**
 ```ts
@@ -576,9 +615,11 @@ for (const room of hold.rooms) {
     await redis.del(`room_held:${room.room_id}`);
 }
 ```
-Delete the hold and all room locks. This is done AFTER commit — if we deleted Redis keys before commit and the DB crashed, the rooms would appear available but have no booking record. Always clean Redis after DB success.
+Delete the hold and all room locks. This happens **after** the commit — never before. If we deleted Redis first and the DB commit failed, the rooms would appear available but have a dangling booking record. Always clean Redis after DB success.
 
-**Step 9 — Rollback on error:**
+---
+
+**On any error — rollback:**
 ```ts
 } catch (err) {
     await connection.rollback();
@@ -586,7 +627,7 @@ Delete the hold and all room locks. This is done AFTER commit — if we deleted 
     throw err;
 }
 ```
-If ANY of the 3 inserts fails (DB down, constraint violation, etc), `rollback()` undoes everything — no orphaned booking record, no orphaned booking_rooms, no orphaned payment. The Redis hold stays alive so the user can try again.
+If ANY of the 3 inserts fail (DB down, duplicate key, network timeout), `rollback()` undoes all of them — no partial booking, no orphaned payment row. The Redis hold stays alive so the user can try again.
 
 ---
 
@@ -594,42 +635,51 @@ If ANY of the 3 inserts fails (DB down, constraint violation, etc), `rollback()`
 
 ```ts
 export const markPaymentSuccess = async (booking_id: number) => {
-    await bookingModel.updatePaymentStatus(booking_id, 2); // SUCCESS
+    await bookingModel.updatePaymentStatus(booking_id, 2); // 2 = SUCCESS
 };
 
 export const markPaymentFailed = async (booking_id: number) => {
-    await bookingModel.updatePaymentStatus(booking_id, 3); // FAILED
+    await bookingModel.updatePaymentStatus(booking_id, 3); // 3 = FAILED
 };
 ```
 
-Simple wrappers that call the model with the right status code. In the dummy flow, the frontend calls these directly. In production, `markPaymentSuccess` would be called from a Razorpay/Stripe webhook after the payment gateway confirms money was received.
+Simple one-liners that call the model with the right status code. In the current dev flow, the payment page calls these directly after `confirmBooking`. In production with Razorpay or Stripe, `markPaymentSuccess` would be triggered by the payment gateway's webhook after it confirms money was received — these endpoints would be locked behind webhook signature verification.
 
 ---
 
 ## 4. `booking.controller.ts` — HTTP Layer
 
-Controllers are thin — they just handle HTTP mechanics (parsing request, calling service, sending response).
+Controllers are intentionally thin. Their only job: read the HTTP request, call the service, and send the HTTP response. No business logic here.
 
 ---
 
 ### `paymentPage`
 
 ```ts
-export const paymentPage = (req: Request, res: Response) => {
+export const paymentPage = async (req: Request, res: Response) => {
     const hold_id = req.query.hold_id as string;
+
     if (!hold_id) return res.redirect("/");
-    res.render("booking/payment", { hold_id });
+
+    try {
+        const holdData = await bookingService.getHold(hold_id);
+        res.render("booking/payment", { hold_id, holdData });
+    } catch {
+        return res.redirect("/");
+    }
 };
 ```
 
-`req.query.hold_id` → reads from URL: `/payment-page?hold_id=f59361f3...`
+`req.query.hold_id` → reads from the URL: `/payment-page?hold_id=f59361f3...`
 
-`as string` cast → TypeScript types `req.query` values as `string | string[] | ParsedQs | ParsedQs[]` because query params can technically appear multiple times (`?a=1&a=2`). `as string` tells TypeScript "trust me, it's a single string".
+`as string` cast → TypeScript types `req.query` values as `string | string[] | ParsedQs | ParsedQs[]` because query params can technically repeat (`?a=1&a=2`). `as string` tells TypeScript "treat this as a single string".
 
-`res.render("booking/payment", { hold_id })` → renders `views/booking/payment.ejs` and passes `hold_id` as a template variable.
+**Why `async` and why fetch `holdData` here?**
+The old version was sync and only passed `hold_id` to the template. The EJS then had to do a second `fetch('/bookings/hold/:id')` call after the page loaded — that gap caused the blank blue bar you saw. Now we fetch hold data on the server before rendering, so the page loads fully populated with zero extra client requests.
 
-> **Current limitation:** Only `hold_id` is passed — the full hold data is not. This means the EJS must fetch it client-side via `fetch('/bookings/hold/:id')` after the page loads, causing the brief blank state.
-> **Fix:** Make this `async`, call `bookingService.getHold(hold_id)`, and pass `holdData` to the template so the page renders fully populated.
+`res.render("booking/payment", { hold_id, holdData })` → renders `views/booking/payment.ejs` and passes both variables into it. In the EJS: `<%- JSON.stringify(holdData) %>` dumps the full object into the page's JavaScript.
+
+If the hold is expired or the `hold_id` is invalid, `getHold` throws and the catch block redirects to `/` instead of rendering a broken page.
 
 ---
 
@@ -638,10 +688,10 @@ export const paymentPage = (req: Request, res: Response) => {
 ```ts
 export const holdBooking = async (req: Request, res: Response) => {
     const user = (req as any).user;
-    if (!user) return res.status(401).json({ success: false, error: "Login required" });
+    if (!user) return res.status(401).json({ ... });
 ```
 
-`(req as any).user` → the JWT middleware attaches the decoded token payload to `req.user`. TypeScript doesn't know about this custom property, so `as any` suppresses the type error. In production, extend the Express `Request` type instead.
+`(req as any).user` → the JWT middleware (`validToken`) attaches the decoded token payload to `req.user`. TypeScript doesn't know about this custom property, so `as any` suppresses the type error. In production, extend the Express `Request` type to declare `user` properly.
 
 ```ts
     const { hotel_id, checkin_date, checkout_date, adults, children, rooms, special_requests } = req.body;
@@ -651,31 +701,23 @@ export const holdBooking = async (req: Request, res: Response) => {
     }
 ```
 
-`rooms?.length` — optional chaining: if `rooms` is undefined, `?.length` returns `undefined` (falsy) instead of throwing `Cannot read property 'length' of undefined`.
+`rooms?.length` — optional chaining. If `rooms` is undefined (wasn't sent), `?.length` returns `undefined` (falsy) instead of throwing `Cannot read property 'length' of undefined`.
 
 ```ts
     const result = await bookingService.holdBooking({
         hotel_id:  Number(hotel_id),
-        user_id:   user.userId,       // from JWT payload
-        adults:    Number(adults) || 1,   // default 1 if not provided
-        children:  Number(children) || 0, // default 0 if not provided
+        user_id:   user.userId,
+        adults:    Number(adults)   || 1,
+        children:  Number(children) || 0,
         ...
     });
-    res.json(result);
 ```
 
-`Number(hotel_id)` — body values from JSON are already typed but from form submissions they'd be strings. `Number()` ensures they're always numeric.
+`Number(hotel_id)` — request body values are strings when they come from form submissions. `Number()` ensures they're always numeric before passing to the service.
 
-`user.userId` — the field name in your JWT payload. **Verify this matches what your JWT middleware puts in** — some implementations use `user_id`, others `userId`, `id`, or `sub`.
+`user.userId` — the field name from your JWT payload. **Verify this matches what your `validToken` middleware puts in** — it might be `user_id`, `id`, or `sub` depending on how the token was signed.
 
-Error handling:
-```ts
-    } catch (err: any) {
-        console.error("HOLD ERROR:", err.message);
-        res.status(400).json({ success: false, error: err.message });
-    }
-```
-`err: any` → TypeScript requires explicit typing of caught errors since TS 4.0. Service errors (not enough rooms, invalid dates) are thrown as `Error` objects — `err.message` returns the human-readable message to the client.
+`Number(adults) || 1` — if adults is `0`, `null`, or `undefined`, defaults to `1`.
 
 ---
 
@@ -687,15 +729,17 @@ export const getHold = async (req: Request, res: Response) => {
     res.json(data);
 ```
 
-`req.params.hold_id` → from route `/hold/:hold_id`. `as string` is the fix for the TypeScript error you saw — Express types params as `string | string[]`.
+`req.params.hold_id` → from the route pattern `/hold/:hold_id`. The `:hold_id` part becomes `req.params.hold_id`.
 
-If hold doesn't exist, service throws, caught below:
+`as string` — same reason as before. TypeScript types route params as `string` already, but the cast removes any linter warnings in some configs.
+
+If the hold is expired, the service throws and the catch block returns a `404`:
 ```ts
     } catch (err: any) {
         res.status(404).json({ success: false, error: err.message });
     }
 ```
-404 is correct here — the hold resource doesn't exist (expired or invalid ID).
+404 is correct — the hold resource doesn't exist (expired or bad ID).
 
 ---
 
@@ -711,12 +755,12 @@ export const confirmBooking = async (req: Request, res: Response) => {
 
     const result = await bookingService.confirmBooking(
         hold_id,
-        Number(payment_method_id) || 2  // default to CARD if not provided
+        Number(payment_method_id) || 2  // default to CARD
     );
     res.json(result);
 ```
 
-`Number(payment_method_id) || 2` — if `payment_method_id` is `0`, `null`, `undefined`, or `NaN`, defaults to `2` (CARD). The payment page sends `2` for card tab, `3` for UPI tab.
+`Number(payment_method_id) || 2` — if `payment_method_id` is `0`, `null`, or `undefined`, defaults to `2` (CARD). The payment page sends `2` for the card tab and `3` for UPI.
 
 ---
 
@@ -731,122 +775,115 @@ export const paymentSuccess = async (req: Request, res: Response) => {
 };
 ```
 
-These are simple pass-through controllers. In the dummy flow, the payment EJS calls these directly. In production with Razorpay:
-- You'd verify the webhook signature first
-- Then call `markPaymentSuccess`
-- These endpoints would be removed or locked behind webhook verification middleware
+Straight pass-through controllers. Validate input → call service → respond. In production these would verify a Razorpay/Stripe webhook signature before trusting the `booking_id`.
 
 ---
 
 ## 5. `booking.router.ts` — Route Definitions
 
 ```ts
-import { validToken } from "../../../common/middlewares/verifyJWTToken";
+// Page routes
+router.get("/payment-page", bookingController.paymentPage);
 
-const router = Router();
-
-router.get("/payment-page",      bookingController.paymentPage);
-
-router.post("/hold",   validToken, bookingController.holdBooking);
-router.get("/hold/:hold_id",       bookingController.getHold);
-router.post("/confirm",            bookingController.confirmBooking);
-router.post("/payment-success",    bookingController.paymentSuccess);
-router.post("/payment-failed",     bookingController.paymentFailed);
+// API routes
+router.post("/hold",            validToken, bookingController.holdBooking);   // needs login
+router.get("/hold/:hold_id",               bookingController.getHold);
+router.post("/confirm",                    bookingController.confirmBooking);
+router.post("/payment-success",            bookingController.paymentSuccess);
+router.post("/payment-failed",             bookingController.paymentFailed);
 ```
 
-**`validToken` middleware on `/hold` only:**
+**Why only `/hold` has `validToken`:**
 
-| Route | Auth required | Why |
-|-------|-------------|-----|
-| `GET /payment-page` | No | Page render — the hold_id in URL is the auth |
-| `POST /hold` | **Yes** | Must be logged in to create a booking |
-| `GET /hold/:hold_id` | No | Payment page needs to fetch hold data |
-| `POST /confirm` | No | Hold itself is the auth token |
-| `POST /payment-success` | No | Would be webhook in production |
-| `POST /payment-failed` | No | Would be webhook in production |
+| Route | Auth | Reason |
+|-------|------|--------|
+| `GET /payment-page` | No | Server renders the page — hold_id in URL is enough |
+| `POST /hold` | **Yes** | Must be logged in to create a reservation |
+| `GET /hold/:hold_id` | No | Payment page fetches this — hold_id acts as the token |
+| `POST /confirm` | No | hold_id (a UUID) acts as implicit auth |
+| `POST /payment-success` | No | Would be a webhook in production |
+| `POST /payment-failed` | No | Would be a webhook in production |
 
-**Why is `/confirm` not protected?**  
-The `hold_id` (a UUID) acts as a secret token — it's only known to the user who created the hold. An attacker would need to guess a 122-bit UUID. In production, you'd add `validToken` here too and verify `hold.user_id === req.user.userId`.
+**Why is `/confirm` not protected?**
+The `hold_id` is a UUID — 122 bits of randomness. An attacker would need to guess correctly from 2^122 possibilities. It functions as a short-lived secret token. In production, add `validToken` and verify `hold.user_id === req.user.userId` inside the service.
 
 ---
 
 ## 6. Complete Flow — User Journey
 
 ```
-1. USER ON SEARCH RESULTS PAGE
-   Selects rooms, clicks "Continue To Book"
+1. USER SELECTS ROOMS on search results page
+   Chooses room types and quantities, clicks "Continue To Book"
         ↓
-2. FRONTEND — createHold()
-   POST /bookings/hold
-   Body: { hotel_id, checkin_date, checkout_date, adults, children,
-           rooms: [{ room_type_id: 28, qty: 1 }] }
+2. FRONTEND calls POST /bookings/hold
+   Body: {
+     hotel_id: 10,
+     checkin_date: "2026-06-11",
+     checkout_date: "2026-06-30",
+     adults: 2, children: 0,
+     rooms: [{ room_type_id: 28, qty: 1 }]
+   }
         ↓
 3. CONTROLLER — holdBooking()
-   Validates user is logged in (JWT)
-   Validates required fields present
+   ✓ User is logged in (JWT check)
+   ✓ Required fields present
+   → calls bookingService.holdBooking()
         ↓
 4. SERVICE — holdBooking()
-   a. calcNights() — validate dates
-   b. DB query: fetch hotel_name
-   c. Redis: getHeldRoomIds() — who's holding what right now
-   d. DB query: getAvailableRooms() — status=1 AND no booking overlap
-   e. Filter: remove Redis-held rooms from results
-   f. Slice: take only qty needed
-   g. Build holdPayload with all booking data
-   h. Redis SET hold:{uuid} = payload  EX 600
-   i. Redis SET room_held:{room_id} = hold_id  EX 600
-   j. Return { success, hold_id, total_amount, nights, rooms }
+   a. calcNights() → 19 nights
+   b. DB: fetch hotel_name → "Grand Palace Hotel"
+   c. Redis: getRoomsHeldByOthers() → [97, 98] (rooms held by others)
+   d. DB: getAvailableRooms(qty=1+2=3) → [room 96, room 99, room 100]
+   e. Filter: remove [97,98] → [96, 99, 100] (none removed here)
+   f. Slice to 1 → [room 96]
+   g. Build holdPayload { hold_id, hotel_name, rooms, total_amount=60800 ... }
+   h. Redis SET hold:uuid = payload  EX 600
+   i. Redis SET room_held:96 = hold_id  EX 600
+   j. Return { success, hold_id, total_amount: 60800 }
         ↓
-5. FRONTEND — redirects
+5. FRONTEND redirects to payment page
    window.location.href = `/bookings/payment-page?hold_id=${data.hold_id}`
         ↓
-6. CONTROLLER — paymentPage()
-   Reads hold_id from query param
-   res.render("booking/payment", { hold_id })
+6. CONTROLLER — paymentPage() [async]
+   Calls bookingService.getHold(hold_id)
+   → Redis returns full holdPayload + secondsLeft
+   res.render("booking/payment", { hold_id, holdData })
         ↓
-7. PAYMENT PAGE LOADS
-   EJS renders with hold_id
-   initPage() calls GET /bookings/hold/:hold_id
+7. PAYMENT PAGE LOADS — fully populated immediately
+   EJS injects holdData into the page JavaScript:
+     const HOLD_DATA = { hotel_name, rooms, total_amount, expires_in_seconds ... }
+   populateSummary() → fills in all summary fields
+   startCountdown(secondsLeft) → timer starts from actual remaining time
         ↓
-8. CONTROLLER — getHold()
-   SERVICE — getHold()
-   Redis GET hold:{hold_id}
-   Redis TTL hold:{hold_id} → seconds remaining
-   Returns full hold payload + expires_in_seconds
+8. USER FILLS PAYMENT DETAILS + CLICKS PAY
+   validate() → checks card number / UPI
+   processPayment() → shows spinner, simulates 2.5s processing
         ↓
-9. PAYMENT PAGE — populateSummary()
-   Fills in hotel name, dates, rooms, prices
-   startCountdown(expires_in_seconds) — shows timer
+9. FRONTEND calls POST /bookings/confirm
+   Body: { hold_id: "f59361f3...", payment_method_id: 2 }
         ↓
-10. USER FILLS PAYMENT DETAILS + CLICKS PAY
-    processPayment() → validate() → simulate 2.5s delay
+10. CONTROLLER — confirmBooking()
+    ✓ hold_id present
+    → calls bookingService.confirmBooking()
         ↓
-11. FRONTEND — confirmBookingAPI()
-    POST /bookings/confirm
-    Body: { hold_id, payment_method_id: 2 }
+11. SERVICE — confirmBooking()
+    Step 1: Redis GET hold:uuid → hold payload (throws if expired)
+    Step 2: getRoomsHeldByOthers(hold_id) → verify no conflicts
+    Step 3: db.getConnection() + beginTransaction()
+    Step 4: createBooking()     → INSERT bookings        → bookingId = 881
+    Step 5: createBookingRooms()→ INSERT booking_rooms   (rate snapshot)
+    Step 6: createPayment()     → INSERT payments PENDING
+    Step 7: connection.commit() → all 3 inserts permanent
+    Step 8: Redis DEL hold:uuid
+            Redis DEL room_held:96
+    Return: { success, booking_id: 881, booking_reference: "HBMS-A3X9K2" }
         ↓
-12. SERVICE — confirmBooking()
-    a. Redis GET hold:{hold_id} — verify hold still alive
-    b. getHeldRoomIds(hold_id) — verify no conflicts
-    c. db.getConnection() + beginTransaction()
-    d. createBooking() → INSERT bookings → returns booking_id
-    e. createBookingRooms() → INSERT booking_rooms (rate snapshot)
-    f. createPayment() → INSERT payments (PENDING)
-    g. connection.commit()
-    h. connection.release()
-    i. Redis DEL hold:{hold_id}
-    j. Redis DEL room_held:{room_id} for each room
-    k. Return { success, booking_id, booking_reference }
+12. FRONTEND calls POST /bookings/payment-success
+    Body: { booking_id: 881 }
+    → UPDATE payments SET payment_status_id=2, paid_at=NOW()
         ↓
-13. FRONTEND — calls /payment-success
-    POST /bookings/payment-success
-    Body: { booking_id }
-        ↓
-14. SERVICE — markPaymentSuccess()
-    UPDATE payments SET payment_status_id = 2, paid_at = NOW()
-        ↓
-15. FRONTEND — showSuccessResult(booking_reference)
-    Shows "Booking Confirmed! HBMS-A3X9K2"
+13. FRONTEND shows success screen
+    "Booking Confirmed! HBMS-A3X9K2"
     Button: "View Booking" → /bookings/my
 ```
 
@@ -856,14 +893,14 @@ The `hold_id` (a UUID) acts as a secret token — it's only known to the user wh
 
 | Key Pattern | Value | TTL | Purpose |
 |-------------|-------|-----|---------|
-| `hold:{uuid}` | JSON holdPayload | 600s | Full hold data |
-| `room_held:{room_id}` | hold_id string | 600s | Room lock — prevents double booking |
+| `hold:{uuid}` | JSON holdPayload | 600s | Full hold data for payment page + confirm |
+| `room_held:{room_id}` | hold_id string | 600s | Room lock — prevents other users booking same room |
 
 **What happens when TTL expires (user abandons payment):**
 
-Both keys expire automatically. The room becomes holdable again by the next user — `getHeldRoomIds()` won't return it, `getAvailableRooms()` will include it. No cleanup job needed.
+Both keys delete themselves. The next user calling `getRoomsHeldByOthers()` won't see this room anymore. `getAvailableRooms()` will include it again. No cleanup job, no cron, no manual intervention needed.
 
-The booking was never written to MySQL (only written in `confirmBooking`), so there's nothing to roll back in the database.
+The booking was never written to MySQL (that only happens in `confirmBooking`), so there is nothing to roll back in the database either.
 
 ---
 
@@ -898,54 +935,56 @@ The booking was never written to MySQL (only written in `confirmBooking`), so th
 ### After `confirmBooking` (written to MySQL):
 ```
 bookings table:
-  booking_id: 881
-  hotel_id: 10
-  user_id: 22
-  booking_status_id: 2 (CONFIRMED)
-  booking_source_id: 1 (ONLINE)
+  booking_id:        881
+  hotel_id:          10
+  user_id:           22
+  booking_status_id: 2          (CONFIRMED)
+  booking_source_id: 1          (ONLINE)
   booking_reference: "HBMS-A3X9K2"
-  checkin_date: "2026-06-11"
-  checkout_date: "2026-06-30"
-  total_amount: 60800.00
+  checkin_date:      "2026-06-11"
+  checkout_date:     "2026-06-30"
+  total_amount:      60800.00
 
 booking_rooms table:
-  booking_room_id: 1204
-  booking_id: 881
-  room_id: 96
-  rate_per_night: 3200.00   ← snapshot
+  booking_room_id:  1204
+  booking_id:       881
+  room_id:          96
+  rate_per_night:   3200.00    ← price snapshot at time of booking
 
 payments table:
-  hotel_id: 10
-  booking_id: 881
-  payment_method_id: 2 (CARD)
-  payment_status_id: 1 (PENDING)
-  amount: 60800.00
-  paid_at: NULL
+  hotel_id:          10
+  booking_id:        881
+  payment_method_id: 2          (CARD)
+  payment_status_id: 1          (PENDING)
+  amount:            60800.00
+  paid_at:           NULL
 ```
 
 ### After `markPaymentSuccess`:
 ```
 payments table:
-  payment_status_id: 2 (SUCCESS)
-  paid_at: "2026-06-11 10:30:45"
+  payment_status_id: 2          (SUCCESS)
+  paid_at:           "2026-06-11 10:30:45"
 ```
 
 ---
 
 ## 9. Error Handling Map
 
-| Where | Error condition | What happens |
-|-------|----------------|-------------|
-| `calcNights` | checkout ≤ checkin | Throws — 400 response to client |
-| `holdBooking` | Not enough rooms | Throws with count — 400 response |
-| `holdBooking` | Hotel not found | `hotel_name` defaults to `""` — no crash |
-| `getHold` | Hold expired / bad ID | Throws — 404 response / redirect to `/` |
-| `confirmBooking` | Hold expired | Throws — 400, user told to start again |
-| `confirmBooking` | Room conflict | Throws — 400, user told to search again |
-| `confirmBooking` | DB error mid-transaction | Rollback — no partial data, Redis hold stays alive |
-| `paymentPage` | No hold_id in URL | Redirect to `/` |
-| `holdBooking` | Not logged in | 401 — "Login required" |
+| Where it happens | Condition | What the user sees |
+|-----------------|-----------|-------------------|
+| `calcNights` | checkout ≤ checkin | 400 — "Check-out must be after check-in" |
+| `holdBooking` | Not enough rooms of a type | 400 — "Only X room(s) available for Y" |
+| `holdBooking` | No rooms selected | 400 — "No rooms selected" |
+| `holdBooking` | hotel_id doesn't exist | `hotel_name` defaults to `""` — no crash |
+| `getHold` | Hold expired or bad ID | 404 OR redirect to `/` |
+| `confirmBooking` | Hold expired (10 min passed) | 400 — "Hold expired. Please start again" |
+| `confirmBooking` | Room conflict on re-verify | 400 — "Rooms no longer available" |
+| `confirmBooking` | DB error inside transaction | Rollback — no partial data, hold stays alive |
+| `paymentPage` | No `hold_id` in URL | Redirect to `/` |
+| `paymentPage` | Hold expired at render time | Redirect to `/` |
+| `holdBooking` | User not logged in | 401 — "Login required" |
 
 ---
 
-*End of Booking Module Documentation*
+*End of Booking Module Documentation (v2)*
