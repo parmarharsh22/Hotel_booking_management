@@ -8,7 +8,8 @@ export class GuestBookingController {
   // GET /bookings
   async listMyBookings(req: Request, res: Response) {
     try {
-      const userId = (req as any).user?.user_id as number;
+      const userId = (req as any).user?.userId as number;
+      console.log(userId);
       const bookings = await bookingService.getBookingsByUser(userId);
       console.log(bookings);
       return res.status(200).render("myBookings/bookings", { bookings });
@@ -20,7 +21,7 @@ export class GuestBookingController {
   // GET /bookings/:bookingId
   async getBookingDetail(req: Request, res: Response) {
     try {
-      const userId    = (req as any).user?.user_id as number;
+      const userId    = (req as any).user?.userId as number;
       const bookingId = parseInt(req.params.bookingId as any);
       const booking   = await bookingService.getBookingDetail(bookingId, userId);
       return res.status(200).render("myBookings/detail", { booking });
