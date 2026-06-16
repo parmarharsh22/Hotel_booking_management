@@ -251,27 +251,33 @@
         border-radius: 20px;
         padding: 40px;
         text-align: center;
-        width: 320px;
-      }
+    width: min(320px, calc(100vw - 32px));    
+    }
 
       /* Result screen */
 
-      #result-screen {
-        position: fixed;
-        inset: 0;
-        background: #f1f5f9;
-        z-index: 200;
-        align-items: center;
-        justify-content: center;
-      }
+#result-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(5px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#result-screen:not(.hidden) {
+    display: flex;
+}
 
       .result-card {
         background: #fff;
         border-radius: 20px;
         padding: 40px;
         text-align: center;
-        width: 400px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        width: min(400px, calc(100vw - 32px));
+       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
       }
 
       .spinner {
@@ -341,7 +347,7 @@
     <!-- Main layout -->
 
     <div class="min-h-screen flex items-start justify-center py-10 px-4">
-      <div class="w-full max-w-4xl flex gap-6 items-start">
+<div class="w-full max-w-6xl flex flex-col lg:flex-row gap-6 items-start">  
         <!-- Left: Payment form -->
 
         <div class="flex-1">
@@ -410,8 +416,8 @@
 
             <!-- Tabs -->
 
-            <div class="flex gap-1 bg-slate-100 p-1 rounded-xl mb-6">
-              <button
+<div class="flex flex-col sm:flex-row gap-1 bg-slate-100 p-1 rounded-xl mb-6">
+                <button
                 class="tab-btn active flex-1 flex items-center justify-center gap-2"
                 onclick="switchTab('card', this)"
               >
@@ -563,8 +569,8 @@
                 Choose your UPI app
               </p>
 
-              <div class="grid grid-cols-3 gap-3 mb-5">
-                <div class="upi-app" onclick="selectUpiApp(this, 'gpay')">
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">         
+         <div class="upi-app" onclick="selectUpiApp(this, 'gpay')">
                   <div
                     class="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 mx-auto mb-2 flex items-center justify-center"
                   >
@@ -624,8 +630,8 @@
 
           <!-- Security badges -->
 
-          <div class="flex items-center justify-center gap-6 mt-4">
-            <span class="badge">
+<div class="flex flex-wrap items-center justify-center gap-4 mt-4">
+              <span class="badge">
               <svg
                 class="w-3.5 h-3.5 text-green-500"
                 fill="none"
@@ -673,8 +679,8 @@
 
         <!-- Right: Order summary -->
 
-        <div class="w-80 flex-shrink-0">
-          <div class="card p-5 sticky top-8">
+<div class="w-full lg:w-80 flex-shrink-0 order-first lg:order-none">
+            <div class="card p-5 sticky top-8">
             <h2 class="text-sm font-semibold text-slate-800 mb-4">
               Booking Summary
             </h2>
@@ -1298,11 +1304,8 @@
         <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
  
       </div>`;
-
-        document.getElementById("result-title").textContent = "Hold Expired";
-
-        document.getElementById("result-msg").textContent =
-          "Your 10-minute hold has expired. Please search again to book.";
+document.getElementById("result-msg").textContent =
+  "Your reservation time has ended and the selected room has been released. Search again to continue your booking.";
 
         document.getElementById("result-ref").classList.add("hidden");
 
