@@ -11,6 +11,7 @@
 
 <!-- Top bar -->
  
+ 
 <div class="px-8 py-5 border-b border-surface-border flex items-center gap-4">
  
   <a href="/superadmin/hotels" class="p-1.5 rounded-lg text-muted hover: hover:bg-surface-2 transition-colors">
@@ -90,31 +91,40 @@
       </div>
  
  
-      <div>
- 
-        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">City</label>
- 
-        <input type="text" name="city" id="city" placeholder="City" class="input-field text-sm" />
- 
-      </div>
- 
- 
-      <div>
- 
-        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">State</label>
- 
-        <input type="text" name="state" id="state" placeholder="State" class="input-field text-sm" />
- 
-      </div>
- 
- 
-      <div>
- 
-        <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">Country</label>
- 
-        <input type="text" name="country" id="country" placeholder="Country" class="input-field text-sm" />
- 
-      </div>
+    <!-- Country -->
+<div>
+    <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">
+        Country
+    </label>
+
+    <select id="country" name="country" class="input-field text-sm">
+        <option value="">Select Country</option>
+    </select>
+</div>
+
+
+<!-- State -->
+<div>
+    <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">
+        State
+    </label>
+
+    <select id="state" name="state" class="input-field text-sm" disabled>
+        <option value="">Select State</option>
+    </select>
+</div>
+
+
+<!-- City -->
+<div>
+    <label class="block text-xs text-muted font-mono uppercase tracking-wider mb-1.5">
+        City
+    </label>
+
+    <select id="city" name="city" class="input-field text-sm" disabled>
+        <option value="">Select City</option>
+    </select>
+</div>
  
  
       <div>
@@ -211,108 +221,320 @@
  
  
 <script>
- 
-  // async function submitForm() {
- 
-  //   const btn = document.getElementById('submit-btn');
- 
-  //   const errEl = document.getElementById('form-error');
- 
- 
-  //   const fields = ['name','email','phone','address','city','state','country','logo_url','cover_url',
- 
-  //                   'admin_first_name','admin_last_name','admin_email'];
- 
-  //   const body = {};
- 
-  //   fields.forEach(f => body[f] = document.getElementById(f).value.trim());
- 
- 
-  //   if (!body.name || !body.email || !body.admin_first_name || !body.admin_last_name || !body.admin_email) {
- 
-  //     errEl.textContent = 'Please fill in all required fields.';
- 
-  //     errEl.classList.remove('hidden');
- 
-  //     return;
- 
-  //   }
- 
- 
-  //   errEl.classList.add('hidden');
- 
-  //   btn.disabled = true;
- 
-  //   btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg> Creating...`;
- 
- 
-  //   try {
- 
-  //     const res = await fetch('/superadmin/hotels', {
- 
-  //       method: 'POST',
- 
-  //       headers: { 'Content-Type': 'application/json' },
- 
-  //       body: JSON.stringify(body)
- 
-  //     });
- 
- 
-  //     if (res.ok) {
- 
-  //       window.location.href = '/superadmin/hotels';
- 
-  //     } else {
- 
-  //       const msg = await res.text();
- 
-  //       errEl.textContent = msg || 'Failed to create hotel.';
- 
-  //       errEl.classList.remove('hidden');
- 
-  //       btn.disabled = false;
- 
-  //       btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Create Hotel`;
- 
-  //     }
- 
-  //   } catch {
- 
-  //     errEl.textContent = 'Network error. Please try again.';
- 
-  //     errEl.classList.remove('hidden');
- 
-  //     btn.disabled = false;
- 
-  //     btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Create Hotel`;
- 
-  //   }
- 
-  // }
- async function submitForm() {
+
+const countrySelect = document.getElementById("country");
+const stateSelect = document.getElementById("state");
+const citySelect = document.getElementById("city");
+
+
+/* ===============================
+   Load Countries
+================================= */
+async function loadCountries() {
+    try {
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/positions"
+        );
+
+        const result = await response.json();
+
+        countrySelect.innerHTML =
+            '<option value="">Select Country</option>';
+
+        result.data
+            .sort((a,b) => a.name.localeCompare(b.name))
+            .forEach(country => {
+
+                const option = document.createElement("option");
+
+                option.value = country.name;
+                option.textContent = country.name;
+
+                countrySelect.appendChild(option);
+            });
+
+    } catch(err) {
+
+        console.error("Failed to load countries", err);
+
+    }
+}
+
+
+/* ===============================
+   Load States
+================================= */
+async function loadStates(country) {
+
+    stateSelect.disabled = true;
+    citySelect.disabled = true;
+
+    stateSelect.innerHTML =
+        '<option>Loading states...</option>';
+
+    try {
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/states",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    country: country
+                })
+            }
+        );
+
+
+        const result = await response.json();
+
+
+        stateSelect.innerHTML =
+            '<option value="">Select State</option>';
+
+
+        result.data.states
+            .sort((a,b) => a.name.localeCompare(b.name))
+            .forEach(state => {
+
+                const option = document.createElement("option");
+
+                option.value = state.name;
+                option.textContent = state.name;
+
+                stateSelect.appendChild(option);
+
+            });
+
+
+        stateSelect.disabled = false;
+
+
+    } catch(err) {
+
+        console.error("Failed loading states", err);
+
+    }
+
+}
+
+
+/* ===============================
+   Load Cities
+================================= */
+async function loadCities(country, state) {
+
+    citySelect.disabled = true;
+
+    citySelect.innerHTML =
+        '<option>Loading cities...</option>';
+
+
+    try {
+
+
+        const response = await fetch(
+            "https://countriesnow.space/api/v0.1/countries/state/cities",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify({
+                    country: country,
+                    state: state
+                })
+            }
+        );
+
+
+        const result = await response.json();
+
+
+        citySelect.innerHTML =
+            '<option value="">Select City</option>';
+
+
+        result.data
+            .sort((a,b) => a.localeCompare(b))
+            .forEach(city => {
+
+
+                const option =
+                    document.createElement("option");
+
+
+                option.value = city;
+
+                option.textContent = city;
+
+
+                citySelect.appendChild(option);
+
+            });
+
+
+        citySelect.disabled = false;
+
+
+    } catch(err) {
+
+        console.error("Failed loading cities", err);
+
+    }
+}
+
+
+
+/* ===============================
+   Dropdown Events
+================================= */
+
+countrySelect.addEventListener("change", function(){
+
+    stateSelect.innerHTML =
+        '<option value="">Select State</option>';
+
+    citySelect.innerHTML =
+        '<option value="">Select City</option>';
+
+
+    stateSelect.disabled = true;
+    citySelect.disabled = true;
+
+
+    if(this.value){
+
+        loadStates(this.value);
+
+    }
+
+});
+
+
+stateSelect.addEventListener("change", function(){
+
+    citySelect.innerHTML =
+        '<option value="">Select City</option>';
+
+    citySelect.disabled = true;
+
+
+    if(this.value){
+
+        loadCities(
+            countrySelect.value,
+            this.value
+        );
+
+    }
+
+});
+
+
+/* ===============================
+   Submit Form
+================================= */
+
+async function submitForm() {
+
+
     const formData = new FormData();
 
-    // text fields
-    ['name','email','phone','address','city','state','country',
-     'admin_first_name','admin_last_name','admin_email'].forEach(f => {
-        formData.append(f, document.getElementById(f).value.trim());
+
+    const fields = [
+        "name",
+        "email",
+        "phone",
+        "address",
+        "country",
+        "state",
+        "city",
+        "admin_first_name",
+        "admin_last_name",
+        "admin_email"
+    ];
+
+
+    fields.forEach(field => {
+
+        const element =
+            document.getElementById(field);
+
+        formData.append(
+            field,
+            element.value.trim()
+        );
+
     });
 
-    // file fields
-    const logo  = document.getElementById('logo_url').files[0];
-    const cover = document.getElementById('cover_url').files[0];
-    if (logo)  formData.append('logo_url',  logo);
-    if (cover) formData.append('cover_url', cover);
 
-    const res = await fetch('/superadmin/hotels', {
-        method: 'POST',
-        body: formData,
-        // NO Content-Type header — browser sets it automatically with boundary
-    });
 
-    if (res.ok) window.location.href = '/superadmin/hotels';
+    // Images
+
+    const logo =
+        document.getElementById("logo_url").files[0];
+
+
+    const cover =
+        document.getElementById("cover_url").files[0];
+
+
+    if(logo){
+        formData.append("logo_url", logo);
+    }
+
+
+    if(cover){
+        formData.append("cover_url", cover);
+    }
+
+
+    try {
+
+        const res = await fetch(
+            "/superadmin/hotels",
+            {
+                method:"POST",
+                body: formData
+            }
+        );
+
+
+        if(res.ok){
+
+            window.location.href =
+                "/superadmin/hotels";
+
+        } else {
+
+            alert("Failed to create hotel");
+
+        }
+
+
+    } catch(error){
+
+        console.error(error);
+
+        alert("Something went wrong");
+
+    }
+
 }
+
+
+/* ===============================
+   Initial Load
+================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadCountries
+);
 
 </script>
  
