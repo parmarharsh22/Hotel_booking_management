@@ -12,7 +12,6 @@ import hotelAdminRoutes from "./modules/hotelAdmin/hotelAdmin.routes";
 import BookingRoutes from "./modules/booking/routes/booking.routes";
 import frontDeskRouter from "./modules/FrontDesk/routes/frontDeskRoutes";
 import invoice from "./modules/invoices/invoiceMain.routes";
-import myBookings from "./modules/booking/routes/myBookings.router";
 
 const app = express();
 
@@ -45,7 +44,6 @@ app.use("/bookings", BookingRoutes)
 
 app.use("/frontDesk",frontDeskRouter);
 app.use("/invoices",invoice);
-app.use("/myBookings",myBookings);
 
 //All the unproctedRoutes
 app.use("/",authRouter);
