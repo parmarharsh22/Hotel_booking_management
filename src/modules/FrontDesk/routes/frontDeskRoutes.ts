@@ -2,13 +2,30 @@ import express from "express";
 import { validToken } from "../../../common/middlewares/verifyJWTToken";
 import { allowRoles } from "../../../common/middlewares/allowedRoles";
 import * as frontDeskController from "../controller/frontDeskController";
+import { frontDeskContext } from "../../../common/middlewares/frontDeskOnly/loadSideBar";
+import { upload } from "../../../common/middlewares/multerCloud";
 
 const frontDeskRouter = express.Router();
 
-//indexPage
+// dashboard home
 frontDeskRouter.get("/home",validToken,allowRoles("FRONT_DESK"),frontDeskController.showHomePage);
 
+// guest confirmation page
+frontDeskRouter.get("/checkIn/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showGuestVerification);
 
-//logoutPage
-frontDeskRouter.get("/logout",validToken,allowRoles("FRONT_DESK"),frontDeskController.logout);
-export default frontDeskRouter
+// identity capture page
+frontDeskRouter.get("/verifyIdentity/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showDocumentGathring);
+
+// upload identity document
+frontDeskRouter.post("/uploadDocuments/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK"),upload.single("document"),frontDeskController.storeDoc);
+
+// room status page
+frontDeskRouter.get("/showRoomStatuses",validToken,allowRoles("FRONT_DESK"),frontDeskContext,frontDeskController.showRoomStatus);
+
+// get All bookings of the hotel
+frontDeskRouter.get("/bookings",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getBookingsOfHotel);
+
+// logout
+frontDeskRouter.get("/logout",validToken,frontDeskController.logout);
+
+export default frontDeskRouter;

@@ -75,7 +75,7 @@ export const createHotel = async (req: Request, res: Response) => {
         file.buffer,
         `cover-${Date.now()}`,
         "/hotels/covers",
-      );
+      ); 
     }
 
     await tenantService.createHotel(req.body);
