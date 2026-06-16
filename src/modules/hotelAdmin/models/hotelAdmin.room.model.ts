@@ -14,6 +14,7 @@ export interface RoomInterface {
 export interface RoomUpdateInterface {
   room_type_id?:   number;
   room_number?:    string;
+  room_status_id:number | string;
   floor?:          number | null;
   photo_url?:      string | null;
   notes?:          string | null;
@@ -28,6 +29,7 @@ export class RoomModel {
            r.room_id,
            r.hotel_id,
            r.room_number,
+           r.room_status_id,
            r.floor,
            rt.photo_url,
            r.notes,
@@ -35,6 +37,7 @@ export class RoomModel {
            rt.type_name,
            rt.base_price,
            rs.status_name
+           
          FROM rooms r
          INNER JOIN room_types   rt ON r.room_type_id   = rt.room_type_id
          INNER JOIN room_statuses rs ON r.room_status_id = rs.room_status_id
@@ -73,7 +76,7 @@ export class RoomModel {
     try {
       const [data]: any = await db.query(
         `INSERT INTO rooms (hotel_id, room_type_id, room_status_id, room_number, floor, notes)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           room.hotel_id,
           room.room_type_id,
@@ -97,14 +100,17 @@ export class RoomModel {
         `UPDATE rooms
          SET room_type_id = ?,
              room_number  = ?,
+             room_status_id = ?,
              floor        = ?,
              notes        = ?
          WHERE room_id = ? AND hotel_id = ?`,
         [
           data.room_type_id,
           data.room_number,
+          data.room_status_id,
           data.floor     ?? null,
           data.notes     ?? null,
+
           roomId,
           hotelId,
         ]
@@ -143,25 +149,39 @@ export class RoomModel {
     }
   }
 
+static async VerifyRoomExistence(
+    room_number:number,
+    hotelId: number
+): Promise<boolean> {
+    try {
 
-static async VerifyRoomExistence(room_number:number ,hotelId:number):Promise<boolean>{
-  try{
-    const [result]:any = await db.query(
-      `
-      SELECT room_id ROOMS where room_number = ? AND hotel_id = ? 
-      `
-      ,[room_number , hotelId]
-    )
-  if(result.affectedRows>0){
-    return true;
-  }
-    return false;
+        const [rows]: any = await db.query(
+            `
+            SELECT room_id
+            FROM rooms
+            WHERE room_number = ?
+            AND hotel_id = ?
+            `,
+            [room_number, hotelId]
+        );
 
+        return rows.length > 0;
 
-  }catch(e:any){
-    throw e;
-    
-  }
+    } catch (e: any) {
+        throw e;
+    }
 }
+
+
+
+  static async getRoomStatuses(): Promise<any[]>{
+
+    try{
+      const [rows] : any = await db.query(`SELECT * FROM  room_statuses`);
+      return rows;
+    }catch(err:any){
+      throw  err;
+    }
+  }
 
 }

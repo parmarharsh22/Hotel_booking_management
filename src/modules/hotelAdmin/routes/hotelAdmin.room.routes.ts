@@ -3,6 +3,7 @@ import { AdminRoomController } from "../controllers/hotelAdmin.room.controller";
 import { uploadRoomPhoto } from "../../../common/middlewares/multer";
 import { validToken } from "../../../common/middlewares/verifyJWTToken";
 import { allowRoles } from "../../../common/middlewares/allowedRoles";
+import fetchHotel from "../controllers/fetchHotelName.controller";
 
 const adminController = new AdminRoomController();
 
@@ -39,4 +40,29 @@ router.delete("/rooms/:roomId",validToken,allowRoles("ADMIN"),adminController.de
 // Change room status only (separate from full update)
 router.put("/rooms/:roomId/status",validToken,allowRoles("ADMIN"),adminController.updateRoomStatus.bind(adminController));
 
-export default router;
+
+router.get("/rooms/verifyRoomExists" , validToken,allowRoles("ADMIN"),adminController.isRoomExists.bind(adminController))
+
+router.get(
+    "/room-types-siddharth",
+    validToken,
+    allowRoles("ADMIN"),
+    adminController.getRoomTypes.bind(adminController)
+);
+
+
+router.get("/hotel", validToken,allowRoles("ADMIN"),fetchHotel)
+
+
+router.get("/dashboard",(req,res)=>{  
+  res.render("admin/dashboard")
+})
+
+router.get(
+    "/room-statuses",
+    validToken,
+    allowRoles("ADMIN"),
+    adminController.getRoomStatuses.bind(adminController)
+);
+
+export default router;   

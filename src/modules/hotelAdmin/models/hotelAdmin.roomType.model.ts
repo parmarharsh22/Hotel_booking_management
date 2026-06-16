@@ -180,10 +180,11 @@ export class RoomTypeModel {
     }
   }
 
-  
+
 
 
 
 
 }
+
 
