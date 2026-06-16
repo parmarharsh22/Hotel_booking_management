@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeStay - Identity Verification</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; }
+    </style>
+</head>
+
+<body>
+
+    <%- include('../partials/frontDesk/sidebar') %>
+
+    <div class="lg:ml-[260px] min-h-screen">
+
+        <!-- Header -->
+        <header class="bg-white border-b px-8 py-5 flex justify-between items-center sticky top-0 z-30">
+            <div>
+                <h1 class="text-2xl font-bold text-primary">Guest Identity Verification</h1>
+                <p class="text-sm text-gray-500">Capture and verify guest documents at check-in</p>
+            </div>
+
+            <!-- BUG FIX: original linked to /frontDesk/confirmGuest/... which doesn't exist.
+                 The booking-details page lives at /frontDesk/checkIn/:bookingRef. -->
+            <a href="/frontDesk/checkIn/<%= booking.booking_reference %>"
+               class="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                Back
+            </a>
+        </header>
+
+        <main class="p-8 space-y-8">
+
+            <!-- Guest Summary -->
+            <section class="bg-white p-6 rounded-xl border">
+
+                <h2 class="text-lg font-semibold mb-4">Booking &amp; Guest Summary</h2>
+
+                <div class="grid md:grid-cols-3 gap-6">
+
+                    <div>
+                        <label class="text-sm text-gray-500">Booking Reference</label>
+                        <input readonly value="<%= booking.booking_reference %>"
+                               class="w-full mt-1 border rounded-lg p-2 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-gray-500">Guest Name</label>
+                        <input readonly value="<%= booking.first_name + ' ' + booking.last_name %>"
+                               class="w-full mt-1 border rounded-lg p-2 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-gray-500">Phone</label>
+                        <input readonly value="<%= booking.phone || 'N/A' %>"
+                               class="w-full mt-1 border rounded-lg p-2 bg-gray-50">
+                    </div>
+
+                    <!-- BUG FIX: original referenced `first_name` and `last_name` directly,
+                         but this page only receives `booking` (VerificationPageRow).
+                         The controller (showDocumentGathring) does not pass staff name locals.
+                         These fields now show a placeholder; to show real staff name the controller
+                         should also pass staffName from the session user's profile. -->
+                    <div>
+                        <label class="text-sm text-gray-500">Verifier Staff ID</label>
+                        <input readonly value="<%= booking.user_id %>"
+                               class="w-full mt-1 border rounded-lg p-2 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-gray-500">Role</label>
+                        <input readonly value="FRONT_DESK" class="w-full mt-1 border rounded-lg p-2 bg-gray-50">
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Verification Form -->
+            <!-- BUG FIX: original form used /frontDesk/confirmGuest/... — corrected
+                 to /frontDesk/uploadDocuments/:bookingRef which matches the POST route. -->
+            <form action="/frontDesk/uploadDocuments/<%= booking.booking_reference %>"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="bg-white p-6 rounded-xl border space-y-6">
+
+                <h2 class="text-lg font-semibold">Document Verification</h2>
+
+                <!-- Hidden fields -->
+                <input type="hidden" name="booking_id" value="<%= booking.booking_id %>">
+                <input type="hidden" name="user_id"    value="<%= booking.user_id %>">
+
+                <!-- ID Type -->
+                <div>
+                    <label class="text-sm text-gray-600">ID Type</label>
+                    <select name="id_type_id" id="id_type_id" class="w-full mt-1 border rounded-lg p-2">
+                        <option value="">Select ID Type</option>
+                        <option value="1">Aadhaar Card</option>
+                        <option value="2">Passport</option>
+                        <option value="3">Driving License</option>
+                        <option value="4">Voter ID</option>
+                    </select>
+                    <span id="err_id_type_id" class="text-red-500 text-xs"></span>
+                </div>
+
+                <!-- ID Number -->
+                <div>
+                    <label class="text-sm text-gray-600">ID Number</label>
+                    <input type="text" name="id_number" id="id_number"
+                           class="w-full mt-1 border rounded-lg p-2"
+                           placeholder="Enter ID number">
+                    <span id="err_id_number" class="text-red-500 text-xs"></span>
+                </div>
+
+                <!-- Document Upload -->
+                <div>
+                    <label class="text-sm text-gray-600">Upload Document</label>
+                    <input type="file" name="document" id="document"
+                           accept="image/*,.pdf"
+                           class="w-full mt-1 border rounded-lg p-2 bg-gray-50">
+                    <span id="err_document" class="text-red-500 text-xs"></span>
+                </div>
+
+                <!-- Verification Status -->
+                <div>
+                    <label class="text-sm text-gray-600">Verification Result</label>
+                    <select name="verification_status" id="verification_status"
+                            class="w-full mt-1 border rounded-lg p-2">
+                        <option value="">Select Status</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="FAILED">Failed</option>
+                    </select>
+                    <span id="err_verification_status" class="text-red-500 text-xs"></span>
+                </div>
+
+                <!-- Remarks -->
+                <div>
+                    <label class="text-sm text-gray-600">Remarks (optional)</label>
+                    <textarea name="remarks" rows="3"
+                              class="w-full mt-1 border rounded-lg p-2"
+                              placeholder="Any notes from front desk staff"></textarea>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-4">
+
+                    <a href="/frontDesk/checkIn/<%= booking.booking_reference %>"
+                       class="px-5 py-2 border rounded-lg hover:bg-gray-100">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="px-6 py-3 bg-gradient-to-r from-[#775a19] to-[#a8842c] text-white rounded-xl shadow hover:scale-105 transition">
+                        Submit Verification
+                    </button>
+
+                </div>
+
+            </form>
+
+        </main>
+    </div>
+
+    <!-- Client-side validation -->
+    <script>
+        document.querySelector("form").addEventListener("submit", function (e) {
+
+            let isValid = true;
+
+            // Clear previous error messages
+            document.querySelectorAll("span[id^='err_']").forEach(s => s.innerText = "");
+
+            const idType   = document.getElementById("id_type_id");
+            const idNumber = document.getElementById("id_number");
+            const docFile  = document.getElementById("document");
+            const status   = document.getElementById("verification_status");
+
+            // ID Type
+            if (!idType.value) {
+                document.getElementById("err_id_type_id").innerText = "Please select ID type";
+                isValid = false;
+            }
+
+            // ID Number
+            if (!idNumber.value.trim()) {
+                document.getElementById("err_id_number").innerText = "ID number is required";
+                isValid = false;
+            } else if (idNumber.value.trim().length < 5) {
+                document.getElementById("err_id_number").innerText = "ID number seems too short";
+                isValid = false;
+            }
+
+            // Document file
+            if (!docFile.files || !docFile.files.length) {
+                document.getElementById("err_document").innerText = "Please upload a document";
+                isValid = false;
+            } else {
+                const file    = docFile.files[0];
+                const allowed = ["image/jpeg", "image/png", "application/pdf"];
+
+                if (!allowed.includes(file.type)) {
+                    document.getElementById("err_document").innerText = "Only JPG, PNG or PDF allowed";
+                    isValid = false;
+                } else if (file.size > 5 * 1024 * 1024) {
+                    document.getElementById("err_document").innerText = "File must be less than 5 MB";
+                    isValid = false;
+                }
+            }
+
+            // Verification status
+            if (!status.value) {
+                document.getElementById("err_verification_status").innerText = "Please select a verification result";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+</body>
+</html>
