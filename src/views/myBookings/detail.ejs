@@ -1,0 +1,425 @@
+<%
+  const inr = n => "₹" + Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2 });
+  const fmtDate = d => {
+    if (!d) return "—";
+    return new Date(d).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
+  };
+  const nights = Math.max(1, Math.round(
+    (new Date(booking.checkout_date) - new Date(booking.checkin_date)) / 86400000
+  ));
+  const statusCfg = s => ({
+    CONFIRMED:   { cls:"sc",  label:"Confirmed",   color:"#0d9f6e", bg:"#e6f9f3" },
+    CHECKED_IN:  { cls:"sci", label:"Checked In",  color:"#1c64f2", bg:"#e1effe" },
+    CHECKED_OUT: { cls:"sco", label:"Checked Out", color:"#4b5563", bg:"#f3f4f6" },
+    CANCELLED:   { cls:"sx",  label:"Cancelled",   color:"#e02424", bg:"#fde8e8" },
+    PENDING:     { cls:"sp",  label:"Pending",     color:"#c27803", bg:"#fdf6b2" },
+  }[s] || { cls:"sd", label: s, color:"#6b7280", bg:"#f3f4f6" });
+  const sc = statusCfg(booking.status_name);
+  const isHttp = u => u && u.startsWith("http");
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title><%= booking.booking_reference %></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root{
+      --bg:#f0f2f5; --card:#fff; --ink:#0f1623; --ink2:#3d4a5c;
+      --muted:#8492a6; --line:#e4e9f0; --accent:#1a56db;
+      --radius:16px;
+      --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.07);
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{
+      font-family:'Inter',-apple-system,sans-serif;
+      background:var(--bg); color:var(--ink); min-height:100vh;
+    }
+
+    /* ── hero ── */
+    .hero{
+      height:320px; position:relative; overflow:hidden;
+      background:linear-gradient(135deg,#1e3a5f,#2d5986);
+    }
+    .hero-img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .hero-overlay{
+      position:absolute; inset:0;
+      background:linear-gradient(to bottom,rgba(0,0,0,.15) 0%,rgba(0,0,0,.65) 100%);
+    }
+
+    /* back button on hero */
+    .hero-back{
+      position:absolute; top:20px; left:20px; z-index:10;
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3);
+      color:#fff; text-decoration:none; font-size:13px; font-weight:500;
+      padding:8px 14px; border-radius:999px; backdrop-filter:blur(8px);
+      transition:background .15s;
+    }
+    .hero-back:hover{ background:rgba(255,255,255,.28); }
+
+    /* hotel info on hero bottom */
+    .hero-bottom{
+      position:absolute; bottom:0; left:0; right:0; z-index:5;
+      padding:24px 28px;
+      display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+    }
+    .hero-hotel{ display:flex; align-items:flex-end; gap:14px; }
+    .hero-logo{
+      width:60px; height:60px; border-radius:12px; overflow:hidden;
+      background:#fff; border:2px solid rgba(255,255,255,.6);
+      flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    }
+    .hero-logo img{ width:100%; height:100%; object-fit:cover; }
+    .hero-logo .logo-init{ font-size:24px; font-weight:700; color:var(--accent); }
+    .hero-text h1{ font-size:22px; font-weight:800; color:#fff; line-height:1.2; }
+    .hero-text p{ font-size:13px; color:rgba(255,255,255,.75); margin-top:4px; }
+
+    /* status on hero */
+    .hero-status{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 14px; border-radius:999px;
+      font-size:12px; font-weight:700; letter-spacing:.04em;
+      flex-shrink:0;
+    }
+
+    /* ── page layout ── */
+    .layout{
+      max-width:900px; margin:-56px auto 40px;
+      padding:0 16px; position:relative; z-index:10;
+      display:grid; grid-template-columns:1fr 340px; gap:20px;
+      align-items:start;
+    }
+
+    /* ── cards ── */
+    .dcard{
+      background:var(--card); border-radius:var(--radius);
+      box-shadow:var(--shadow); border:1px solid var(--line);
+      overflow:hidden; margin-bottom:16px;
+    }
+    .dcard-header{
+      padding:16px 20px; border-bottom:1px solid var(--line);
+      display:flex; align-items:center; gap:10px;
+    }
+    .dcard-header h2{ font-size:14px; font-weight:700; }
+    .dcard-icon{
+      width:32px; height:32px; border-radius:8px; background:var(--accent-light,#ebf0fd);
+      display:flex; align-items:center; justify-content:center; font-size:16px;
+    }
+    .dcard-body{ padding:20px; }
+
+    /* ref block */
+    .ref-block{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:16px 20px 16px; border-bottom:1px solid var(--line);
+    }
+    .ref-lbl{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+    .ref-val{ font-size:18px; font-weight:800; letter-spacing:.04em; margin-top:2px; }
+    .booked-on{ text-align:right; }
+    .booked-on .lbl{ font-size:11px; color:var(--muted); }
+    .booked-on .val{ font-size:14px; font-weight:600; margin-top:2px; }
+
+    /* dates timeline */
+    .dates-timeline{
+      display:flex; align-items:center; gap:0; padding:0;
+      margin-bottom:20px;
+    }
+    .dt-cell{
+      flex:1; background:#f8f9fc; border-radius:12px; padding:14px 16px; text-align:center;
+    }
+    .dt-label{ font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:4px; }
+    .dt-date{ font-size:16px; font-weight:700; }
+    .dt-day{ font-size:11px; color:var(--muted); margin-top:2px; }
+    .dt-mid{
+      display:flex; flex-direction:column; align-items:center; padding:0 12px;
+    }
+    .dt-mid .nights-bubble{
+      background:var(--accent); color:#fff; font-size:11px; font-weight:700;
+      padding:4px 10px; border-radius:999px; white-space:nowrap;
+    }
+    .dt-mid .arr{ font-size:20px; color:var(--accent); margin:4px 0; }
+
+    /* info rows */
+    .info-row{
+      display:flex; align-items:center; padding:12px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .info-row:last-child{ border-bottom:none; }
+    .info-icon{ width:36px; font-size:18px; flex-shrink:0; }
+    .info-lbl{ font-size:12px; color:var(--muted); }
+    .info-val{ font-size:14px; font-weight:600; margin-top:1px; }
+
+    /* note */
+    .note-box{
+      background:#fffbeb; border:1px solid #fde68a; border-radius:10px;
+      padding:12px 16px; font-size:13px; margin-top:16px;
+      display:flex; gap:10px;
+    }
+    .note-box .note-icon{ font-size:18px; flex-shrink:0; }
+    .note-box p{ color:#78350f; line-height:1.5; }
+
+    /* room cards */
+    .rcard{
+      border:1px solid var(--line); border-radius:12px;
+      overflow:hidden; margin-bottom:12px; display:flex;
+      transition:box-shadow .15s;
+    }
+    .rcard:hover{ box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    .rcard:last-child{ margin-bottom:0; }
+    .rcard-img{
+      width:90px; min-width:90px; background:#e8edf5; overflow:hidden; flex-shrink:0;
+    }
+    .rcard-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .rcard-fallback{
+      width:100%; height:100%; display:flex; align-items:center;
+      justify-content:center; font-size:30px; background:#e8edf5;
+    }
+    .rcard-info{
+      flex:1; padding:14px; display:flex;
+      justify-content:space-between; align-items:center; gap:8px;
+    }
+    .rcard-left{}
+    .rcard-num{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+    .rcard-type{ font-size:15px; font-weight:700; margin-top:2px; }
+    .rcard-right{ text-align:right; flex-shrink:0; }
+    .rcard-rate{ font-size:15px; font-weight:700; }
+    .rcard-per{ font-size:11px; color:var(--muted); }
+    .rcard-sub{
+      margin-top:4px; font-size:12px; font-weight:600;
+      background:#f0f2f5; padding:3px 8px; border-radius:6px;
+      display:inline-block;
+    }
+
+    /* ── right sidebar ── */
+    .price-card{
+      background:linear-gradient(145deg,#1a56db,#0e3fad);
+      border-radius:var(--radius); padding:24px;
+      color:#fff; margin-bottom:16px;
+      box-shadow:0 8px 32px rgba(26,86,219,.35);
+    }
+    .price-card h3{ font-size:13px; opacity:.75; margin-bottom:12px; text-transform:uppercase; letter-spacing:.08em; }
+    .price-main{ font-size:36px; font-weight:800; margin-bottom:4px; }
+    .price-note{ font-size:13px; opacity:.7; }
+    .price-divider{ border:none; border-top:1px solid rgba(255,255,255,.2); margin:16px 0; }
+    .price-row{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; }
+    .price-row .pl{ opacity:.75; }
+    .price-row .pr{ font-weight:600; }
+
+    .action-btns{ display:flex; flex-direction:column; gap:10px; }
+    .btn-primary{
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      width:100%; padding:13px; background:var(--accent); color:#fff;
+      border:none; border-radius:10px; font-size:14px; font-weight:600;
+      cursor:pointer; text-decoration:none; transition:all .15s;
+    }
+    .btn-primary:hover{ background:#1648c7; }
+    .btn-ghost{
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      width:100%; padding:13px; background:var(--card); color:var(--ink);
+      border:1.5px solid var(--line); border-radius:10px;
+      font-size:14px; font-weight:500; cursor:pointer; text-decoration:none;
+      transition:all .15s;
+    }
+    .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); background:#f5f8ff; }
+
+    /* status inside sidebar */
+    .status-badge-lg{
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      padding:12px; border-radius:10px; font-size:14px; font-weight:700;
+      margin-bottom:16px;
+    }
+
+    @media(max-width:700px){
+      .layout{ grid-template-columns:1fr; margin-top:-20px; }
+      .hero{ height:240px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- hero -->
+<div class="hero">
+  <% if (isHttp(booking.hotel_cover)) { %>
+    <img class="hero-img" src="<%= booking.hotel_cover %>" alt="<%= booking.hotel_name %>"
+         onerror="this.style.display='none'"/>
+  <% } %>
+  <div class="hero-overlay"></div>
+
+  <a href="/bookings/all" class="hero-back">← My Bookings</a>
+
+  <div class="hero-bottom">
+    <div class="hero-hotel">
+      <div class="hero-logo">
+        <% if (isHttp(booking.hotel_logo)) { %>
+          <img src="<%= booking.hotel_logo %>" alt=""
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+          <span class="logo-init" style="display:none"><%= (booking.hotel_name||"H")[0] %></span>
+        <% } else { %>
+          <span class="logo-init"><%= (booking.hotel_name||"H")[0] %></span>
+        <% } %>
+      </div>
+      <div class="hero-text">
+        <h1><%= booking.hotel_name %></h1>
+        <p>📍 <%= booking.hotel_city %><% if (booking.hotel_address) { %> &nbsp;·&nbsp; <%= booking.hotel_address %><% } %></p>
+      </div>
+    </div>
+    <span class="hero-status" style="background:<%= sc.bg %>;color:<%= sc.color %>">
+      <%= sc.label %>
+    </span>
+  </div>
+</div>
+
+<!-- main layout -->
+<div class="layout">
+
+  <!-- LEFT column -->
+  <div>
+
+    <!-- booking reference -->
+    <div class="dcard">
+      <div class="ref-block">
+        <div>
+          <div class="ref-lbl">Booking Reference</div>
+          <div class="ref-val"># <%= booking.booking_reference %></div>
+        </div>
+        <div class="booked-on">
+          <div class="lbl">Booked on</div>
+          <div class="val"><%= fmtDate(booking.created_at) %></div>
+        </div>
+      </div>
+
+      <!-- dates timeline -->
+      <div style="padding:20px">
+        <div class="dates-timeline">
+          <div class="dt-cell">
+            <div class="dt-label">Check-in</div>
+            <div class="dt-date"><%= fmtDate(booking.checkin_date) %></div>
+            <div class="dt-day"><%= new Date(booking.checkin_date).toLocaleDateString("en-IN",{weekday:"long"}) %></div>
+          </div>
+          <div class="dt-mid">
+            <div class="nights-bubble"><%= nights %> Night<%= nights > 1 ? "s" : "" %></div>
+            <div class="arr">→</div>
+          </div>
+          <div class="dt-cell">
+            <div class="dt-label">Check-out</div>
+            <div class="dt-date"><%= fmtDate(booking.checkout_date) %></div>
+            <div class="dt-day"><%= new Date(booking.checkout_date).toLocaleDateString("en-IN",{weekday:"long"}) %></div>
+          </div>
+        </div>
+
+        <!-- info rows -->
+        <div class="info-row">
+          <div class="info-icon">👥</div>
+          <div>
+            <div class="info-lbl">Guests</div>
+            <div class="info-val">
+              <%= booking.adults %> Adult<%= booking.adults > 1 ? "s" : "" %>
+              <% if (booking.children > 0) { %> · <%= booking.children %> Child<%= booking.children > 1 ? "ren" : "" %><% } %>
+            </div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🌐</div>
+          <div>
+            <div class="info-lbl">Booking Source</div>
+            <div class="info-val"><%= booking.source_name %></div>
+          </div>
+        </div>
+
+        <% if (booking.special_requests) { %>
+          <div class="note-box">
+            <div class="note-icon">📝</div>
+            <p><strong>Special Requests:</strong> <%= booking.special_requests %></p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- rooms -->
+    <div class="dcard">
+      <div class="dcard-header">
+        <div class="dcard-icon">🛏</div>
+        <h2>Rooms Booked</h2>
+      </div>
+      <div class="dcard-body">
+        <% booking.rooms.forEach(r => {
+             const rate = parseFloat(r.rate_per_night);
+             const sub  = rate * nights;
+        %>
+          <div class="rcard">
+            <div class="rcard-img" style="height:100px">
+              <% if (isHttp(r.room_photo)) { %>
+                <img src="<%= r.room_photo %>" alt="<%= r.type_name %>"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                <div class="rcard-fallback" style="display:none">🛏</div>
+              <% } else { %>
+                <div class="rcard-fallback">🛏</div>
+              <% } %>
+            </div>
+            <div class="rcard-info">
+              <div class="rcard-left">
+                <div class="rcard-num">Room <%= r.room_number %></div>
+                <div class="rcard-type"><%= r.type_name %></div>
+              </div>
+              <div class="rcard-right">
+                <div class="rcard-rate"><%= inr(rate) %></div>
+                <div class="rcard-per">per night</div>
+                <div class="rcard-sub"><%= inr(sub) %> · <%= nights %>N</div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT sidebar -->
+  <div>
+
+    <!-- price card -->
+    <div class="price-card">
+      <h3>Total Amount</h3>
+      <div class="price-main"><%= inr(booking.total_amount) %></div>
+      <div class="price-note">for <%= nights %> night<%= nights > 1 ? "s" : "" %> · <%= booking.adults %> guest<%= booking.adults > 1 ? "s" : "" %></div>
+      <hr class="price-divider"/>
+      <% booking.rooms.forEach(r => { %>
+        <div class="price-row">
+          <span class="pl">Room <%= r.room_number %> (<%= r.type_name %>)</span>
+          <span class="pr"><%= inr(parseFloat(r.rate_per_night) * nights) %></span>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- status -->
+    <div class="dcard" style="margin-bottom:16px">
+      <div class="dcard-body">
+        <div class="status-badge-lg" style="background:<%= sc.bg %>;color:<%= sc.color %>">
+          <span style="font-size:18px">
+            <% if (sc.label==="Confirmed") { %>✓<% } else if (sc.label==="Checked In") { %>🏠<% } else if (sc.label==="Checked Out") { %>✔<% } else if (sc.label==="Cancelled") { %>✕<% } else { %>⏳<% } %>
+          </span>
+          <%= sc.label %>
+        </div>
+        <div style="font-size:12px;color:var(--muted);text-align:center">
+          Booking created <%= fmtDate(booking.created_at) %> via <%= booking.source_name %>
+        </div>
+      </div>
+    </div>
+
+    <!-- actions -->
+    <div class="action-btns">
+      <a href="/invoices/<%= booking.booking_id %>" class="btn-primary">
+        🧾 View & Print Invoice
+      </a>
+      <a href="/bookings/all" class="btn-ghost">
+        ← Back to All Bookings
+      </a>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

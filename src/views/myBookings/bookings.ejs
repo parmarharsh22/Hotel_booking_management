@@ -1,0 +1,363 @@
+<%
+  const inr = n => "₹" + Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2 });
+  const fmtDate = d => {
+    if (!d) return "—";
+    return new Date(d).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
+  };
+  const nightCount = (cin, cout) => Math.max(1, Math.round((new Date(cout) - new Date(cin)) / 86400000));
+  const statusCfg = s => ({
+    CONFIRMED:   { cls:"sc",  label:"Confirmed",   icon:"✓" },
+    CHECKED_IN:  { cls:"sci", label:"Checked In",  icon:"🏠" },
+    CHECKED_OUT: { cls:"sco", label:"Checked Out", icon:"✔" },
+    CANCELLED:   { cls:"sx",  label:"Cancelled",   icon:"✕" },
+    PENDING:     { cls:"sp",  label:"Pending",     icon:"⏳" },
+  }[s] || { cls:"sd", label: s, icon:"•" });
+  const isHttp = u => u && u.startsWith("http");
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>My Bookings</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root{
+      --bg:#f0f2f5;
+      --card:#ffffff;
+      --ink:#0f1623;
+      --ink2:#3d4a5c;
+      --muted:#8492a6;
+      --line:#e4e9f0;
+      --accent:#1a56db;
+      --accent-light:#ebf0fd;
+      --green:#0d9f6e;
+      --green-bg:#e6f9f3;
+      --red:#e02424;
+      --red-bg:#fde8e8;
+      --orange:#c27803;
+      --orange-bg:#fdf6b2;
+      --blue:#1c64f2;
+      --blue-bg:#e1effe;
+      --radius:16px;
+      --shadow:0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-hover:0 4px 12px rgba(0,0,0,.08), 0 16px 40px rgba(0,0,0,.1);
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+
+    body{
+      font-family:'Inter', -apple-system, sans-serif;
+      background:var(--bg); color:var(--ink);
+      min-height:100vh; padding:0;
+    }
+
+    /* ── top banner ── */
+    .banner{
+      background:linear-gradient(135deg, #1a56db 0%, #0e3fad 50%, #1e429f 100%);
+      padding:40px 24px 80px;
+      position:relative; overflow:hidden;
+    }
+    .banner::before{
+      content:""; position:absolute; top:-60px; right:-60px;
+      width:300px; height:300px; border-radius:50%;
+      background:rgba(255,255,255,.06);
+    }
+    .banner::after{
+      content:""; position:absolute; bottom:-80px; left:30%;
+      width:200px; height:200px; border-radius:50%;
+      background:rgba(255,255,255,.04);
+    }
+    .banner-inner{ max-width:900px; margin:0 auto; position:relative; z-index:1; }
+    .banner h1{ font-size:28px; font-weight:800; color:#fff; margin-bottom:6px; }
+    .banner p{ font-size:15px; color:rgba(255,255,255,.7); }
+    .banner-stats{
+      display:flex; gap:24px; margin-top:24px; flex-wrap:wrap;
+    }
+    .bstat{
+      background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
+      border-radius:12px; padding:12px 20px; backdrop-filter:blur(8px);
+    }
+    .bstat-val{ font-size:22px; font-weight:700; color:#fff; }
+    .bstat-lbl{ font-size:12px; color:rgba(255,255,255,.65); margin-top:2px; }
+
+    /* ── main content pulled up over banner ── */
+    .content{
+      max-width:900px; margin:-48px auto 40px;
+      padding:0 16px; position:relative; z-index:2;
+    }
+
+    /* ── filter bar ── */
+    .filter-bar{
+      display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;
+    }
+    .filter-btn{
+      padding:8px 18px; border-radius:999px; font-size:13px; font-weight:500;
+      border:1.5px solid var(--line); background:var(--card); color:var(--ink2);
+      cursor:pointer; transition:all .15s;
+    }
+    .filter-btn.active, .filter-btn:hover{
+      background:var(--accent); color:#fff; border-color:var(--accent);
+    }
+
+    /* ── empty ── */
+    .empty{
+      background:var(--card); border-radius:var(--radius);
+      box-shadow:var(--shadow); padding:72px 32px; text-align:center;
+    }
+    .empty-icon{ font-size:64px; margin-bottom:20px; }
+    .empty h2{ font-size:20px; font-weight:700; margin-bottom:8px; }
+    .empty p{ color:var(--muted); font-size:15px; }
+
+    /* ── booking card ── */
+    .bcard{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+      overflow:hidden;
+      transition:box-shadow .2s, transform .2s;
+      border:1px solid var(--line);
+    }
+    .bcard:hover{
+      box-shadow:var(--shadow-hover);
+      transform:translateY(-2px);
+    }
+
+    /* top stripe — hotel image */
+    .bcard-hero{
+      height:140px; position:relative; overflow:hidden;
+      background:linear-gradient(135deg,#1e3a5f,#2d5986);
+    }
+    .bcard-hero img{
+      width:100%; height:100%; object-fit:cover;
+      transition:transform .4s;
+    }
+    .bcard:hover .bcard-hero img{ transform:scale(1.03); }
+    .bcard-hero-overlay{
+      position:absolute; inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,.1) 0%, rgba(0,0,0,.55) 100%);
+    }
+    .bcard-hero-fallback{
+      width:100%; height:100%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:40px; color:rgba(255,255,255,.3);
+    }
+
+    /* logo badge on hero */
+    .bcard-logo-wrap{
+      position:absolute; bottom:14px; left:16px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .bcard-logo{
+      width:44px; height:44px; border-radius:10px;
+      border:2px solid rgba(255,255,255,.7);
+      overflow:hidden; background:#fff; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .bcard-logo img{ width:100%; height:100%; object-fit:cover; }
+    .bcard-logo .logo-init{
+      font-size:18px; font-weight:700; color:var(--accent);
+    }
+    .bcard-logo-text{ color:#fff; }
+    .bcard-logo-text h3{ font-size:15px; font-weight:700; line-height:1.2; }
+    .bcard-logo-text p{ font-size:12px; opacity:.8; margin-top:1px; }
+
+    /* status on hero top-right */
+    .bcard-status-wrap{
+      position:absolute; top:14px; right:14px;
+    }
+    .sbadge{
+      display:inline-flex; align-items:center; gap:5px;
+      padding:4px 11px; border-radius:999px;
+      font-size:11px; font-weight:600; letter-spacing:.03em;
+    }
+    .sbadge .dot{ width:6px; height:6px; border-radius:50%; }
+    .sc  { background:rgba(13,159,110,.9);  color:#fff; }
+    .sci { background:rgba(28,100,242,.9);  color:#fff; }
+    .sco { background:rgba(82,98,114,.85);  color:#fff; }
+    .sx  { background:rgba(224,36,36,.9);   color:#fff; }
+    .sp  { background:rgba(194,120,3,.9);   color:#fff; }
+    .sd  { background:rgba(100,116,139,.85);color:#fff; }
+
+    /* body */
+    .bcard-body{ padding:18px 20px; }
+
+    /* ref + date row */
+    .bcard-top{
+      display:flex; justify-content:space-between; align-items:flex-start;
+      margin-bottom:14px;
+    }
+    .bcard-ref{ font-size:11px; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; }
+
+    /* date row */
+    .dates-row{
+      display:flex; align-items:center; gap:10px; margin-bottom:14px;
+    }
+    .date-pill{
+      background:#f5f7fa; border-radius:10px; padding:10px 14px; flex:1; text-align:center;
+    }
+    .date-pill label{ font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:3px; }
+    .date-pill p{ font-size:14px; font-weight:600; }
+    .nights-pill{
+      display:flex; flex-direction:column; align-items:center;
+      padding:0 8px;
+    }
+    .nights-pill .arr{ font-size:18px; color:var(--muted); line-height:1; }
+    .nights-pill .n{ font-size:12px; font-weight:600; color:var(--ink2); white-space:nowrap; }
+
+    /* meta row */
+    .meta-row{
+      display:flex; gap:16px; flex-wrap:wrap; margin-bottom:16px;
+    }
+    .meta-chip{
+      display:flex; align-items:center; gap:5px;
+      font-size:12px; color:var(--ink2);
+    }
+    .meta-chip .icon{ font-size:14px; }
+
+    /* bottom row */
+    .bcard-bottom{
+      display:flex; justify-content:space-between; align-items:center;
+      padding-top:14px; border-top:1px solid var(--line);
+    }
+    .bcard-amount-wrap .lbl{ font-size:11px; color:var(--muted); }
+    .bcard-amount{ font-size:20px; font-weight:800; color:var(--ink); }
+    .per-night{ font-size:12px; color:var(--muted); font-weight:400; margin-left:2px; }
+
+    .btn-view{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:10px 20px; background:var(--accent); color:#fff;
+      border:none; border-radius:10px; font-size:13px; font-weight:600;
+      cursor:pointer; text-decoration:none; transition:all .15s;
+    }
+    .btn-view:hover{ background:#1648c7; transform:translateX(2px); }
+    .btn-view .arr{ transition:transform .15s; }
+    .btn-view:hover .arr{ transform:translateX(3px); }
+  </style>
+</head>
+<body>
+
+<!-- banner -->
+<div class="banner">
+  <div class="banner-inner">
+    <h1>My Bookings</h1>
+    <p>All your hotel stays in one place</p>
+    <div class="banner-stats">
+      <div class="bstat">
+        <div class="bstat-val"><%= bookings.length %></div>
+        <div class="bstat-lbl">Total Bookings</div>
+      </div>
+      <div class="bstat">
+        <div class="bstat-val"><%= bookings.filter(b => b.status_name === "CONFIRMED").length %></div>
+        <div class="bstat-lbl">Confirmed</div>
+      </div>
+      <div class="bstat">
+        <div class="bstat-val"><%= bookings.filter(b => b.status_name === "CHECKED_OUT").length %></div>
+        <div class="bstat-lbl">Completed</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- content -->
+<div class="content">
+
+  <% if (bookings.length === 0) { %>
+    <div class="empty">
+      <div class="empty-icon">🏨</div>
+      <h2>No bookings yet</h2>
+      <p>Your upcoming and past stays will appear here.</p>
+    </div>
+  <% } else { %>
+
+    <% bookings.forEach(b => {
+         const n  = nightCount(b.checkin_date, b.checkout_date);
+         const sc = statusCfg(b.status_name);
+         const init = (b.hotel_name || "H")[0].toUpperCase();
+    %>
+      <div class="bcard">
+
+        <!-- hero -->
+        <div class="bcard-hero">
+          <% if (isHttp(b.hotel_logo)) { %>
+            <img src="<%= b.hotel_logo %>" alt="<%= b.hotel_name %>"
+                 onerror="this.style.display='none'"/>
+          <% } else { %>
+            <div class="bcard-hero-fallback">🏨</div>
+          <% } %>
+          <div class="bcard-hero-overlay"></div>
+
+          <!-- logo + name over hero -->
+          <div class="bcard-logo-wrap">
+            <div class="bcard-logo">
+              <% if (isHttp(b.hotel_logo)) { %>
+                <img src="<%= b.hotel_logo %>" alt=""
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+                <span class="logo-init" style="display:none"><%= init %></span>
+              <% } else { %>
+                <span class="logo-init"><%= init %></span>
+              <% } %>
+            </div>
+            <div class="bcard-logo-text">
+              <h3><%= b.hotel_name %></h3>
+              <p>📍 <%= b.hotel_city %></p>
+            </div>
+          </div>
+
+          <!-- status badge -->
+          <div class="bcard-status-wrap">
+            <span class="sbadge <%= sc.cls %>"><%= sc.icon %> <%= sc.label %></span>
+          </div>
+        </div>
+
+        <!-- body -->
+        <div class="bcard-body">
+
+          <div class="bcard-top">
+            <div class="bcard-ref">Ref · <%= b.booking_reference %></div>
+          </div>
+
+          <!-- dates -->
+          <div class="dates-row">
+            <div class="date-pill">
+              <label>Check-in</label>
+              <p><%= fmtDate(b.checkin_date) %></p>
+            </div>
+            <div class="nights-pill">
+              <span class="arr">→</span>
+              <span class="n"><%= n %>N</span>
+            </div>
+            <div class="date-pill">
+              <label>Check-out</label>
+              <p><%= fmtDate(b.checkout_date) %></p>
+            </div>
+          </div>
+
+          <!-- meta -->
+          <div class="meta-row">
+            <span class="meta-chip"><span class="icon">👤</span> <%= b.adults %> Adult<%= b.adults > 1 ? "s" : "" %><% if (b.children > 0) { %> · <%= b.children %> Child<%= b.children > 1 ? "ren" : "" %><% } %></span>
+            <span class="meta-chip"><span class="icon">🗓</span> Booked <%= fmtDate(b.created_at) %></span>
+          </div>
+
+          <!-- bottom -->
+          <div class="bcard-bottom">
+            <div class="bcard-amount-wrap">
+              <div class="lbl">Total Amount</div>
+              <div class="bcard-amount"><%= inr(b.total_amount) %></div>
+            </div>
+            <a href="/bookings/<%= b.booking_id %>" class="btn-view">
+              View Details <span class="arr">→</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    <% }) %>
+
+  <% } %>
+</div>
+
+</body>
+</html>
