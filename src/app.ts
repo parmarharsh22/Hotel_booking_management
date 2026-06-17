@@ -12,6 +12,7 @@ import hotelAdminRoutes from "./modules/hotelAdmin/hotelAdmin.routes";
 import BookingRoutes from "./modules/booking/routes/booking.routes";
 import frontDeskRouter from "./modules/FrontDesk/routes/frontDeskRoutes";
 import invoice from "./modules/invoices/invoiceMain.routes";
+import { startDirtyRoomWorker } from "./modules/FrontDesk/workers/dirtyRoomWorker";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+startDirtyRoomWorker();
 //url routes
 
 //protected Routes
@@ -39,9 +41,6 @@ app.use("/authen",authenRoute);
 app.use("/superadmin", superadminRoutes);
 app.use("/hotelAdmin",hotelAdminRoutes);
 app.use("/bookings", BookingRoutes)
-
-
-
 app.use("/frontDesk",frontDeskRouter);
 app.use("/invoices",invoice);
 
