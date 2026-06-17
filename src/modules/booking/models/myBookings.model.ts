@@ -76,6 +76,7 @@ export class GuestBookingModel {
            b.created_at,
            bs.status_name,
            bsrc.source_name,
+           h.hotel_id AS hotel_id,
            h.name  AS hotel_name,
            h.city  AS hotel_city,
            h.address AS hotel_address,
