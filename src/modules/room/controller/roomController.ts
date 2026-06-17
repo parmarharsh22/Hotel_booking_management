@@ -23,20 +23,22 @@ export const searchHotels = async (req: Request, res: Response) => {
         }
 
         const data: searchHotelReqBody = req.body;
+      
         const hotels = await roomService.searchHotels(data);
         const amenities=await roomService.fetchAmenities();
 
         const query = {
             location: data.location,
-            check_in: data.check_in,
-            check_out: data.check_out,
+            checkIn: data.checkIn,
+            checkOut: data.checkOut,
             rooms: data.rooms,
             adults: data.adults,
             children: data.children,
-            price_filter:data.price_filter,
-            roomTypes_filter:data.roomTypes_filter,
-            amenities_filter:data.amenities_filter
+            priceFilter:data.priceFilter,
+            roomTypesFilter:data.roomTypesFilter,
+            amenitiesFilter:data.amenitiesFilter
         };
+       
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
             roomTypes:roomTypes||[],
@@ -56,17 +58,18 @@ export const searchHotels = async (req: Request, res: Response) => {
 export const hotelDetails = async (req: Request, res: Response) => {
     try {
         const hotelId = req.params["hotelId"] as string;
-        const { location, checkIn, checkOut, hotelName, rooms, adults, children, price_filter } =
+       
+        const { location, checkIn, checkOut, hotelName, rooms, adults, children, priceFilter } =
             req.query;
 
         let roomTypes:string[] = [];
         let amenities:string[] = [];
 
-        if (req.query.roomTypes_filter) {
-            roomTypes = JSON.parse(req.query.roomTypes_filter as string) as string[];
+        if (req.query.roomTypesFilter) {
+            roomTypes = JSON.parse(req.query.roomTypesFilter as string) as string[];
         }
-        if (req.query.amenities_filter) {
-            amenities = JSON.parse(req.query.amenities_filter as string) as string[];
+        if (req.query.amenitiesFilter) {
+            amenities = JSON.parse(req.query.amenitiesFilter as string) as string[];
         }
 
         const parsedHotelId = parseInt(hotelId || "-1", 10);
@@ -79,7 +82,7 @@ export const hotelDetails = async (req: Request, res: Response) => {
             parsedHotelId,
             String(checkIn || ""),
             String(checkOut || ""),
-            parseInt(price_filter as string || '-1'),
+            parseInt(priceFilter as string || '20000'),
             roomTypes,
             amenities
         );
@@ -87,13 +90,13 @@ export const hotelDetails = async (req: Request, res: Response) => {
         const query = {
             hotel_id: parsedHotelId,
             location,
-            check_in: checkIn,
-            check_out: checkOut,
+            checkIn: checkIn,
+            checkOut: checkOut,
             hotelName,
             rooms,
             adults,
             children,
-            price_filter,
+            priceFilter,
             roomTypes,
             amenities
         };
@@ -103,7 +106,7 @@ export const hotelDetails = async (req: Request, res: Response) => {
             room_type,
             query,
         });
-    } catch (error) { }
+    } catch (error) { console.error(error); }
 };
 
 export const createHold = async (req: Request, res: Response) => {
