@@ -17,9 +17,9 @@ router.get(
 
 // Printable invoice
 router.get(
-  "/:bookingId/download",
+  "/:bookingId/:hotelId/download",
   validToken,
-  allowRoles("FRONT_DESK", "ADMIN"),
+  allowRoles("GUEST"),
   invoiceController.downloadInvoice.bind(invoiceController)
 );
 
