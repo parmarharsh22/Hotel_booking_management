@@ -30,43 +30,101 @@
 
         <div class="lg:ml-[260px] min-h-screen">
 
-            <%- include('../partials/frontDesk/header', { pageTitle: "Room Status" }) %>
+            <!-- Header -->
+            <%- include("../partials/frontDesk/header.ejs") %>
 
-                <main class="p-8">
+                <!-- Hero Section -->
+                <div class="px-8 py-6">
 
-                    <!-- Summary Row -->
+                    <div class="bg-gradient-to-r from-[#031632] via-[#0c234d] to-[#1a2b48]
+                rounded-3xl shadow-xl p-8">
 
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                        <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-[#031632]">
-                            <p class="text-sm text-gray-500">Total Rooms</p>
-                            <h2 class="text-4xl font-bold text-[#031632] mt-2">
-                                <%= rooms.length %>
-                            </h2>
-                        </div>
+                        <div class="flex justify-between items-center">
 
-                        <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-red-500">
-                            <p class="text-sm text-gray-500">Occupied</p>
-                            <h2 class="text-4xl font-bold text-red-500 mt-2">
-                                <%= occupiedCount %>
-                            </h2>
-                        </div>
+                            <div>
 
-                        <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-green-500">
-                            <p class="text-sm text-gray-500">Vacant</p>
-                            <h2 class="text-4xl font-bold text-green-500 mt-2">
-                                <%= vacantCount %>
-                            </h2>
-                        </div>
+                                <div class="flex items-center gap-3 mb-2">
 
-                        <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-yellow-500">
-                            <p class="text-sm text-gray-500">Maintenance</p>
-                            <h2 class="text-4xl font-bold text-yellow-500 mt-2">
-                                <%= maintenanceCount %>
-                            </h2>
+                                    <span class="material-symbols-outlined text-yellow-300 text-4xl">
+                                        hotel
+                                    </span>
+
+                                    <h1 class="text-4xl font-bold text-white">
+                                        Room Management
+                                    </h1>
+
+                                </div>
+
+                                <p class="text-yellow-300 text-lg">
+                                    Monitor room availability, occupancy, housekeeping status and maintenance
+                                    activities.
+                                </p>
+
+                            </div>
+
+                            <div class="hidden lg:flex gap-4">
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-blue-200 text-xs">
+                                        Total Rooms
+                                    </p>
+
+                                    <h3 class="text-white text-2xl font-bold">
+                                        <%= rooms.length %>
+                                    </h3>
+
+                                </div>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-green-200 text-xs">
+                                        Available
+                                    </p>
+
+                                    <h3 class="text-green-300 text-2xl font-bold">
+                                        <%= vacantCount %>
+                                    </h3>
+
+                                </div>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-yellow-200 text-xs">
+                                        Occupied
+                                    </p>
+
+                                    <h3 class="text-yellow-300 text-2xl font-bold">
+                                        <%= occupiedCount %>
+                                    </h3>
+
+                                </div>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-red-200 text-xs">
+                                        Maintenance
+                                    </p>
+
+                                    <h3 class="text-red-300 text-2xl font-bold">
+                                        <%= maintenanceCount %>
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
                         </div>
 
                     </div>
 
+                </div>
+
+                <main class="p-8">
                     <!-- Floors -->
 
                     <div class="space-y-12">
@@ -84,7 +142,6 @@
                                         <span class="material-symbols-outlined">
                                             apartment
                                         </span>
-
                                     </div>
 
                                     <div>

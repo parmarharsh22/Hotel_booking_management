@@ -143,6 +143,7 @@
     try {
  
       const res = await fetch('/superadmin/hotels', {
+        credentials: "include",
         headers:{'Accept':'application/json'}
       });
  
