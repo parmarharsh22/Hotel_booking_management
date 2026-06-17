@@ -7,10 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
     <div class="flex flex-1 flex-col md:flex-row">
@@ -22,11 +24,11 @@
                 </div>
                 
                 <nav class="mt-4 space-y-1">
-                    <a href="/hotelAdmin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white  transition">
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
+                    <a href="/hotelAdmin/rooms" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-bed w-5"></i>
                         <span>Rooms</span>
                     </a>
@@ -108,8 +110,248 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto flex ">
                        
+<!-- Revenue Trend Card -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-1/2 m-2">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between p-6 border-b border-slate-100">
+
+        <div>
+           <div>
+    <h3 class="text-lg font-bold text-slate-900">
+        Revenue Trend
+    </h3>
+
+    <p class="mt-1 text-sm text-slate-500">
+        Financial performance over the selected period
+    </p>
+
+    <div
+        id="revenueTrendSummary"
+        class="mt-3 text-2xl font-bold text-slate-900"
+    >
+        ₹0
+    </div>
+</div>
+        </div>
+
+        <!-- Period Toggle -->
+        <div
+            class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1"
+            id="revenueTrendPeriodSelector"
+        >
+            <button
+                type="button"
+                data-period="daily"
+                class="revenue-period-btn px-4 py-2 text-sm font-medium rounded-lg bg-white shadow-sm text-slate-900"
+            >
+                Daily
+            </button>
+
+            <button
+                type="button"
+                data-period="monthly"
+                class="revenue-period-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700"
+            >
+                Monthly
+            </button>
+
+            <button
+                type="button"
+                data-period="yearly"
+                class="revenue-period-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-500 hover:text-slate-700"
+            >
+                Yearly
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Chart Area -->
+    <div class="p-6">
+
+        <!-- Loading -->
+        <div
+            id="revenueTrendLoading"
+            class="hidden h-[320px] flex items-center justify-center"
+        >
+            <div class="flex flex-col items-center gap-3">
+
+                <div
+                    class="h-8 w-8 rounded-full border-4 border-slate-200 border-t-indigo-600 animate-spin"
+                ></div>
+
+                <span class="text-sm text-slate-500">
+                    Loading revenue data...
+                </span>
+
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div
+            id="revenueTrendChartContainer"
+            class="h-[320px]"
+        >
+            <canvas id="revenueTrendChart"></canvas>
+        </div>
+
+        <!-- Empty State -->
+        <div
+            id="revenueTrendEmpty"
+            class="hidden h-[320px] flex items-center justify-center"
+        >
+            <div class="text-center">
+
+                <div
+                    class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100"
+                >
+                    📊
+                </div>
+
+                <h4 class="font-semibold text-slate-700">
+                    No Revenue Data
+                </h4>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    No booking revenue available for this period.
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Booking Status Distribution -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full m-2">
+
+    <!-- Header -->
+    <div class="p-6 border-b border-slate-100">
+
+        <h3 class="text-lg font-bold text-slate-900">
+            Booking Status Distribution
+        </h3>
+
+        <p class="mt-1 text-sm text-slate-500">
+            Overview of booking statuses across the hotel
+        </p>
+
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+
+        <!-- Loading State -->
+        <div
+            id="bookingStatusLoading"
+            class="hidden h-[320px] flex items-center justify-center"
+        >
+            <div class="flex flex-col items-center gap-3">
+
+                <div
+                    class="h-8 w-8 rounded-full border-4 border-slate-200 border-t-indigo-600 animate-spin"
+                ></div>
+
+                <span class="text-sm text-slate-500">
+                    Loading booking statistics...
+                </span>
+
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div
+            id="bookingStatusEmpty"
+            class="hidden h-[320px] flex items-center justify-center"
+        >
+            <div class="text-center">
+
+                <div
+                    class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100"
+                >
+                    📋
+                </div>
+
+                <h4 class="font-semibold text-slate-700">
+                    No Booking Data
+                </h4>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    No booking statistics available.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- Chart Content -->
+        <div id="bookingStatusContent">
+
+            <!-- Total -->
+            <div class="text-center mb-6">
+
+                <p class="text-sm text-slate-500">
+                    Total Bookings
+                </p>
+
+                <h2
+                    id="bookingStatusTotal"
+                    class="mt-1 text-3xl font-bold text-slate-900"
+                >
+                    0
+                </h2>
+
+            </div>
+
+            <!-- Donut Chart -->
+           <div class="relative h-[220px]">
+
+    <canvas id="bookingStatusChart"></canvas>
+
+    <div
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+    >
+        <div class="text-center">
+
+            <div
+                id="bookingStatusTotalCenter"
+                class="text-2xl font-bold text-slate-900"
+            >
+                0
+            </div>
+
+            <div
+                class="text-xs text-slate-500"
+            >
+                Bookings
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+            <!-- Legend -->
+            <div
+                id="bookingStatusLegend"
+                class="grid grid-cols-1 gap-3 mt-6"
+            >
+
+                <!-- Dynamic Rows -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
                     </div>
 
                     <!-- Pagination / Footer Indicators -->
@@ -141,7 +383,481 @@
             </footer>
         </main>
     </div>
+<script>
 
-   
+let revenueChart = null;
+let currentRevenuePeriod = "daily";
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initializeRevenueTrend();
+
+    document
+        .querySelectorAll(".revenue-period-btn")
+        .forEach(button => {
+
+            button.addEventListener("click", async () => {
+
+                const period = button.dataset.period;
+
+                if (period === currentRevenuePeriod) return;
+
+                currentRevenuePeriod = period;
+
+                updateRevenuePeriodUI(period);
+
+                await loadRevenueTrend(period);
+            });
+
+        });
+});
+
+async function initializeRevenueTrend() {
+
+    updateRevenuePeriodUI("daily");
+
+    await loadRevenueTrend("daily");
+}
+
+function updateRevenuePeriodUI(activePeriod) {
+
+    document
+        .querySelectorAll(".revenue-period-btn")
+        .forEach(button => {
+
+            const isActive =
+                button.dataset.period === activePeriod;
+
+            if (isActive) {
+
+                button.classList.add(
+                    "bg-white",
+                    "shadow-sm",
+                    "text-slate-900"
+                );
+
+                button.classList.remove(
+                    "text-slate-500"
+                );
+
+            } else {
+
+                button.classList.remove(
+                    "bg-white",
+                    "shadow-sm",
+                    "text-slate-900"
+                );
+
+                button.classList.add(
+                    "text-slate-500"
+                );
+            }
+
+        });
+}
+
+async function loadRevenueTrend(period) {
+
+    const loading =
+        document.getElementById("revenueTrendLoading");
+
+    const chartContainer =
+        document.getElementById("revenueTrendChartContainer");
+
+    const emptyState =
+        document.getElementById("revenueTrendEmpty");
+
+    try {
+
+        loading.classList.remove("hidden");
+        chartContainer.classList.add("hidden");
+        emptyState.classList.add("hidden");
+
+        const response = await fetch(
+            `/hotelAdmin/revenue-trend?period=${period}`
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to load revenue trend");
+        }
+
+        const result = await response.json();
+
+        const data = result.data || [];
+
+        loading.classList.add("hidden");
+
+        if (!data.length) {
+
+            emptyState.classList.remove("hidden");
+
+            return;
+        }
+
+        chartContainer.classList.remove("hidden");
+
+        renderRevenueChart(data);
+
+    } catch (error) {
+
+        console.error(error);
+
+        loading.classList.add("hidden");
+
+        emptyState.classList.remove("hidden");
+    }
+}
+
+function renderRevenueChart(data) {
+
+    const ctx =
+        document
+            .getElementById("revenueTrendChart")
+            .getContext("2d");
+
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+
+    revenueChart = new Chart(ctx, {
+
+        type: "bar",
+
+        data: {
+
+            labels: data.map(item => item.label),
+
+            datasets: [
+                {
+                    label: "Revenue",
+
+                    data: data.map(
+                        item => item.revenue
+                    ),
+
+                    borderRadius: 8,
+
+                    borderSkipped: false,
+
+                    backgroundColor:
+                        "rgba(79,70,229,0.85)",
+
+                    hoverBackgroundColor:
+                        "rgba(67,56,202,1)"
+                }
+            ]
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label(context) {
+
+                            const value =
+                                Number(context.raw);
+
+                            return (
+                                " Revenue: ₹" +
+                                value.toLocaleString(
+                                    "en-IN"
+                                )
+                            );
+                        }
+                    }
+                }
+            },
+
+            scales: {
+
+                x: {
+
+                    grid: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: "#64748b"
+                    }
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    grid: {
+                        color: "#e2e8f0"
+                    },
+
+                    ticks: {
+
+                        color: "#64748b",
+
+                        callback(value) {
+
+                            return (
+                                "₹" +
+                                Number(value)
+                                    .toLocaleString("en-IN")
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+</script>
+
+// for Donut
+
+<script>
+
+let bookingStatusChart = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    await loadBookingStatusDistribution();
+
+});
+
+
+
+
+async function loadBookingStatusDistribution() {
+
+    const loading =
+        document.getElementById(
+            "bookingStatusLoading"
+        );
+
+    const content =
+        document.getElementById(
+            "bookingStatusContent"
+        );
+
+    const empty =
+        document.getElementById(
+            "bookingStatusEmpty"
+        );
+
+    try {
+
+        loading.classList.remove("hidden");
+        content.classList.add("hidden");
+        empty.classList.add("hidden");
+
+        const response = await fetch(
+            "/hotelAdmin//booking-status-distribution"
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to fetch booking status data"
+            );
+        }
+
+        const result = await response.json();
+
+        loading.classList.add("hidden");
+
+        if (
+            !result.data ||
+            result.data.length === 0
+        ) {
+
+            empty.classList.remove("hidden");
+            return;
+        }
+
+        content.classList.remove("hidden");
+
+        renderBookingStatusChart(
+            result.data
+        );
+
+        renderBookingStatusLegend(
+            result.data
+        );
+
+        document.getElementById(
+            "bookingStatusTotal"
+        ).textContent =
+            result.totalBookings.toLocaleString(
+                "en-IN"
+            );
+
+    } catch (error) {
+
+        console.error(error);
+
+        loading.classList.add("hidden");
+
+        empty.classList.remove("hidden");
+    }
+}
+// chart Renderer
+
+
+
+function renderBookingStatusChart(data) {
+
+    const ctx =
+        document
+            .getElementById(
+                "bookingStatusChart"
+            )
+            .getContext("2d");
+
+    if (bookingStatusChart) {
+        bookingStatusChart.destroy();
+    }
+
+    const chartColors = [
+        "#10b981", // confirmed
+        "#3b82f6", // checked in
+        "#8b5cf6", // checked out
+        "#f59e0b", // pending
+        "#ef4444"  // cancelled
+    ];
+
+    bookingStatusChart = new Chart(
+        ctx,
+        {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: data.map(
+                    item =>
+                    item.status.replaceAll(
+                        "_",
+                        " "
+                    )
+                ),
+
+                datasets: [
+                    {
+                        data: data.map(
+                            item => item.count
+                        ),
+
+                        backgroundColor:
+                            chartColors,
+
+                        borderWidth: 0
+                    }
+                ]
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                cutout: "70%",
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label(context) {
+
+                                const value =
+                                    context.raw;
+
+                                return (
+                                    `${context.label}: ${value}`
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    );
+}
+
+
+function renderBookingStatusLegend(data) {
+
+    const legend =
+        document.getElementById(
+            "bookingStatusLegend"
+        );
+
+    const chartColors = [
+        "#10b981",
+        "#3b82f6",
+        "#8b5cf6",
+        "#f59e0b",
+        "#ef4444"
+    ];
+
+    legend.innerHTML = "";
+
+    data.forEach((item, index) => {
+
+        legend.innerHTML += `
+            <div class="flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                    <span
+                        class="h-3 w-3 rounded-full"
+                        style="background:${chartColors[index]}"
+                    ></span>
+
+                    <span
+                        class="text-sm font-medium text-slate-700"
+                    >
+                        ${item.status.replaceAll("_", " ")}
+                    </span>
+
+                </div>
+
+                <div
+                    class="text-sm text-slate-500"
+                >
+                    ${item.count}
+                    (${item.percentage}%)
+                </div>
+
+            </div>
+        `;
+    });
+}
+
+
+
+</script>
+
+
+
+
+
+
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

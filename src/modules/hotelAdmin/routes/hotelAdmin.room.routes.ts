@@ -42,9 +42,9 @@ router.put("/rooms/:roomId/status",validToken,allowRoles("ADMIN"),adminControlle
 
 
 router.get("/rooms/verifyRoomExists" , validToken,allowRoles("ADMIN"),adminController.isRoomExists.bind(adminController))
-
+//fetch Version
 router.get(
-    "/room-types-siddharth",
+    "/room-list-types",
     validToken,
     allowRoles("ADMIN"),
     adminController.getRoomTypes.bind(adminController)
@@ -54,9 +54,6 @@ router.get(
 router.get("/hotel", validToken,allowRoles("ADMIN"),fetchHotel)
 
 
-router.get("/dashboard",(req,res)=>{  
-  res.render("admin/dashboard")
-})
 
 router.get(
     "/room-statuses",

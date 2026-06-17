@@ -143,20 +143,23 @@
     <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
         Room Number
     </label>
-
-    <input
+<div class="relative">
+                        <input
         type="text"
         id="roomNumber"
         name="room_number"
         value="<%= room.room_number %>"
-        oninput="VerifyRoomNumber(event)"
+        onblur="validateRoomNumberUniqueness(this.value)"
+        data-original-room-number="<%= room.room_number %>"
         required
         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
     >
+                        <div id="validationFeedbackIcon" class="absolute right-3 top-1/2 -translate-y-1/2 hidden text-xs"></div>
+                    </div>
+                    <p id="validationFeedbackText" class="text-[11px] mt-1 transition-all hidden"></p>
+    
 
-    <p id="roomNumberError" class="text-red-500 text-xs mt-1 hidden">
-        This room number already exists.
-    </p>
+   <p id="validationFeedbackText" class="text-[11px] mt-1 transition-all hidden"></p>
 </div>
 
                 <div>
@@ -174,7 +177,29 @@
                  required: true})  
                  %>
                 </div>
+                 <%- include('../partials/components/RoomStatusDropDown', {
+    id: 'roomStatusDropdown',
+    name: 'room_status_id',
+    
+    label: 'Room Status',
+    required: true
+}) %>
+<script>
 
+document.addEventListener('DOMContentLoaded', () => {
+
+    DynamicDropdown.load({
+        elementId: 'roomStatusDropdown',
+        endpoint: '/hotelAdmin/room-statuses',
+        valueKey: 'room_status_id',
+
+        labelBuilder: (status) =>
+            status.status_name
+    });
+
+});
+
+</script>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Operational Condition Status</label>
                     <select name="room_status_id" required
@@ -205,7 +230,7 @@
                 <i class="fa-solid fa-arrow-rotate-left text-[10px]"></i>
                 <span>Reset Modifications</span>
             </button>
-            <button type="submit" 
+            <button type="submit" id="submitButton"
                 class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-medium px-5 py-2.5 rounded-md shadow-sm transition">
                 <i class="fa-regular fa-floppy-disk text-[11px]"></i>
                 <span>Save Parameters</span>
@@ -215,6 +240,82 @@
 </div>
 
 <script>
+
+ let isRoomNumberValid = false;
+
+    /**
+     * Triggers asynchronous pipeline check to avoid database level composite duplicate constraint rejections
+     */
+    async function validateRoomNumberUniqueness(roomNumber) {
+       const roomInput =
+        document.getElementById("roomNumber");
+
+    const originalRoomNumber =
+        roomInput.dataset.originalRoomNumber;
+
+    // Skip validation if unchanged
+    if (roomNumber.trim() === originalRoomNumber.trim()) {
+
+        isRoomNumberValid = true;
+
+        document
+            .getElementById("submitButton")
+            .disabled = false;
+
+        return;
+    }
+
+        const textFeedback = document.getElementById('validationFeedbackText');
+        const iconFeedback = document.getElementById('validationFeedbackIcon');
+        const submitBtn = document.getElementById('submitButton');
+            // Matches our input architecture configuration context
+
+        // Setup loading state indicators
+        iconFeedback.className = "absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 animate-spin";
+        iconFeedback.innerHTML = `<i class="fa-solid fa-spinner"></i>`;
+        iconFeedback.classList.remove('hidden');
+
+        try {
+            // Adjust this API string path to perfectly match your verification endpoint
+            const checkUrl = `/hotelAdmin/rooms/verifyRoomExists?room_number=${encodeURIComponent(roomNumber)}`;
+            const response = await fetch(checkUrl);
+            const data = await response.json();
+
+            textFeedback.classList.remove('hidden');
+
+            if (data.exists) {
+                // Duplicate identity conflict matches found
+                isRoomNumberValid = false;
+            
+                submitBtn.disabled = true;
+                textFeedback.className = "text-[11px] mt-1 text-rose-600 font-medium";
+                textFeedback.innerText = "✕ Identification mismatch: This room identifier actively exists in this property asset.";
+                iconFeedback.className = "absolute right-3 top-1/2 -translate-y-1/2 text-rose-500";
+                iconFeedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+            } else {
+                // Identity clean to proceed
+                isRoomNumberValid = true;
+                submitBtn.disabled = false;
+                textFeedback.className = "text-[11px] mt-1 text-emerald-600 font-medium";
+                textFeedback.innerText = "✓ Room configuration identifier code verified unique.";
+                iconFeedback.className = "absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500";
+                iconFeedback.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+            }
+        } catch (err) {
+            console.error("Uniqueness engine connection interruption context: ", err);
+            // Graceful fallback to avoid locking administration interface due to temporary server lag
+            iconFeedback.classList.add('hidden');
+            textFeedback.classList.add('hidden');
+            submitBtn.disabled = false;
+            isRoomNumberValid = true;
+        }
+    }
+
+
+
+
+
+
     /**
      * Intercepts file select events to safely push blob streams 
      * directly into the image element interface for real-time validation.
