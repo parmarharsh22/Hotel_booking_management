@@ -636,12 +636,10 @@
             return false;
         }
 
-        /* ── Events ── */
         roomSelects.forEach(select => {
             select.addEventListener("change", () => { updateSummary(); validateCapacity(); });
         });
 
-        /* ── createHold (preserved exactly) ── */
         async function createHold() {
             updateSummary();
             if (!validateCapacity()) return;
@@ -664,6 +662,11 @@
                         rooms,
                     }),
                 });
+if (response.url.includes("/login")) {
+    window.location.href = "/login";
+    return;
+}
+
                 const data = await response.json();
                 if (data.success) { window.location.href = `/bookings/payment-page?hold_id=${data.hold_id}`; }
                 else { alert(data.error || "Failed to hold rooms. Please try again."); }
