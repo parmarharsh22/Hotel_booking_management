@@ -14,7 +14,6 @@ export class InvoiceController {
       const bookingId = parseInt(req.params.bookingId as any);
 
       const invoice = await invoiceService.generateInvoice(bookingId, hotelId);
-      console.log(invoice);
       return res.status(200).render("invoices/invoice", { invoice });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });

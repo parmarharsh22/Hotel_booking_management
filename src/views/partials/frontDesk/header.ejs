@@ -1,33 +1,23 @@
-<header
-    class="bg-white border-b border-gray-200 px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+<header class="bg-white border-b border-gray-200 px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-    <!-- Greeting Section -->
+    <!-- greeting section -->
     <div>
-
-        <p id="greetingText"
-            class="text-2xl font-bold text-[#031632]">
+        <p id="greetingText" class="text-2xl font-bold text-[#031632]">
             Good Morning
         </p>
-
         <p class="text-sm text-gray-500">
             Welcome back, <%= first_name %>
         </p>
-
     </div>
 
-    <!-- Date & Time -->
+    <!-- live date and time -->
     <div class="text-right">
-
-        <p id="liveTime"
-            class="text-2xl font-semibold text-[#775a19]">
+        <p id="liveTime" class="text-2xl font-semibold text-[#775a19]">
             00:00:00
         </p>
-
-        <p id="liveDate"
-            class="text-sm text-gray-500">
+        <p id="liveDate" class="text-sm text-gray-500">
             Monday, January 1, 2026
         </p>
-
     </div>
 
 </header>
@@ -37,30 +27,22 @@
     function updateHeaderClock() {
 
         const now = new Date();
-
         const hour = now.getHours();
 
+        // pick greeting based on time of day
         let greeting = "Good Evening";
 
         if (hour >= 5 && hour < 12) {
-
             greeting = "Good Morning";
-
         } else if (hour >= 12 && hour < 17) {
-
             greeting = "Good Afternoon";
-
         } else if (hour >= 17 && hour < 21) {
-
             greeting = "Good Evening";
-
         } else {
-
             greeting = "Good Night";
         }
 
-        document.getElementById("greetingText").textContent =
-            greeting;
+        document.getElementById("greetingText").textContent = greeting;
 
         document.getElementById("liveTime").textContent =
             now.toLocaleTimeString("en-IN", {
@@ -74,15 +56,12 @@
                 weekday: "long",
                 year: "numeric",
                 month: "long",
-                day: "numeric"
+                day: "numeric",
             });
     }
 
+    // run once immediately then tick every second
     updateHeaderClock();
-
-    setInterval(
-        updateHeaderClock,
-        1000
-    );
+    setInterval(updateHeaderClock, 1000);
 
 </script>
