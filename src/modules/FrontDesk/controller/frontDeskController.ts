@@ -306,6 +306,11 @@ export const cleanRoom = async (req: Request, res: Response) => {
     }
 };
 
+
+export const showIncidentals = async(req:Request,res:Response)=>{
+    res.render("frontDesk/incidentals")
+}
+
 // logout
 export const logout = async (req: Request, res: Response): Promise<void> => {
     try {

@@ -36,6 +36,8 @@ frontDeskRouter.post("/releaseRoom",validToken,frontDeskContext,allowRoles("FRON
 
 frontDeskRouter.post("/cleanRoom",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.cleanRoom);
 
+frontDeskRouter.get("/incidentals",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showIncidentals);
+
 // logout
 frontDeskRouter.get("/logout",validToken,frontDeskController.logout);
 
