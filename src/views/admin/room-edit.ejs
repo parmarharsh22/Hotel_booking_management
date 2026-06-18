@@ -169,20 +169,23 @@
                 </div>
 
                 <div id="type_container">
-                     <%-
-                include('../partials/components/TypeDropDown' ,{
-                 id: 'roomTypeDropdown',
-                 name: 'room_type_id',
-                 label: 'Room Category Allocation',
-                 required: true})  
-                 %>
+                  <%- include('../partials/components/TypeDropDown', {
+    id: 'roomTypeDropdown',
+    name: 'room_type_id',
+    label: 'Room Category Allocation',
+    required: true,
+    selectedValue: room.room_type_id
+}) %>
+
                 </div>
+
+
                  <%- include('../partials/components/RoomStatusDropDown', {
     id: 'roomStatusDropdown',
     name: 'room_status_id',
-    
     label: 'Room Status',
-    required: true
+    required: true,
+    selectedValue: room.room_status_id
 }) %>
 <script>
 
@@ -200,16 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Operational Condition Status</label>
-                    <select name="room_status_id" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                        <option value="1" <%= room.room_status_id == 1 ? 'selected' : '' %>>Available (1)</option>
-                        <option value="2" <%= room.room_status_id == 2 ? 'selected' : '' %>>Occupied (2)</option>
-                        <option value="3" <%= room.room_status_id == 3 ? 'selected' : '' %>>Maintenance (3)</option>
-                    </select>
-                </div>
-            </div>
+               
 
             <div class="space-y-4 flex flex-col justify-between">
                 <div>
