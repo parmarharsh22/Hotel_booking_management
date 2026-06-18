@@ -21,16 +21,15 @@
         <%= label || "Room Type" %>
     </label>
 
-    <select
-        id="<%= id %>"
-        name="<%= name %>"
-        class="<%= 'w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5' %>"
-        <%= required ? 'required' : '' %>
-    >
-        <option value="">
-            Loading room types...
-        </option>
-    </select>
+   <select
+    id="<%= id %>"
+    name="<%= name %>"
+    data-selected-value="<%= selectedValue || '' %>"
+    class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5"
+    <%= required ? 'required' : '' %>
+>
+    <option value="">Loading...</option>
+</select>
 
     <p
         id="<%= id %>-feedback"
@@ -44,16 +43,21 @@
 class DynamicDropdown {
 
     static async load({
-        elementId,
-        endpoint,
-        valueKey,
-        labelBuilder,
-        selectedValue = null
-    }) {
+    elementId,
+    endpoint,
+    valueKey,
+    labelBuilder,
+    selectedValue = null
+}) {
 
-        const select = document.getElementById(elementId);
+    const select = document.getElementById(elementId);
 
-        if (!select) return;
+    if (!select) return;
+
+    if (!selectedValue) {
+        selectedValue =
+            select.dataset.selectedValue || null;
+    }
 
         try {
 
@@ -110,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DynamicDropdown.load({
         elementId: 'roomTypeDropdown',
-        endpoint: '/hotelAdmin/room-types-siddharth',
+        endpoint: '/hotelAdmin/room-list-types',
         valueKey: 'room_type_id',
 
         labelBuilder: (type) =>

@@ -264,7 +264,10 @@
 
                     <textarea
                         name="description"
-                        rows="6"
+                        rows="6",
+                        id="description"
+        
+                        value="<%= roomType.description%>"
                         class="w-full px-4 py-3 border border-slate-300 rounded-lg resize-none"><%= roomType.description || '' %></textarea>
                 </div>
 
@@ -336,6 +339,7 @@
 
                                 <input
                                     type="file"
+                                    
                                     id="roomImage"
                                     name="image"
                                     accept="image/*"
@@ -405,92 +409,6 @@
 
 </div>
 
-<script>
-const imageInput = document.getElementById('roomImage');
-const imagePreview = document.getElementById('imagePreview');
-
-imageInput.addEventListener('change', function () {
-
-    const file = this.files[0];
-
-    if(file){
-        imagePreview.src = URL.createObjectURL(file);
-    }
-});
-document
-    .getElementById("editRoomTypeForm")
-    .addEventListener("submit", updateRoomType);
-
-async function updateRoomType(e) {
-    e.preventDefault();
-
-    try {
-        const typeId = window.location.pathname.split("/").pop();
-
-        const formData = new FormData();
-
-        formData.append(
-            "type_name",
-            document.getElementById("type_name").value
-        );
-
-        formData.append(
-            "base_price",
-            document.getElementById("base_price").value
-        );
-
-        formData.append(
-            "max_adults",
-            document.getElementById("max_adults").value
-        );
-
-        formData.append(
-            "max_children",
-            document.getElementById("max_children").value
-        );
-
-        formData.append(
-            "description",
-            document.getElementById("description").value
-        );
-
-        const imageFile =
-            document.getElementById("roomImage").files[0];
-
-        if (imageFile) {
-            formData.append("type_photo", imageFile);
-        }
-
-        const response = await fetch(
-            `/hotelAdmin/room-types/${typeId}`,
-            {
-                method: "PUT",
-                body: formData
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.message || "Update failed");
-        }
-
-        alert("Room type updated successfully");
-
-        window.location.href = "/hotelAdmin/room-types";
-
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-    }
-}
-document
-    .querySelectorAll('input[name="amenities"]:checked')
-    .forEach(cb => {
-        formData.append("amenities[]", cb.value);
-    });
-
-</script>
 
 
                     <!-- Pagination / Footer Indicators -->
@@ -517,6 +435,220 @@ document
             </footer>
         </main>
     </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
+    const form = document.getElementById("editRoomTypeForm");
+    const imageInput = document.getElementById("roomImage");
+    const imagePreview = document.getElementById("imagePreview");
+
+    if (!form) {
+        console.error("Form not found");
+        return;
+    }
+
+    const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
+    const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp"
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image Preview + Validation
+    |--------------------------------------------------------------------------
+    */
+    imageInput?.addEventListener("change", function () {
+
+        const file = this.files?.[0];
+
+        if (!file) return;
+
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            alert("Only JPG, PNG and WEBP images are allowed.");
+            this.value = "";
+            return;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            alert("Image must be less than 2 MB.");
+            this.value = "";
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+
+        imagePreview.src = previewUrl;
+
+        imagePreview.onload = () => {
+            URL.revokeObjectURL(previewUrl);
+        };
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Form Submit
+    |--------------------------------------------------------------------------
+    */
+    form.addEventListener("submit", updateRoomType);
+
+    async function updateRoomType(event) {
+
+        event.preventDefault();
+
+        const submitBtn =
+            form.querySelector('button[type="submit"]');
+
+        try {
+
+            submitBtn?.setAttribute("disabled", "true");
+
+            const typeId =
+                Number(window.location.pathname.split("/").pop());
+
+            if (!Number.isInteger(typeId) || typeId <= 0) {
+                throw new Error("Invalid room type ID.");
+            }
+
+            const typeName =
+                document.getElementById("type_name");
+
+            const basePrice =
+                document.getElementById("base_price");
+
+            const maxAdults =
+                document.getElementById("max_adults");
+
+            const maxChildren =
+                document.getElementById("max_children");
+
+            const description =
+                document.getElementById("description");
+
+            if (
+                !typeName ||
+                !basePrice ||
+                !maxAdults ||
+                !maxChildren ||
+                !description
+            ) {
+                throw new Error(
+                    "One or more form fields are missing."
+                );
+            }
+
+            if (!typeName.value.trim()) {
+                throw new Error("Room type name is required.");
+            }
+
+            if (!basePrice.value) {
+                throw new Error("Base price is required.");
+            }
+
+            const formData = new FormData();
+
+            formData.append(
+                "type_name",
+                typeName.value.trim()
+            );
+
+            formData.append(
+                "base_price",
+                basePrice.value
+            );
+
+            formData.append(
+                "max_adults",
+                maxAdults.value
+            );
+
+            formData.append(
+                "max_children",
+                maxChildren.value
+            );
+
+            formData.append(
+                "description",
+                description.value.trim()
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Amenities
+            |--------------------------------------------------------------------------
+            */
+            document
+                .querySelectorAll(
+                    'input[name="amenities"]:checked'
+                )
+                .forEach(input => {
+                    formData.append(
+                        "amenities[]",
+                        input.value
+                    );
+                });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Image
+            |--------------------------------------------------------------------------
+            */
+            const imageFile = imageInput?.files?.[0];
+
+            if (imageFile) {
+                formData.append(
+                    "type_photo",
+                    imageFile
+                );
+            }
+
+            const response = await fetch(
+                `/hotelAdmin/room-types/${typeId}`,
+                {
+                    method: "PUT",
+                    body: formData
+                }
+            );
+
+            let result = {};
+
+            try {
+                result = await response.json();
+            } catch {
+                result = {};
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message || "Update failed."
+                );
+            }
+
+            alert("Room type updated successfully.");
+
+            window.location.href =
+                "/hotelAdmin/room-types";
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.message ||
+                "Something went wrong."
+            );
+
+        } finally {
+
+            submitBtn?.removeAttribute("disabled");
+
+        }
+    }
+
+});
+</script>
 </body>
 </html>

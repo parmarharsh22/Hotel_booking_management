@@ -96,6 +96,9 @@ export class RoomTypeModel {
   static async updateRoomType(typeId: number, hotelId: number, data: RoomTypeUpdateInterface): Promise<boolean> {
     try {
       console.log(data);
+    
+       
+      
       const [result]: any = await db.query(
         `UPDATE room_types
          SET type_name     = ?,
@@ -103,7 +106,7 @@ export class RoomTypeModel {
              description   = ?,
              base_price    = ?,
              max_adults = ?,
-             max_children = ?,
+             max_children = ?
          WHERE room_type_id = ? AND hotel_id = ?`,
         [
           data.type_name,
@@ -113,7 +116,7 @@ export class RoomTypeModel {
           data.max_adults,
           data.max_children,
           typeId,
-          hotelId,
+          hotelId
         ]
       );
       return result.affectedRows > 0;
