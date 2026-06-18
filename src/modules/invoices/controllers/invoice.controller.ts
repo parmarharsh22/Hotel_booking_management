@@ -25,11 +25,11 @@ export class InvoiceController {
   async downloadInvoice(req: Request, res: Response) {
     try {
     //   const hotelId   = (req as any).hotelId as number;
-    const hotelId = 1;
+    const hotelId = parseInt(req.params.hotelId as any);
       const bookingId = parseInt(req.params.bookingId as any);
 
       const invoice = await invoiceService.generateInvoice(bookingId, hotelId);
-      return res.status(200).render("invoices/print", { invoice });
+      return res.status(200).render("invoices/invoice", { invoice });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

@@ -22,6 +22,7 @@ export class GuestBookingController {
       const userId    = (req as any).user?.userId as number;
       const bookingId = parseInt(req.params.bookingId as any);
       const booking   = await bookingService.getBookingDetail(bookingId, userId);
+      console.log(booking);
       return res.status(200).render("myBookings/detail", { booking });
     } catch (err: any) {
       return res.status(404).json({ message: err.message });
