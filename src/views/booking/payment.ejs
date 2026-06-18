@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Complete Payment — LuxeStay</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f1f5f9;
+        color: #0f172a;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+      }
+
+      /* Tabs */
+
+      .tab-btn {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #64748b;
+        transition: all 0.15s;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+      }
+
+      .tab-btn.active {
+        background: #2563eb;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+      }
+
+      /* Input */
+
+      .field {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        width: 100%;
+        font-size: 0.9rem;
+        font-family: "Inter", sans-serif;
+        color: #0f172a;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        outline: none;
+      }
+
+      .field:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background: #fff;
+      }
+
+      .field::placeholder {
+        color: #94a3b8;
+      }
+
+      .field-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #475569;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      /* Card visual */
+
+      .card-preview {
+        background: linear-gradient(
+          135deg,
+          #1e3a8a 0%,
+          #2563eb 50%,
+          #3b82f6 100%
+        );
+
+        border-radius: 16px;
+        padding: 24px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+
+        min-height: 160px;
+      }
+
+      .card-preview::before {
+        content: "";
+        position: absolute;
+        top: -40px;
+        right: -40px;
+
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .card-preview::after {
+        content: "";
+        position: absolute;
+        bottom: -60px;
+        right: 40px;
+
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      /* UPI apps */
+
+      .upi-app {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+      }
+
+      .upi-app:hover {
+        border-color: #93c5fd;
+        background: #eff6ff;
+      }
+
+      .upi-app.selected {
+        border-color: #2563eb;
+        background: #eff6ff;
+      }
+
+      /* Pay button */
+
+      .pay-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+
+        transition:
+          background 0.15s,
+          transform 0.1s,
+          box-shadow 0.15s;
+
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      }
+
+      .pay-btn:hover {
+        background: #1d4ed8;
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+      }
+
+      .pay-btn:active {
+        transform: scale(0.99);
+      }
+
+      .pay-btn:disabled {
+        background: #93c5fd;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      /* Toggle */
+
+      .toggle-wrap {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+
+      .toggle {
+        width: 40px;
+        height: 22px;
+        border-radius: 11px;
+        position: relative;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s;
+      }
+
+      .toggle.success-mode {
+        background: #22c55e;
+      }
+
+      .toggle.fail-mode {
+        background: #ef4444;
+      }
+
+      .toggle-knob {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        position: absolute;
+        top: 3px;
+        transition: left 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Processing overlay */
+
+      #processing-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+      }
+      #processing-overlay:not(.hidden) {
+        display: flex;
+      }
+
+      .processing-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+    width: min(320px, calc(100vw - 32px));    
+    }
+
+      /* Result screen */
+
+#result-screen {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    backdrop-filter: blur(5px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#result-screen:not(.hidden) {
+    display: flex;
+}
+
+      .result-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        width: min(400px, calc(100vw - 32px));
+       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      }
+
+      .spinner {
+        width: 44px;
+        height: 44px;
+        border: 3px solid #e2e8f0;
+
+        border-top-color: #2563eb;
+        border-radius: 50%;
+
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .checkmark {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #f0fdf4;
+        border: 2px solid #bbf7d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+      }
+
+      .crossmark {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: #fef2f2;
+        border: 2px solid #fecaca;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+      }
+
+      /* Card number spacing */
+
+      .card-number-display {
+        font-size: 1.1rem;
+        letter-spacing: 0.2em;
+        font-weight: 600;
+        margin-top: 24px;
+      }
+
+      /* Security badges */
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.7rem;
+        color: #64748b;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Main layout -->
+
+    <div class="min-h-screen flex items-start justify-center py-10 px-4">
+<div class="w-full max-w-6xl flex flex-col lg:flex-row gap-6 items-start">  
+        <!-- Left: Payment form -->
+
+        <div class="flex-1">
+          <!-- Header -->
+
+          <div class="mb-6">
+            <a
+              href="#"
+              onclick="history.back()"
+              class="text-sm text-slate-500 hover:text-slate-800 flex items-center gap-1.5 mb-4"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+
+              Back to booking
+            </a>
+
+            <h1 class="text-2xl font-bold text-slate-900">
+              Complete your payment
+            </h1>
+
+            <p class="text-sm text-slate-500 mt-1">
+              Your booking is held for
+              <span id="countdown" class="font-semibold text-blue-600"
+                >10:00</span
+              >
+            </p>
+          </div>
+
+          <div class="card p-6">
+            <!-- DEV toggle -->
+
+            <div class="toggle-wrap flex items-center justify-between mb-6">
+              <div>
+                <p
+                  class="text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  Dev Mode
+                </p>
+
+                <p class="text-xs text-slate-400 mt-0.5" id="toggle-label">
+                  Simulate:
+                  <span class="text-green-600 font-medium">Success</span>
+                </p>
+              </div>
+
+              <button
+                id="outcome-toggle"
+                class="toggle success-mode"
+                onclick="toggleOutcome()"
+              >
+                <div
+                  class="toggle-knob"
+                  id="toggle-knob"
+                  style="left: 21px"
+                ></div>
+              </button>
+            </div>
+
+            <!-- Tabs -->
+
+<div class="flex flex-col sm:flex-row gap-1 bg-slate-100 p-1 rounded-xl mb-6">
+                <button
+                class="tab-btn active flex-1 flex items-center justify-center gap-2"
+                onclick="switchTab('card', this)"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <rect x="1" y="4" width="22" height="16" rx="2" />
+                  <line x1="1" y1="10" x2="23" y2="10" />
+                </svg>
+
+                Credit / Debit Card
+              </button>
+
+              <button
+                class="tab-btn flex-1 flex items-center justify-center gap-2"
+                onclick="switchTab('upi', this)"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                  />
+                </svg>
+
+                UPI
+              </button>
+            </div>
+
+            <!-- Card tab -->
+
+            <div id="tab-card">
+              <!-- Card preview -->
+
+              <div class="card-preview mb-6">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p
+                      class="text-xs text-blue-200 uppercase tracking-widest font-medium"
+                    >
+                      LuxeStay
+                    </p>
+                  </div>
+
+                  <div class="flex gap-1">
+                    <div
+                      class="w-8 h-8 rounded-full bg-red-400 opacity-80"
+                    ></div>
+
+                    <div
+                      class="w-8 h-8 rounded-full bg-amber-400 opacity-80 -ml-3"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="card-number-display" id="preview-number">
+                  •••• •••• •••• ••••
+                </div>
+
+                <div class="flex justify-between mt-4 text-xs">
+                  <div>
+                    <p class="text-blue-200 uppercase tracking-wider text-xs">
+                      Card Holder
+                    </p>
+
+                    <p class="font-medium mt-0.5" id="preview-name">
+                      YOUR NAME
+                    </p>
+                  </div>
+
+                  <div class="text-right">
+                    <p class="text-blue-200 uppercase tracking-wider text-xs">
+                      Expires
+                    </p>
+
+                    <p class="font-medium mt-0.5" id="preview-expiry">
+                      MM / YY
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card fields -->
+
+              <div class="space-y-4">
+                <div>
+                  <label class="field-label">Card Number</label>
+
+                  <input
+                    id="card-number"
+                    class="field"
+                    placeholder="1234 5678 9012 3456"
+                    maxlength="19"
+                    oninput="formatCardNumber(this)"
+                  />
+                </div>
+
+                <div>
+                  <label class="field-label">Name on Card</label>
+
+                  <input
+                    id="card-name"
+                    class="field"
+                    placeholder="John Smith"
+                    oninput="updatePreview()"
+                  />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="field-label">Expiry Date</label>
+
+                    <input
+                      id="card-expiry"
+                      class="field"
+                      placeholder="MM / YY"
+                      maxlength="7"
+                      oninput="formatExpiry(this)"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="field-label">CVV</label>
+
+                    <input
+                      id="card-cvv"
+                      class="field"
+                      placeholder="•••"
+                      maxlength="3"
+                      type="password"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- UPI tab -->
+
+            <div id="tab-upi" class="hidden">
+              <p class="text-sm font-medium text-slate-600 mb-4">
+                Choose your UPI app
+              </p>
+
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">         
+         <div class="upi-app" onclick="selectUpiApp(this, 'gpay')">
+                  <div
+                    class="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 mx-auto mb-2 flex items-center justify-center"
+                  >
+                    <span class="text-xs font-bold text-blue-600">G</span>
+                  </div>
+
+                  <p class="text-xs font-medium text-slate-700">Google Pay</p>
+                </div>
+
+                <div class="upi-app" onclick="selectUpiApp(this, 'phonepe')">
+                  <div
+                    class="w-10 h-10 rounded-full bg-purple-600 shadow-sm mx-auto mb-2 flex items-center justify-center"
+                  >
+                    <span class="text-xs font-bold text-white">P</span>
+                  </div>
+
+                  <p class="text-xs font-medium text-slate-700">PhonePe</p>
+                </div>
+
+                <div class="upi-app" onclick="selectUpiApp(this, 'paytm')">
+                  <div
+                    class="w-10 h-10 rounded-full bg-sky-500 shadow-sm mx-auto mb-2 flex items-center justify-center"
+                  >
+                    <span class="text-xs font-bold text-white">pt</span>
+                  </div>
+
+                  <p class="text-xs font-medium text-slate-700">Paytm</p>
+                </div>
+              </div>
+
+              <p class="text-xs text-slate-400 text-center mb-3">
+                — or enter UPI ID —
+              </p>
+
+              <div>
+                <label class="field-label">UPI ID</label>
+
+                <div class="relative">
+                  <input
+                    id="upi-id"
+                    class="field pr-20"
+                    placeholder="name@upi"
+                  />
+
+                  <button
+                    onclick="verifyUpi()"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-blue-600 hover:text-blue-800"
+                  >
+                    Verify
+                  </button>
+                </div>
+
+                <p id="upi-status" class="text-xs mt-1.5 hidden"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security badges -->
+
+<div class="flex flex-wrap items-center justify-center gap-4 mt-4">
+              <span class="badge">
+              <svg
+                class="w-3.5 h-3.5 text-green-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+
+              256-bit SSL
+            </span>
+
+            <span class="badge">
+              <svg
+                class="w-3.5 h-3.5 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+
+              PCI DSS Compliant
+            </span>
+
+            <span class="badge">
+              <svg
+                class="w-3.5 h-3.5 text-amber-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+
+              3D Secure
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: Order summary -->
+
+<div class="w-full lg:w-80 flex-shrink-0 order-first lg:order-none">
+            <div class="card p-5 sticky top-8">
+            <h2 class="text-sm font-semibold text-slate-800 mb-4">
+              Booking Summary
+            </h2>
+
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Hotel</span>
+
+                <span
+                  class="font-medium text-slate-800 text-right max-w-[160px]"
+                  id="sum-hotel"
+                  >Grand Palace Hotel</span
+                >
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-slate-500">Check-in</span>
+
+                <span class="font-medium text-slate-800" id="sum-checkin"
+                  >—</span
+                >
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-slate-500">Check-out</span>
+
+                <span class="font-medium text-slate-800" id="sum-checkout"
+                  >—</span
+                >
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-slate-500">Nights</span>
+
+                <span class="font-medium text-slate-800" id="sum-nights"
+                  >—</span
+                >
+              </div>
+
+              <div class="flex justify-between">
+                <span class="text-slate-500">Guests</span>
+
+                <span class="font-medium text-slate-800" id="sum-guests"
+                  >—</span
+                >
+              </div>
+            </div>
+
+            <div
+              id="sum-rooms"
+              class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-sm"
+            ></div>
+
+            <div class="mt-4 pt-4 border-t border-slate-100">
+              <div class="flex justify-between items-center">
+                <span class="text-xs text-slate-500">Subtotal</span>
+
+                <span class="text-sm font-medium" id="sum-subtotal">₹0</span>
+              </div>
+
+              <div class="flex justify-between items-center mt-1.5">
+                <span class="text-xs text-slate-500">Taxes & fees (12%)</span>
+
+                <span class="text-sm font-medium" id="sum-tax">₹0</span>
+              </div>
+            </div>
+
+            <div
+              class="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center"
+            >
+              <span class="font-semibold text-slate-900">Total</span>
+
+              <span class="text-xl font-bold text-blue-600" id="sum-total"
+                >₹0</span
+              >
+            </div>
+
+            <button
+              class="pay-btn mt-5"
+              onclick="processPayment()"
+              id="pay-btn"
+            >
+              Pay <span id="pay-amount">₹0</span>
+            </button>
+
+            <p class="text-center text-xs text-slate-400 mt-3">
+              By paying you agree to our <a href="#" class="underline">Terms</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing overlay -->
+
+    <div id="processing-overlay" class="hidden">
+      <div class="processing-card">
+        <div class="spinner"></div>
+
+        <p class="font-semibold text-slate-900 text-lg">
+          Processing payment...
+        </p>
+
+        <p class="text-sm text-slate-500 mt-1" id="processing-msg">
+          Please do not close this window
+        </p>
+      </div>
+    </div>
+
+    <!-- Result screen -->
+
+    <div id="result-screen" class="hidden">
+      <div class="result-card">
+        <div id="result-icon"></div>
+
+        <h2 class="text-xl font-bold text-slate-900" id="result-title"></h2>
+
+        <p class="text-sm text-slate-500 mt-2" id="result-msg"></p>
+
+        <div
+          id="result-ref"
+          class="hidden mt-5 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
+        >
+          <p class="text-xs text-slate-400 uppercase tracking-wider">
+            Booking Reference
+          </p>
+
+          <p
+            class="text-lg font-bold text-blue-600 font-mono mt-1"
+            id="result-ref-text"
+          ></p>
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <button
+            id="result-action"
+            onclick="handleResultAction()"
+            class="flex-1 py-2.5 rounded-xl font-semibold text-sm bg-blue-600 text-white hover:bg-blue-700 transition"
+          ></button>
+
+          <button
+            id="result-secondary"
+            onclick="handleSecondaryAction()"
+            class="flex-1 py-2.5 rounded-xl font-semibold text-sm border border-slate-200 text-slate-700 hover:bg-slate-50 transition hidden"
+          ></button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ─── State ───────────────────────────────────────────
+
+      let simulateSuccess = true;
+
+      let activeTab = "card";
+
+      let selectedUpiApp = null;
+
+      let holdData = null;
+
+      let countdownTimer = null;
+
+      // ─── Load hold data from API ──────────────────────────
+
+      const holdId = new URLSearchParams(location.search).get("hold_id");
+
+      if (!holdId) window.location.href = "/";
+
+      async function initPage() {
+        try {
+          const res = await fetch(`/bookings/hold/${holdId}`);
+          const data = await res.json();
+          if (!data.success) {
+            showExpiredResult();
+            return;
+          }
+          holdData = data;
+        } catch {
+          showExpiredResult();
+          return;
+        }
+
+        // render separately — errors here won't be mistaken for expired hold
+        try {
+          populateSummary();
+          startCountdown(holdData.expires_in_seconds);
+        } catch (err) {
+          console.error("Render error:", err);
+        }
+      }
+
+      // ─── Populate summary ────────────────────────────────
+
+      function populateSummary() {
+        const h = holdData;
+
+        const checkin = new Date(h.checkin_date);
+
+        const checkout = new Date(h.checkout_date);
+
+        const nights = Math.round((checkout - checkin) / 86400000);
+
+        const tax = Math.round(Number(h.total_amount) * 0.12);
+
+        const grand = h.total_amount + tax;
+
+        document.getElementById("sum-hotel").textContent = h.hotel_name;
+
+        document.getElementById("sum-checkin").textContent =
+          checkin.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+
+        document.getElementById("sum-checkout").textContent =
+          checkout.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+
+        document.getElementById("sum-nights").textContent =
+          `${nights} night${nights > 1 ? "s" : ""}`;
+
+        document.getElementById("sum-guests").textContent =
+          `${h.adults} adults, ${h.children} children`;
+
+        // Group rooms by type_name since service returns one entry per room_id
+
+        const grouped = {};
+
+        h.rooms.forEach((r) => {
+          const key = r.type_name;
+
+          if (!grouped[key])
+            grouped[key] = {
+              type_name: r.type_name,
+              count: 0,
+              rate_per_night: Number(r.rate_per_night),
+            };
+
+          grouped[key].count++;
+        });
+
+        const roomsHtml = Object.values(grouped)
+          .map(
+            (r) => `
+ 
+      <div class="flex justify-between text-slate-600">
+ 
+        <span>${r.type_name} × ${r.count}</span>
+ 
+        <span>₹${(r.rate_per_night * r.count * nights).toLocaleString("en-IN")}</span>
+ 
+      </div>
+ 
+    `,
+          )
+          .join("");
+
+        document.getElementById("sum-rooms").innerHTML = roomsHtml;
+
+        document.getElementById("sum-subtotal").textContent =
+          `₹${h.total_amount.toLocaleString("en-IN")}`;
+
+        document.getElementById("sum-tax").textContent =
+          `₹${tax.toLocaleString("en-IN")}`;
+
+        document.getElementById("sum-total").textContent =
+          `₹${grand.toLocaleString("en-IN")}`;
+
+        document.getElementById("pay-amount").textContent =
+          `₹${grand.toLocaleString("en-IN")}`;
+      }
+
+      // ─── Countdown ───────────────────────────────────────
+
+      function startCountdown(seconds) {
+        const el = document.getElementById("countdown");
+
+        let remaining = seconds;
+
+        countdownTimer = setInterval(() => {
+          if (remaining <= 0) {
+            clearInterval(countdownTimer);
+
+            el.textContent = "0:00";
+
+            el.classList.replace("text-blue-600", "text-red-500");
+
+            showExpiredResult();
+
+            return;
+          }
+
+          remaining--;
+
+          const m = Math.floor(remaining / 60);
+
+          const s = remaining % 60;
+
+          el.textContent = `${m}:${s.toString().padStart(2, "0")}`;
+
+          if (remaining <= 60)
+            el.classList.replace("text-blue-600", "text-red-500");
+        }, 1000);
+      }
+
+      // ─── Tab switch ──────────────────────────────────────
+
+      function switchTab(tab, btn) {
+        activeTab = tab;
+
+        document
+          .getElementById("tab-card")
+          .classList.toggle("hidden", tab !== "card");
+
+        document
+          .getElementById("tab-upi")
+          .classList.toggle("hidden", tab !== "upi");
+
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+
+        btn.classList.add("active");
+      }
+
+      // ─── Dev toggle ──────────────────────────────────────
+
+      function toggleOutcome() {
+        simulateSuccess = !simulateSuccess;
+
+        const btn = document.getElementById("outcome-toggle");
+
+        const knob = document.getElementById("toggle-knob");
+
+        const label = document.getElementById("toggle-label");
+
+        if (simulateSuccess) {
+          btn.classList.replace("fail-mode", "success-mode");
+
+          knob.style.left = "21px";
+
+          label.innerHTML =
+            'Simulate: <span class="text-green-600 font-medium">Success</span>';
+        } else {
+          btn.classList.replace("success-mode", "fail-mode");
+
+          knob.style.left = "3px";
+
+          label.innerHTML =
+            'Simulate: <span class="text-red-500 font-medium">Failure</span>';
+        }
+      }
+
+      // ─── Card formatting ─────────────────────────────────
+
+      function formatCardNumber(input) {
+        let val = input.value.replace(/\D/g, "").slice(0, 16);
+
+        input.value = val.replace(/(.{4})/g, "$1 ").trim();
+
+        const display = val.padEnd(16, "•");
+
+        document.getElementById("preview-number").textContent = display
+          .replace(/(.{4})/g, "$1 ")
+          .trim();
+      }
+
+      function formatExpiry(input) {
+        let val = input.value.replace(/\D/g, "").slice(0, 4);
+
+        if (val.length >= 2) val = val.slice(0, 2) + " / " + val.slice(2);
+
+        input.value = val;
+
+        document.getElementById("preview-expiry").textContent =
+          val || "MM / YY";
+      }
+
+      function updatePreview() {
+        const name =
+          document.getElementById("card-name").value.toUpperCase() ||
+          "YOUR NAME";
+
+        document.getElementById("preview-name").textContent = name;
+      }
+
+      // ─── UPI ─────────────────────────────────────────────
+
+      function selectUpiApp(el, app) {
+        document
+          .querySelectorAll(".upi-app")
+          .forEach((a) => a.classList.remove("selected"));
+
+        el.classList.add("selected");
+
+        selectedUpiApp = app;
+
+        document.getElementById("upi-id").value = "";
+
+        document.getElementById("upi-status").classList.add("hidden");
+      }
+
+      function verifyUpi() {
+        const val = document.getElementById("upi-id").value.trim();
+
+        const status = document.getElementById("upi-status");
+
+        if (!val.includes("@")) {
+          status.textContent = "✗ Invalid UPI ID format";
+
+          status.className = "text-xs mt-1.5 text-red-500";
+        } else {
+          status.textContent = "✓ UPI ID verified";
+
+          status.className = "text-xs mt-1.5 text-green-600";
+        }
+
+        status.classList.remove("hidden");
+      }
+
+      // ─── Validation ──────────────────────────────────────
+
+      function validate() {
+        if (activeTab === "card") {
+          const num = document
+            .getElementById("card-number")
+            .value.replace(/\s/g, "");
+
+          const name = document.getElementById("card-name").value.trim();
+
+          const exp = document.getElementById("card-expiry").value.trim();
+
+          const cvv = document.getElementById("card-cvv").value.trim();
+
+          if (num.length < 16) return "Enter a valid 16-digit card number";
+
+          if (!name) return "Enter name on card";
+
+          if (exp.length < 7) return "Enter a valid expiry date";
+
+          if (cvv.length < 3) return "Enter a valid CVV";
+
+          return null;
+        }
+
+        if (activeTab === "upi") {
+          if (
+            !selectedUpiApp &&
+            !document.getElementById("upi-id").value.trim()
+          ) {
+            return "Select a UPI app or enter your UPI ID";
+          }
+
+          return null;
+        }
+
+        return null;
+      }
+
+      // ─── Process payment ─────────────────────────────────
+
+      async function processPayment() {
+        const err = validate();
+
+        if (err) {
+          alert(err);
+
+          return;
+        }
+
+        // Show processing
+
+        document
+          .getElementById("processing-overlay")
+          .classList.remove("hidden");
+
+        document.getElementById("processing-msg").textContent =
+          "Please do not close this window";
+
+        // Simulate processing delay (1.5s auth + 1s confirm)
+
+        await sleep(1500);
+
+        document.getElementById("processing-msg").textContent =
+          "Confirming your booking...";
+
+        await sleep(1000);
+
+        document.getElementById("processing-overlay").classList.add("hidden");
+
+        if (simulateSuccess) {
+          await confirmBookingAPI();
+        } else {
+          showFailureResult();
+        }
+      }
+
+      // ─── API call ────────────────────────────────────────
+
+      async function confirmBookingAPI() {
+        try {
+          // map active tab to payment_method_id
+
+          const methodMap = { card: 2, upi: 3 };
+
+          const payment_method_id = methodMap[activeTab] || 2;
+
+          const res = await fetch("/bookings/confirm", {
+            method: "POST",
+
+            headers: { "Content-Type": "application/json" },
+
+            body: JSON.stringify({
+              hold_id: holdData.hold_id,
+
+              payment_method_id,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            // mark payment as SUCCESS (dummy flow — real flow: Razorpay webhook does this)
+
+            await fetch("/bookings/payment-success", {
+              method: "POST",
+
+              headers: { "Content-Type": "application/json" },
+
+              body: JSON.stringify({ booking_id: data.booking_id }),
+            });
+
+            clearInterval(countdownTimer);
+
+            showSuccessResult(data.booking_reference);
+          } else {
+            // mark payment as FAILED
+
+            if (data.booking_id) {
+              await fetch("/bookings/payment-failed", {
+                method: "POST",
+
+                headers: { "Content-Type": "application/json" },
+
+                body: JSON.stringify({ booking_id: data.booking_id }),
+              });
+            }
+
+            showFailureResult(data.error);
+          }
+        } catch {
+          showFailureResult("Network error. Please try again.");
+        }
+      }
+
+      // ─── Result screens ──────────────────────────────────
+
+      function showSuccessResult(ref) {
+        document.getElementById("result-icon").innerHTML = `
+ 
+      <div class="checkmark">
+ 
+        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+ 
+      </div>`;
+
+        document.getElementById("result-title").textContent =
+          "Booking Confirmed!";
+
+        document.getElementById("result-msg").textContent =
+          "Your payment was successful. A confirmation has been sent to your email.";
+
+        document.getElementById("result-ref").classList.remove("hidden");
+
+        document.getElementById("result-ref-text").textContent =
+          ref || "HBMS-XXXXXX";
+
+        document.getElementById("result-action").textContent = "View Booking";
+
+        document.getElementById("result-secondary").textContent =
+          "Back to Home";
+
+        document.getElementById("result-secondary").classList.remove("hidden");
+
+        document.getElementById("result-screen").classList.remove("hidden");
+      }
+
+      function showFailureResult(msg) {
+        document.getElementById("result-icon").innerHTML = `
+ 
+      <div class="crossmark">
+ 
+        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+ 
+      </div>`;
+
+        document.getElementById("result-title").textContent = "Payment Failed";
+
+        document.getElementById("result-msg").textContent =
+          msg ||
+          "Your payment could not be processed. No amount has been deducted.";
+
+        document.getElementById("result-ref").classList.add("hidden");
+
+        document.getElementById("result-action").textContent = "Try Again";
+
+        document.getElementById("result-secondary").classList.add("hidden");
+
+        document.getElementById("result-screen").classList.remove("hidden");
+      }
+
+      function showExpiredResult() {
+        document.getElementById("result-icon").innerHTML = `
+ 
+      <div class="crossmark">
+ 
+        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+ 
+      </div>`;
+document.getElementById("result-msg").textContent =
+  "Your reservation time has ended and the selected room has been released. Search again to continue your booking.";
+
+        document.getElementById("result-ref").classList.add("hidden");
+
+        document.getElementById("result-action").textContent = "Search Again";
+
+        document.getElementById("result-secondary").classList.add("hidden");
+
+        document.getElementById("result-screen").classList.remove("hidden");
+      }
+
+      function handleResultAction() {
+        const title = document.getElementById("result-title").textContent;
+
+        if (title === "Booking Confirmed!")
+          window.location.href = "/bookings/my";
+        else if (title === "Hold Expired") window.location.href = "/";
+        else document.getElementById("result-screen").classList.add("hidden");
+      }
+
+      function handleSecondaryAction() {
+        window.location.href = "/";
+      }
+
+      // ─── Util ─────────────────────────────────────────────
+
+      function sleep(ms) {
+        return new Promise((r) => setTimeout(r, ms));
+      }
+
+      // ─── Init ─────────────────────────────────────────────
+
+      initPage();
+    </script>
+  </body>
+</html>

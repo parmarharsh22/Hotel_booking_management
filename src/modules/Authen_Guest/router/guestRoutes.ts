@@ -14,4 +14,5 @@ authenRoute.post("/updateProfile",validToken,uploadProfilePhoto.single("avatar")
 // Logout a exisiting user
 authenRoute.get("/logout",validToken,authenGuestCont.logoutUser)
 
+
 export default authenRoute;

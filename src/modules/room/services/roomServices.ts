@@ -10,12 +10,16 @@ import { db } from "../../../config/db";
 import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 
 export const searchHotels = async (params: searchHotelReqBody) => {
-  const { location, check_in, check_out, rooms, adults, children } = params;
+ const { location, checkIn, checkOut, rooms, adults, children, priceFilter, roomTypesFilter
+    , amenitiesFilter } = params;
 
-  const hotels_data = await roomModel.searchHotels(
+    const hotels_data = await roomModel.searchHotels(
     location,
-    check_in,
-    check_out
+    checkIn,
+    checkOut,
+    priceFilter,
+    roomTypesFilter,
+    amenitiesFilter
   );
 
   const hotels: Record<string, Hotel> = {};
@@ -67,87 +71,92 @@ export const searchHotels = async (params: searchHotelReqBody) => {
     ) {
       result.push({
         ...hotel,
-        available_rooms:hotel.rooms.length,
+        available_rooms: hotel.rooms.length,
         starting_price: Math.min(...hotel.rooms.map((r) => r.price)),
       });
     }
   }
 
+  result.sort((a,b)=>a.starting_price-b.starting_price)
+
   return result;
 };
 
-export const hotelDetails=async (hotelId:number,check_in:string,check_out:string)=>{
-  const hotelDetails=await roomModel.hotelDetails(hotelId,check_in,check_out);
+export const hotelDetails = async (hotelId: number, checkIn: string, checkOut: string,priceFilter:number|undefined,roomTypes:string[]|undefined,amenities:string[]|undefined) => {
+  const hotelDetails = await roomModel.hotelDetails(hotelId, checkIn, checkOut,priceFilter,roomTypes,amenities);
 
   let hotel: HotelDetails | undefined;
-  let room_type:RoomType[]=[];
+  let room_type: RoomType[] = [];
 
-  for(let i=0;i< hotelDetails.length;i++)
-  {
-    const element=hotelDetails[i];
+  for (let i = 0; i < hotelDetails.length; i++) {
+    const element = hotelDetails[i];
 
-    if(i==0)
-    {
-      hotel={
-        hotel_id:Number(element.hotel_id),
-        name:element.name,
-        address:element.address,
-        city:element.city,
-        state:element.state,
-        country:element.country,
-        cover_url:element.cover_url
+    if (i == 0) {
+      hotel = {
+        hotel_id: Number(element.hotel_id),
+        name: element.name,
+        address: element.address,
+        city: element.city,
+        state: element.state,
+        country: element.country,
+        cover_url: element.cover_url
       }
     }
 
     room_type.push({
-      room_type_id:element.room_type_id,
-      type:element.type_name,
-      price:element.base_price,
-      max_adults:element.max_adults,
-      max_children:element.max_children,
-      available_rooms:element.available_rooms,
-      description:element.description,
-      amenities:element.amenities.split(',').map((item:string)=>item.trim())
+      room_type_id: element.room_type_id,
+      type: element.type_name,
+      price: element.base_price,
+      max_adults: element.max_adults,
+      max_children: element.max_children,
+      available_rooms: element.available_rooms,
+      description: element.description,
+      amenities: element.amenities.split(',').map((item: string) => item.trim())
     })
   }
-  
-  return {hotel,room_type};
-} 
 
-export const createHold=async (bookingData:BookigData,userId:number)=>{
-   const connection = await db.getConnection();
+  return { hotel, room_type };
+}
 
-   try {
+export const createHold = async (bookingData: BookigData, userId: number) => {
+  const connection = await db.getConnection();
+
+  try {
     await connection.beginTransaction();
-    const heldRooms:RoomRow[]=[];
+    const heldRooms: RoomRow[] = [];
 
-    for(const selection of bookingData.selections)
-    {
-      const rooms=await roomModel.getAvailableRooms(
-        connection,bookingData.hotelId,selection.roomTypeId,bookingData.checkIn,bookingData.checkOut,selection.quantity
+    for (const selection of bookingData.selections) {
+      const rooms = await roomModel.getAvailableRooms(
+        connection, bookingData.hotelId, selection.roomTypeId, bookingData.checkIn, bookingData.checkOut, selection.quantity
       )
 
-      if(rooms.length<selection.quantity)
-      {
+      if (rooms.length < selection.quantity) {
         throw new Error(`${selection.quantity} rooms are occupied by someone else`)
       }
 
       heldRooms.push(...rooms);
     }
 
-    await roomModel.insertRoomHolds(connection,heldRooms,userId,bookingData.checkIn,bookingData.checkOut,bookingData.adults,bookingData.children);
+    await roomModel.insertRoomHolds(connection, heldRooms, userId, bookingData.checkIn, bookingData.checkOut, bookingData.adults, bookingData.children);
 
     await connection.commit();
 
-    return {success:true};
+    return { success: true };
 
-   } catch (error) {
+  } catch (error) {
     await connection.rollback();
 
     throw error;
-   }
-   finally
-   {
+  }
+  finally {
     connection.release();
-   }
+  }
+}
+
+export const fetchFilterRoomTypes = async () => {
+  return await roomModel.fetchFilterRoomTypes();
+}
+
+export const fetchAmenities = async () => {
+  return await roomModel.fetchAmenities();
 }

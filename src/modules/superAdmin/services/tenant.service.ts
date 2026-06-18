@@ -41,7 +41,7 @@ export const createHotel = async (body: any) => {
 
         // 2. insert hotel
         const [hotelResult]: any = await connection.query(
-            `INSERT INTO hotels 
+            `INSERT INTO hotels   
             (tenant_status_id, name, slug, address, city, state, country, phone, email, logo_url, cover_url)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [

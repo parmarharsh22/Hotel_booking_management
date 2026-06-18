@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeStay - Guest Confirmation</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9fc; }
+    </style>
+</head>
+
+<body class="bg-background text-on-background">
+
+    <%- include('../partials/frontDesk/sidebar') %>
+
+    <div class="lg:ml-[260px] min-h-screen">
+
+        <%- include("../partials/frontDesk/header.ejs") %>
+
+        <!-- hero section -->
+        <div class="px-8 py-6">
+            <div class="bg-gradient-to-r from-[#031632] via-[#0c234d] to-[#1a2b48] rounded-3xl shadow-xl p-8">
+                <div class="flex justify-between items-center">
+
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-yellow-300 text-4xl">fact_check</span>
+                            <h1 class="text-4xl font-bold text-white">Booking Verification</h1>
+                        </div>
+                        <p class="text-yellow-300 text-lg">
+                            Verify guest details, validate identification documents and complete the check-in OR Billing process.
+                        </p>
+                    </div>
+
+                    <div class="hidden lg:flex">
+                        <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center">
+                            <p class="text-blue-200 text-sm">Booking Reference</p>
+                            <h2 class="text-2xl font-bold text-white mt-1"><%= booking.booking_reference %></h2>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <main class="p-8 space-y-8">
+
+            <!-- booking summary -->
+            <section class="bg-white border border-outline-variant rounded-xl p-6">
+
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary">confirmation_number</span>
+                    <h2 class="text-xl font-semibold text-primary">Booking Information</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Booking Reference</label>
+                        <input type="text" readonly value="<%= booking.booking_reference %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Check-In Date</label>
+                        <input type="text" readonly
+                            value="<%= new Date(booking.checkin_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Check-Out Date</label>
+                        <input type="text" readonly
+                            value="<%= new Date(booking.checkout_date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Adults</label>
+                        <input type="text" readonly value="<%= booking.adults %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Children</label>
+                        <input type="text" readonly value="<%= booking.children %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Total Amount</label>
+                        <input type="text" readonly value="₹ <%= booking.total_amount %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                </div>
+
+                <% if (booking.special_requests) { %>
+                    <div class="mt-6">
+                        <label class="text-sm text-on-surface-variant">Special Requests</label>
+                        <textarea readonly rows="3"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2"><%= booking.special_requests %></textarea>
+                    </div>
+                <% } %>
+
+            </section>
+
+            <!-- room information -->
+            <section class="bg-white border border-outline-variant rounded-xl p-6">
+
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary">bed</span>
+                    <h2 class="text-xl font-semibold text-primary">Room Information</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Room Number</label>
+                        <input type="text" readonly value="<%= booking.room_number %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Room Type</label>
+                        <input type="text" readonly value="<%= booking.type_name %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-on-surface-variant">Capacity</label>
+                        <input type="text" readonly value="<%= booking.capacity %>"
+                            class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- guest details -->
+            <section class="bg-white border border-outline-variant rounded-xl p-6">
+
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary">person</span>
+                    <h2 class="text-xl font-semibold text-primary">Guest Information</h2>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-8">
+
+                    <!-- profile photo or initials fallback -->
+                    <div class="flex flex-col items-center">
+                        <% if (booking.photo_url) { %>
+                            <img src="/uploads/profile-photos/<%= booking.photo_url %>"
+                                class="w-32 h-32 rounded-full object-cover border-4 border-primary-container"
+                                alt="<%= booking.first_name %>">
+                        <% } else { %>
+                            <div class="w-32 h-32 rounded-full bg-secondary-container flex items-center justify-center text-4xl font-bold text-on-secondary-container">
+                                <%= booking.first_name.charAt(0).toUpperCase() %><%= booking.last_name.charAt(0).toUpperCase() %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- guest fields -->
+                    <div class="flex-1 grid md:grid-cols-2 gap-6">
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">First Name</label>
+                            <input readonly value="<%= booking.first_name %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">Last Name</label>
+                            <input readonly value="<%= booking.last_name %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">Email</label>
+                            <input readonly value="<%= booking.email %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">Phone</label>
+                            <input readonly value="<%= booking.phone || '' %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">Date of Birth</label>
+                            <input readonly
+                                value="<%= booking.dob ? new Date(booking.dob).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A' %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">Gender</label>
+                            <input readonly value="<%= booking.gender || 'N/A' %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="text-sm text-on-surface-variant">Address</label>
+                            <textarea readonly rows="3"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2"><%= booking.address || '' %></textarea>
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">City</label>
+                            <input readonly value="<%= booking.city %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                        <div>
+                            <label class="text-sm text-on-surface-variant">State</label>
+                            <input readonly value="<%= booking.state %>"
+                                class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low p-2">
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- action buttons -->
+            <div class="flex justify-end gap-4">
+
+                <a href="/frontDesk/home"
+                    class="px-6 py-3 border border-outline-variant rounded-lg hover:bg-surface-container transition">
+                    Cancel
+                </a>
+
+                <% if (source === "current") { %>
+
+                    <a href="/frontDesk/verifyIdentity/<%= booking.booking_reference %>"
+                        class="px-6 py-3 bg-gradient-to-r from-[#775a19] to-[#a8842c] text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 font-medium flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">verified_user</span>
+                        Next & Continue
+                    </a>
+
+                <% } else if (source === "past") { %>
+
+                    <a href="/frontDesk/bookings?tab=history"
+                        class="px-6 py-3 bg-gradient-to-r from-[#775a19] to-[#a8842c] text-white rounded-xl shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 font-medium flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">history</span>
+                        Back to History
+                    </a>
+
+                <% } else { %>
+
+                    <!-- bill source — checkout + open invoice -->
+                    <button
+                        id="checkoutBtn"
+                        onclick="handleCheckout()"
+                        class="px-6 py-3 bg-white border border-[#775a19] text-[#775a19] rounded-xl shadow-sm hover:bg-yellow-50 transition-all duration-200 font-medium flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">receipt_long</span>
+                        Generate Invoice
+                    </button>
+
+                <% } %>
+
+            </div>
+
+        </main>
+    </div>
+
+</body>
+
+<script>
+
+    // baked in from the server — no chance of mismatch
+    const BOOKING_REFERENCE = "<%= booking.booking_reference %>";
+    const BOOKING_ID        = "<%= booking.booking_id %>";
+
+    async function handleCheckout() {
+
+        if (!confirm(`Checkout guest and generate invoice for Booking #${BOOKING_REFERENCE}?`)) {
+            return;
+        }
+
+        const btn = document.getElementById("checkoutBtn");
+        btn.disabled    = true;
+        btn.textContent = "Processing...";
+
+        try {
+
+            const response = await fetch("/frontDesk/releaseRoom", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bookingReference: BOOKING_REFERENCE }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "checkout failed");
+            }
+
+            // open invoice in a new tab only after the checkout succeeded
+            window.open(`/invoices/${BOOKING_ID}`, "_blank");
+
+            Toastify({
+                text: "Guest checked out successfully",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#16a34a",
+            }).showToast();
+
+            // redirect back to checkout list after a short delay
+            setTimeout(() => {
+                window.location.href = "/frontDesk/checkout";
+            }, 2000);
+
+        } catch (err) {
+
+            console.error("[handleCheckout]", err);
+
+            Toastify({
+                text: err.message || "something went wrong during checkout",
+                duration: 4000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#dc2626",
+            }).showToast();
+
+            btn.disabled    = false;
+            btn.innerHTML   = `<span class="material-symbols-outlined text-sm">receipt_long</span> Generate Invoice`;
+        }
+    }
+
+</script>
+
+</html>

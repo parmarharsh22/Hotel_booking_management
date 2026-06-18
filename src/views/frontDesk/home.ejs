@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>LuxeStay - Front Desk Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+
+        .luxury-gradient {
+            background: linear-gradient(135deg, #031632 0%, #1a2b48 100%);
+        }
+
+        #sidebar-toggle:checked~aside {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 1023px) {
+            aside {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+        }
+    </style>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#b6c7eb",
+                        "tertiary": "#211400",
+                        "surface-container-high": "#e6e8eb",
+                        "status-available": "#2D8A56",
+                        "outline": "#75777e",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eceef1",
+                        "on-primary-fixed": "#081b38",
+                        "status-dirty": "#64748B",
+                        "on-background": "#191c1e",
+                        "inverse-surface": "#2d3133",
+                        "tertiary-container": "#3c2700",
+                        "tertiary-fixed-dim": "#e5c18a",
+                        "status-maintenance": "#D97706",
+                        "inverse-primary": "#b6c7eb",
+                        "surface-white": "#FFFFFF",
+                        "primary": "#031632",
+                        "inverse-on-surface": "#eff1f4",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1e",
+                        "primary-container": "#1a2b48",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#e9c176",
+                        "surface-dim": "#d8dadd",
+                        "surface": "#f7f9fc",
+                        "surface-variant": "#e0e3e6",
+                        "secondary-container": "#fed488",
+                        "on-secondary-container": "#785a1a",
+                        "on-primary-container": "#8293b5",
+                        "secondary-fixed": "#ffdea5",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#d7e2ff",
+                        "surface-container-highest": "#e0e3e6",
+                        "surface-container-low": "#f2f4f7",
+                        "outline-variant": "#c5c6ce",
+                        "on-surface-variant": "#44474d",
+                        "surface-bright": "#f7f9fc",
+                        "on-primary-fixed-variant": "#374765",
+                        "on-secondary-fixed": "#261900",
+                        "status-booked": "#1A2B48",
+                        "background": "#f7f9fc",
+                        "secondary": "#775a19",
+                        "surface-tint": "#4e5f7e"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        gutter: "24px",
+                        "sidebar-width": "260px",
+                        "container-margin-desktop": "32px",
+                        "container-margin-mobile": "16px",
+                        unit: "4px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "title-sm": ["18px", { lineHeight: "24px", fontWeight: "600" }],
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "data-mono": ["14px", { lineHeight: "20px", letterSpacing: "-0.01em", fontWeight: "500" }],
+                        "display-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+                        "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "display-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Socket.IO for live dashboard updates -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // join this hotel's room for live updates
+        socket.emit("joinHotel", <%= hotelId %>);
+
+        socket.on("connect", () => {
+            console.log("[FrontDesk] Socket connected:", socket.id);
+        });
+
+        socket.on("dashboardUpdate", (data) => {
+            const checkinEl = document.getElementById("checkins");
+            const checkoutEl = document.getElementById("checkouts");
+            const occupancyEl = document.getElementById("occupancy");
+
+            if (checkinEl && data.checkins !== undefined) checkinEl.textContent = data.checkins;
+            if (checkoutEl && data.checkouts !== undefined) checkoutEl.textContent = data.checkouts;
+            if (occupancyEl && data.occupancy !== undefined) occupancyEl.textContent = data.occupancy + "%";
+
+            location.reload();
+        });
+
+        // refresh when a room status changes elsewhere
+        socket.on("room_status_updated", () => {
+            location.reload();
+        });
+    </script>
+</head>
+
+<body class="bg-background text-on-background">
+
+    <!-- Sidebar Toggle (mobile) -->
+    <input class="hidden peer" id="sidebar-toggle" type="checkbox" />
+
+    <!-- Sidebar partial -->
+    <%- include('../partials/frontDesk/sidebar.ejs') %>
+
+        <!-- Main Content -->
+        <div class="lg:ml-[260px] min-h-screen">
+
+            <!-- Mobile toggle label -->
+            <label
+                class="lg:hidden fixed top-6 left-4 z-[60] cursor-pointer p-2 bg-white rounded-lg shadow-md border border-outline-variant"
+                for="sidebar-toggle">
+                <span class="material-symbols-outlined">menu</span>
+            </label>
+
+            <main class="min-h-screen">
+
+                <!-- Top App Bar -->
+                <header
+                    class="h-auto lg:h-20 bg-white border-b border-outline-variant flex flex-col lg:flex-row items-start lg:items-center justify-between px-4 lg:px-container-margin-desktop py-4 lg:py-0 sticky top-0 z-40">
+                    <div class="flex items-center gap-4 ml-12 lg:ml-0">
+                        <div class="hidden sm:block p-2 bg-primary-container rounded-lg">
+                            <span class="material-symbols-outlined text-on-primary-container">apartment</span>
+                        </div>
+                        <div>
+                            <h2
+                                class="font-headline-md text-headline-md text-primary tracking-tight leading-tight lg:leading-normal">
+                                <%= hotelname %>
+                            </h2>
+                            <p class="text-body-sm text-on-surface-variant">
+                                Operational Workspace &bull; Shift: <%= shift %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <%- include('../partials/frontDesk/header.ejs') %>
+
+                </header>
+
+                <!-- Content Grid -->
+               <div class="p-4 lg:p-container-margin-desktop max-w-[1440px] mx-auto space-y-8">
+
+                    <!-- KPI Widgets -->
+                    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                        <div
+                            class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Today's Check-ins
+                            </p>
+                            <h3 id="checkins" class="font-display-lg text-display-lg text-primary">
+                                <%= checkincount %>
+                            </h3>
+                            <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl">login</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Check-outs</p>
+                            <h3 id="checkouts" class="font-display-lg text-display-lg text-primary">
+                                <%= checkoutcount %>
+                            </h3>
+                            <div class="absolute bottom-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl">logout</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white border border-outline-variant p-6 rounded-lg relative overflow-hidden group hover:border-primary transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2">Total Occupancy</p>
+                            <h3 id="occupancy" class="font-display-lg text-display-lg text-primary">
+                                <%= occupancy %>%
+                            </h3>
+                            <div class="mt-4 h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+                                <div class="h-full rounded-full
+                                <%= occupancy >= 80 ? 'bg-red-500' : occupancy >= 50 ? 'bg-yellow-500' : 'bg-green-500' %>"
+                                    style="width: <%= occupancy %>%">
+                                </div>
+                            </div>
+                            <div
+                                class="absolute bottom-10 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl">bed</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-primary text-white p-6 rounded-lg relative overflow-hidden group hover:bg-primary-container transition-colors cursor-default">
+                            <p class="font-label-caps text-label-caps text-primary-fixed-dim mb-2">Pending Requests</p>
+                            <div class="mt-4 flex items-center gap-2">
+                                <span class="text-[12px] font-medium text-surface-variant">No pending requests</span>
+                            </div>
+                            <div class="absolute bottom-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity">
+                                <span class="material-symbols-outlined text-5xl">doorbell</span>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- Operational Layout -->
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                        <!-- Upcoming Arrivals -->
+                        <section class="xl:col-span-2 space-y-6">
+
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <h4 class="font-title-sm text-title-sm text-primary">Upcoming Arrivals</h4>
+                            </div>
+
+                            <div class="bg-white border border-outline-variant rounded-lg overflow-hidden">
+                                <div class="h-[300px] overflow-y-auto">
+                                    <table class="w-full text-left">
+
+                                        <thead
+                                            class="sticky top-0 bg-surface-container-low border-b border-outline-variant z-20">
+                                            <tr>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Guest</th>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Name</th>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Reference</th>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Rooms</th>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    ETA</th>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant">
+                                                    Status</th>
+                                                <th
+                                                    class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant text-right">
+                                                    Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody class="divide-y divide-outline-variant">
+                                            <% arrivals.forEach((arrival)=> { %>
+                                                <tr class="hover:bg-surface-bright transition-colors">
+
+                                                    <td class="px-6 py-5">
+                                                        <div
+                                                            class="w-10 h-10 rounded-full overflow-hidden bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold shrink-0">
+                                                            <% if (!arrival.photo_url) { %>
+                                                                <%= arrival.first_name.charAt(0).toUpperCase() %>
+                                                                    <%= arrival.last_name.charAt(0).toUpperCase() %>
+                                                                        <% } else { %>
+                                                                            <img class="w-full h-full object-cover"
+                                                                                src="/uploads/profile-photos/<%= arrival.photo_url %>"
+                                                                                alt="<%= arrival.first_name %>">
+                                                                            <% } %>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+                                                        <p class="font-body-md font-semibold text-primary">
+                                                            <%= arrival.first_name %>
+                                                                <%= arrival.last_name %>
+                                                        </p>
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+                                                        <p class="font-body-md text-primary">
+                                                            <%= arrival.booking_reference %>
+                                                        </p>
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+                                                        <!-- room_numbers comes from GROUP_CONCAT; no type_name on ArrivalRow -->
+                                                        <p class="font-body-md text-primary">Room(s)</p>
+                                                        <p class="text-[12px] text-on-surface-variant">
+                                                            <%= arrival.room_numbers %>
+                                                        </p>
+                                                    </td>
+
+                                                    <td class="px-6 py-5 text-primary font-medium">
+                                                        <%= new Date(arrival.checkin_date).toLocaleTimeString([], {
+                                                            hour: "2-digit" , minute: "2-digit" }) %>
+                                                    </td>
+
+                                                    <td class="px-6 py-5">
+                                                        <span
+                                                            class="inline-block px-3 py-1 rounded-full bg-[#E8F5E9] text-status-available font-label-caps text-[10px] uppercase">
+                                                            Room Ready
+                                                        </span>
+                                                    </td>
+
+                                                    <td class="px-6 py-5 text-right">
+                                                        <a href="/frontDesk/checkIn/<%= arrival.booking_reference %>?source=current"
+                                                            class="text-secondary hover:underline font-label-caps text-label-caps">
+                                                            Check In
+                                                        </a>
+                                                    </td>
+
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Floor occupancy chart -->
+                        <section class="bg-white border border-outline-variant rounded-lg p-6 mt-8">
+
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="font-title-sm text-title-sm text-primary">
+                                Floor Occupancy
+                            </h4>
+                        </div>
+
+                        <canvas id="floorChart" height="100"></canvas>
+
+                        <!-- Extra Statistics -->
+                        <div class="grid grid-cols-3 gap-4 mt-6 border-t pt-5">
+
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 uppercase">
+                                    Highest Floor
+                                </p>
+                               <p class="text-lg font-bold text-primary">
+                                Floor
+                                <%= floorOccupancy.length > 0
+                                    ? floorOccupancy.reduce((a, b) => a.occupied > b.occupied ? a : b).floor
+                                    : 'N/A'
+                                %>
+                                </p>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 uppercase">
+                                    Total Occupied
+                                </p>
+                                <p class="text-lg font-bold text-red-500">
+                                    <%= counts.occupied %>
+                                </p>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 uppercase">
+                                    Total Floors
+                                </p>
+                                <p class="text-lg font-bold text-primary">
+                                    <%= floorOccupancy.length %>
+                                </p>
+                            </div>
+
+                        </div>
+
+                        </section>
+
+                        <!-- Room type utilization chart -->
+                        <section class="bg-white border border-outline-variant rounded-lg p-6 mt-8">
+
+                        <h4 class="font-title-sm text-title-sm text-primary mb-6">
+                            Room Type Utilization
+                        </h4>
+
+                        <canvas id="roomTypeChart" height="100"></canvas>
+
+                        <div class="mt-6 border-t pt-4 space-y-3">
+
+                            <% roomTypeStats.forEach(type => { %>
+
+                                <div class="flex justify-between items-center">
+
+                                    <div>
+                                        <p class="font-medium text-primary">
+                                            <%= type.type_name %>
+                                        </p>
+
+                                        <p class="text-xs text-gray-500">
+                                            <%= type.total_rooms %> Total Rooms
+                                        </p>
+                                    </div>
+
+                                    <div class="text-right">
+
+                                        <p class="font-semibold text-primary">
+                                            <%= type.occupied %> / <%= type.total_rooms %>
+                                        </p>
+
+                                        <p class="text-xs text-gray-500">
+                                            Occupied
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            <% }) %>
+
+                        </div>
+
+                        </section>
+
+
+                        <section class="bg-white border border-outline-variant rounded-lg p-6 mt-8">
+                        <h4 class="font-title-sm text-title-sm text-primary mb-6">
+                            Upcoming Arrival Forecast
+                        </h4>
+
+                        <canvas id="arrivalChart" height="100"></canvas>
+
+                        <!-- Forecast Summary -->
+                        <div class="grid grid-cols-3 gap-4 mt-6 border-t pt-5">
+
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 uppercase">
+                                    Next 7 Days
+                                </p>
+
+                                <p class="text-xl font-bold text-primary">
+                                    <%= arrivalForecast.reduce((sum, day) => sum + day.total, 0) %>
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    Expected Arrivals
+                                </p>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 uppercase">
+                                    Peak Day
+                                </p>
+
+                                <% const peakArrival = arrivalForecast.reduce(
+                                    (max, day) => day.total > max.total ? day : max,
+                                    arrivalForecast[0]
+                                ); %>
+
+                                <p class="text-xl font-bold text-yellow-600">
+                                    <%= peakArrival?.total || 0 %>
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    <%= peakArrival?.arrival_date || "N/A" %>
+                                </p>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 uppercase">
+                                    Daily Average
+                                </p>
+
+                                <p class="text-xl font-bold text-green-600">
+                                    <%= arrivalForecast.length
+                                        ? Math.round(
+                                            arrivalForecast.reduce((sum, day) => sum + day.total, 0)
+                                            / arrivalForecast.length
+                                        )
+                                        : 0
+                                    %>
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    Guests / Day
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- Arrival Breakdown -->
+                        <div class="mt-5 border-t pt-4">
+
+                            <h5 class="text-sm font-semibold text-primary mb-3">
+                                Upcoming Schedule
+                            </h5>
+
+                            <div class="space-y-2 max-h-44 overflow-y-auto">
+
+                                <% arrivalForecast.forEach(day => { %>
+
+                                    <div class="flex items-center justify-between">
+
+                                        <span class="text-sm text-gray-600">
+                                            <%= new Date(day.arrival_date).toLocaleDateString(
+                                                "en-IN",
+                                                {
+                                                    weekday: "short",
+                                                    day: "2-digit",
+                                                    month: "short"
+                                                }
+                                            ) %>
+                                        </span>
+
+                                        <span class="
+                                            px-3 py-1 rounded-full text-xs font-semibold
+                                            <%= day.total >= 10
+                                                ? 'bg-red-100 text-red-700'
+                                                : day.total >= 5
+                                                ? 'bg-yellow-100 text-yellow-700'
+                                                : 'bg-green-100 text-green-700'
+                                            %>
+                                        ">
+                                            <%= day.total %> Arrivals
+                                        </span>
+
+                                    </div>
+
+                                <% }) %>
+
+                            </div>
+
+                        </div>
+
+                        </section>
+
+                        <!-- Operations Sidebar -->
+                        <section class="space-y-6">
+
+                            <!-- Room Distribution -->
+
+                            <div class="bg-white border border-outline-variant rounded-lg p-5">
+
+                                <h4 class="font-title-sm text-title-sm text-primary mb-4">
+                                    Room Distribution
+                                </h4>
+
+                                <canvas id="roomDistributionChart"></canvas>
+
+                            </div>
+
+                            <!-- Daily Summary -->
+
+                            <div class="bg-white border border-outline-variant rounded-lg p-5">
+
+                                <h4 class="font-title-sm text-title-sm text-primary mb-4">
+                                    Daily Summary
+                                </h4>
+
+                                <div class="space-y-4">
+
+                                    <div class="flex justify-between">
+                                        <span>Check-ins</span>
+                                        <span class="font-semibold">
+                                            <%= checkincount %>
+                                        </span>
+                                    </div>
+
+                                    <div class="flex justify-between">
+                                        <span>Check-outs</span>
+                                        <span class="font-semibold">
+                                            <%= checkoutcount %>
+                                        </span>
+                                    </div>
+
+                                    <div class="flex justify-between">
+                                        <span>Occupied Rooms</span>
+                                        <span class="font-semibold text-red-500">
+                                            <%= counts.occupied %>
+                                        </span>
+                                    </div>
+
+                                    <div class="flex justify-between">
+                                        <span>Vacant Rooms</span>
+                                        <span class="font-semibold text-green-600">
+                                            <%= counts.vacant %>
+                                        </span>
+                                    </div>
+
+                                    <div class="flex justify-between">
+                                        <span>Maintenance</span>
+                                        <span class="font-semibold text-yellow-600">
+                                            <%= counts.maintenance %>
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                <canvas id="operationsChart" class="mt-4" height="160"></canvas>
+
+                            </div>
+
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script src="/JS/toastmessage.js"></script>
+        <script src="/JS/frontDesk/homepage.js"></script>
+        <script>
+
+            // room distribution chart
+            new Chart(
+                document.getElementById("roomDistributionChart"),
+                {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Occupied", "Vacant", "Maintenance"],
+                        datasets: [{
+                            data: [<%= counts.occupied %>, <%= counts.vacant %>, <%= counts.maintenance %>],
+                            backgroundColor: ["#ba1a1a", "#2D8A56", "#D97706"]
+                        }]
+                    }
+                }
+            );
+
+            // today's operations chart
+            new Chart(
+                document.getElementById("operationsChart"),
+                {
+                    type: "bar",
+                    data: {
+                        labels: ["Check-Ins", "Check-Outs", "Arrivals"],
+                        datasets: [{
+                            data: [<%= checkincount %>, <%= checkoutcount %>, <%= arrivals.length %>],
+                            backgroundColor: ["#2D8A56", "#1A2B48", "#D97706"]
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } }
+                    }
+                }
+            );
+
+            // floor occupancy chart
+            new Chart(
+                document.getElementById("floorChart"),
+                {
+                    type: "bar",
+                    data: {
+                        labels: <%- JSON.stringify(floorOccupancy.map(f => "Floor " + f.floor)) %>,
+                        datasets: [{
+                            label: "Occupied Rooms",
+                            data: <%- JSON.stringify(floorOccupancy.map(f => f.occupied)) %>,
+                            backgroundColor: "#1a2b48"
+                        }]
+                    }
+                }
+            );
+
+            // room type utilization chart
+            new Chart(
+                document.getElementById("roomTypeChart"),
+                {
+                    type: "bar",
+                    data: {
+                        labels: <%- JSON.stringify(roomTypeStats.map(r => r.type_name)) %>,
+                        datasets: [{
+                            label: "Occupied",
+                            data: <%- JSON.stringify(roomTypeStats.map(r => r.occupied)) %>,
+                            backgroundColor: "#775a19"
+                        }]
+                    },
+                    options: {
+                        indexAxis: "y"
+                    }
+                }
+            );
+
+            // arrival forecast chart
+            new Chart(
+                document.getElementById("arrivalChart"),
+                {
+                    type: "line",
+                    data: {
+                      labels: <%- JSON.stringify(arrivalForecast.map(a => new Date(a.arrival_date).toISOString().split("T")[0])) %>,
+                        datasets: [{
+                            label: "Arrivals",
+                            data: <%- JSON.stringify(arrivalForecast.map(a => a.total)) %>,
+                            borderColor: "#031632",
+                            tension: 0.3,
+                            fill: false
+                        }]
+                    }
+                }
+            );
+
+            // flash toast messages
+            <% if (error) { %>
+            showToast(<%= JSON.stringify(error) %>, "error");
+            <% } %>
+            <% if (success) { %>
+            showToast(<%= JSON.stringify(success) %>);
+            <% } %>
+
+        </script>
+
+</body>
+
+</html>

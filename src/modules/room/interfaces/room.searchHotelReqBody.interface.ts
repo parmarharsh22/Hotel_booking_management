@@ -1,8 +1,11 @@
 export interface searchHotelReqBody{
     location:string;
-    check_in:string;
-    check_out:string;
+    checkIn:string;
+    checkOut:string;
     rooms:number;
     adults:number;
     children?:number;
+    priceFilter:number|undefined;
+    roomTypesFilter:string[]|undefined;
+    amenitiesFilter:string[]|undefined;
 }

@@ -6,8 +6,8 @@ export interface UserTokenPayload extends JwtPayload {
     userId: number;
     hotel_id?: string;
     roleId: string;
-
 }
+
 export const validToken = async(
     req :Request,
     res : Response,

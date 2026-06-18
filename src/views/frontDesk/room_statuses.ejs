@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!DOCTYPE html>
+
+    <html lang="en">
+
+    <head>
+
+        <meta charset="UTF-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>
+            Room Status | LuxeStay
+        </title>
+
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+        <script src="/socket.io/socket.io.js"></script>
+    </head>
+
+<body class="bg-[#f7f9fc]">
+
+    <%- include('../partials/frontDesk/sidebar') %>
+
+        <div class="lg:ml-[260px] min-h-screen">
+
+            <!-- Header -->
+            <%- include("../partials/frontDesk/header.ejs") %>
+
+                <!-- Hero Section -->
+                <div class="px-8 py-6">
+
+                    <div class="bg-gradient-to-r from-[#031632] via-[#0c234d] to-[#1a2b48]
+                rounded-3xl shadow-xl p-8">
+
+                        <div class="flex justify-between items-center">
+
+                            <div>
+
+                                <div class="flex items-center gap-3 mb-2">
+
+                                    <span class="material-symbols-outlined text-yellow-300 text-4xl">
+                                        hotel
+                                    </span>
+
+                                    <h1 class="text-4xl font-bold text-white">
+                                        Room Management
+                                    </h1>
+
+                                </div>
+
+                                <p class="text-yellow-300 text-lg">
+                                    Monitor room availability, occupancy, housekeeping status and maintenance
+                                    activities.
+                                </p>
+
+                            </div>
+
+                            <div class="hidden lg:flex gap-4">
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-blue-200 text-xs">
+                                        Total Rooms
+                                    </p>
+
+                                    <h3 class="text-white text-2xl font-bold">
+                                        <%= rooms.length %>
+                                    </h3>
+
+                                </div>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-green-200 text-xs">
+                                        Available
+                                    </p>
+
+                                    <h3 class="text-green-300 text-2xl font-bold">
+                                        <%= vacantCount %>
+                                    </h3>
+
+                                </div>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-yellow-200 text-xs">
+                                        Occupied
+                                    </p>
+
+                                    <h3 class="text-yellow-300 text-2xl font-bold">
+                                        <%= occupiedCount %>
+                                    </h3>
+
+                                </div>
+
+                                <div
+                                    class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 text-center min-w-[130px]">
+
+                                    <p class="text-red-200 text-xs">
+                                        Maintenance
+                                    </p>
+
+                                    <h3 class="text-red-300 text-2xl font-bold">
+                                        <%= maintenanceCount %>
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <main class="p-8">
+                    <!-- Floors -->
+
+                    <div class="space-y-12">
+
+                        <% Object.keys(floors) .sort((a,b)=>Number(b)-Number(a))
+                            .forEach(floor => { %>
+
+                            <section>
+
+                                <div class="flex items-center gap-4 mb-6">
+
+                                    <div
+                                        class="w-12 h-12 rounded-xl bg-[#031632] text-white flex items-center justify-center">
+
+                                        <span class="material-symbols-outlined">
+                                            apartment
+                                        </span>
+                                    </div>
+
+                                    <div>
+
+                                        <h2 class="text-2xl font-bold text-[#031632]">
+
+                                            Floor <%= floor %>
+
+                                        </h2>
+
+                                        <p class="text-gray-500 text-sm">
+
+                                            <%= floors[floor].length %> Rooms
+
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5">
+
+                                    <% floors[floor].forEach(room=> { %>
+
+                                        <div
+                                            class="group rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 cursor-pointer bg-white">
+
+
+                                            <div class="h-2
+
+        <%= room.room_status === 'OCCUPIED'
+            ? 'bg-red-500'
+            : room.room_status === 'VACANT'
+            ? 'bg-green-500'
+            : 'bg-yellow-500'
+        %>">
+
+                                            </div>
+
+                                            <div class="p-5">
+
+                                                <div class="flex justify-between items-start">
+
+                                                    <div>
+
+                                                        <h3 class="text-3xl font-bold text-[#031632]">
+
+                                                            <%= room.room_number %>
+
+                                                        </h3>
+
+                                                        <p class="text-sm text-gray-500">
+
+                                                            <%= room.type_name %>
+
+                                                        </p>
+
+                                                    </div>
+
+                                                    <span class="material-symbols-outlined text-[#031632]">
+
+                                                        bed
+
+                                                    </span>
+
+                                                </div>
+
+                                                <div class="mt-4">
+
+                                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
+
+                <%= room.room_status === 'OCCUPIED'
+                    ? 'bg-red-100 text-red-700'
+                    : room.room_status === 'VACANT'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-yellow-100 text-yellow-700'
+                %>">
+
+                                                        <%= room.room_status %>
+
+                                                    </span>
+
+                                                </div>
+
+                                                <% if(room.room_status==='OCCUPIED' ){ %>
+
+                                                    <div class="mt-5 border-t pt-4 space-y-3">
+
+                                                        <div>
+                                                            <p
+                                                                class="text-[11px] uppercase tracking-wide text-gray-500">
+                                                                Current Guest
+                                                            </p>
+
+                                                            <p class="font-semibold text-[#031632] truncate">
+                                                                <%= room.current_guest %>
+                                                            </p>
+                                                        </div>
+
+                                                        <div>
+                                                            <p
+                                                                class="text-[11px] uppercase tracking-wide text-gray-500">
+                                                                Booking Reference
+                                                            </p>
+
+                                                            <p class="text-sm font-medium text-[#031632]">
+                                                                <%= room.booking_reference %>
+                                                            </p>
+                                                        </div>
+
+                                                        <div>
+                                                            <p
+                                                                class="text-[11px] uppercase tracking-wide text-gray-500">
+                                                                Check-Out Date
+                                                            </p>
+
+                                                            <div
+                                                                class="flex items-center gap-2 text-sm text-red-600 font-medium">
+                                                                <span class="material-symbols-outlined text-base">
+                                                                    event
+                                                                </span>
+
+                                                                <%= new
+                                                                    Date(room.checkout_date).toLocaleDateString('en-IN',
+                                                                    { day: '2-digit' , month: 'short' , year: 'numeric'
+                                                                    }) %>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <% } %>
+
+                                                        <% if(room.room_status==='VACANT' ){ %>
+
+                                                            <div class="mt-5 border-t pt-4">
+
+                                                                <div
+                                                                    class="flex items-center gap-2 text-green-600 text-sm font-medium">
+
+                                                                    <span class="material-symbols-outlined">
+                                                                        check_circle
+                                                                    </span>
+
+                                                                    Available
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            <% } %>
+
+                                                                <% if(room.room_status==='MAINTENANCE' ){ %>
+
+                                                                    <div class="mt-5 border-t pt-4">
+
+                                                                        <div
+                                                                            class="flex items-center gap-2 text-yellow-600 text-sm font-medium">
+
+                                                                            <span class="material-symbols-outlined">
+                                                                                engineering
+                                                                            </span>
+
+                                                                            Under Maintenance
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                    <% } %>
+
+                                            </div>
+
+                                        </div>
+
+                                        <% }) %>
+
+                                </div>
+                            </section>
+                            <% }) %>
+                    </div>
+                </main>
+
+        </div>
+        // Socket
+        <script>
+            const socket = io();
+            socket.emit(
+                "joinHotel",<%= hotelId %> );
+            socket.on("room_status_updated", () => {
+                window.location.reload();
+            }
+            );  
+        </script>
+</body>
+
+</html>
