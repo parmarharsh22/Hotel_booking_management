@@ -16,7 +16,7 @@ router.get("/room-types/new",validToken,allowRoles("ADMIN"),adminRoomTypeControl
 
 // room-type update rendering
 
-router.get("/room-type/edit/:typeId",adminRoomTypeController.showEditRoomType.bind(adminRoomTypeController))
+router.get("/room-type/edit/:typeId",validToken,allowRoles("ADMIN"),adminRoomTypeController.showEditRoomType.bind(adminRoomTypeController))
 
 // create room type (with optional photo)
 router.post(

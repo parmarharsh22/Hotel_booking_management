@@ -22,7 +22,7 @@
                 </div>
                 
                <nav class="mt-4 space-y-1">
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
@@ -63,7 +63,7 @@
 
         <!-- Main Workspace -->
         <main class="flex-1 flex flex-col">
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8">
+            <!-- <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8">
                 <div>
                     <h1 class="text-xl font-bold text-slate-900">Room Categories</h1>
                     <p class="text-xs text-slate-500 hidden sm:block">Global Management System</p>
@@ -84,44 +84,14 @@
                         A
                     </div>
                 </div>
-            </header>
-
+            </header> -->
+<%- include('../partials/header') %>
             <div class="p-6 md:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
                 
                 <!-- Controls and Actions Header -->
              
 
-                <!-- KPI Metric Row -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Categories</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-slate-900">12</span>
-                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">+1 New</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Avg. Base Price</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-slate-900">$420</span>
-                            <span class="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Peak Season</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Inventory</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-slate-900">184</span>
-                            <span class="text-xs text-slate-500">Rooms Total</span>
-                        </div>
-                    </div>
-                    <div class="bg-[#0f172a] p-5 rounded-xl border border-slate-800 shadow-sm text-white">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">RevPAR Forecast</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-white">$312.45</span>
-                            <span class="text-xs text-slate-400"><i class="fa-solid fa-chart-line"></i></span>
-                        </div>
-                    </div>
-                </div>
+               
 
                 <!-- Inventory Data Sheet -->
               <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -160,32 +130,46 @@
                         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Room Category Allocation</label>
-                    <select name="room_type_id" required
-                        class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
-                        <option value="" disabled selected>Select dynamic operational category...</option>
-                        <% if (typeof roomTypes !== 'undefined' && roomTypes.length > 0) { %>
-                            <% roomTypes.forEach(type => { %>
-                                <option value="<%= type.room_type_id %>"><%= type.type_name %> (ID: <%= type.room_type_id %>)</option>
-                            <% }) %>
-                        <% } else { %>
-                            <option value="1">Standard Room (1)</option>
-                            <option value="2">Deluxe Suite (2)</option>
-                            <option value="3">Family Penthouse (3)</option>
-                        <% } %>
-                    </select>
-                </div>
+               <%-
+                include('../partials/components/TypeDropDown' ,{
+                 id: 'roomTypeDropdown',
+                 name: 'room_type_id',
+                 label: 'Room Category Allocation',
+                 required: true})  
+                 %>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Initial Status Condition</label>
+                    <!-- <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Initial Status Condition</label>
                     <select name="room_status_id" required
                         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                         <option value="1" selected>AVAILABLE (1)</option>
                         <option value="2">OCCUPIED (2)</option>
                         <option value="3">DIRTY (3)</option>
                         <option value="4">MAINTENANCE (4)</option>
-                    </select>
+                    </select> -->
+                    <%- include('../partials/components/RoomStatusDropDown', {
+    id: 'roomStatusDropdown',
+    name: 'room_status_id',
+    label: 'Room Status',
+    required: true
+}) %>
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    DynamicDropdown.load({
+        elementId: 'roomStatusDropdown',
+        endpoint: '/hotelAdmin/room-statuses',
+        valueKey: 'room_status_id',
+
+        labelBuilder: (status) =>
+            status.status_name
+    });
+
+});
+
+</script>
+
                 </div>
             </div>
 
@@ -195,7 +179,7 @@
                     <textarea name="notes" rows="4" placeholder="Mention hardware attributes, layout preferences, or structural constraints..."
                         class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 h-[114px] outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition resize-none"></textarea>
                 </div>
-
+<!-- 
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Property Spatial Image</label>
                     <div class="flex items-center space-x-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
@@ -212,7 +196,7 @@
                             <p class="text-[10px] text-slate-400 leading-tight">Accepts PNG, JPG assets up to 5MB.</p>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -267,33 +251,33 @@
     /**
      * Asynchronous fetch request router targeting your administrative put pipeline.
      */
-    async function handleFormSubmission(event, roomId) {
-        event.preventDefault();
-        const targetedForm = event.target;
+    // async function handleFormSubmission(event, roomId) {
+    //     event.preventDefault();
+    //     const targetedForm = event.target;
         
-        // Packaging components inside a FormData engine to process active file buffers cleanly
-        const transmissionPayload = new FormData(targetedForm);
-        console.log(transmissionPayload);
+    //     // Packaging components inside a FormData engine to process active file buffers cleanly
+    //     const transmissionPayload = new FormData(targetedForm);
+    //     console.log(transmissionPayload);
         
-        try {
-            const apiResultResponse = await fetch(`/hotelAdmin/rooms/${roomId}`, {
-                method: 'PUT',
-                body: transmissionPayload
-            });
+    //     try {
+    //         const apiResultResponse = await fetch(`/hotelAdmin/rooms/${roomId}`, {
+    //             method: 'POST',
+    //             body: transmissionPayload
+    //         });
 
-            if (apiResultResponse.ok) {
-                alert('Room specifications configuration applied successfully.');
-                // Route user context back to tracking views or refresh data layout maps
-                window.location.reload();
-            } else {
-                const faultData = await apiResultResponse.json();
-                alert(`Configuration Exception Encountered: ${faultData.message || 'System fault validation failed.'}`);
-            }
-        } catch (networkFault) {
-            console.error('API Pipeline Breakdown Context: ', networkFault);
-            alert('A network exception interrupted data synchronization operations.');
-        }
-    }
+    //         if (apiResultResponse.ok) {
+    //             alert('Room specifications configuration applied successfully.');
+    //             // Route user context back to tracking views or refresh data layout maps
+    //             window.location.reload();
+    //         } else {
+    //             const faultData = await apiResultResponse.json();
+    //             alert(`Configuration Exception Encountered: ${faultData.message || 'System fault validation failed.'}`);
+    //         }
+    //     } catch (networkFault) {
+    //         console.error('API Pipeline Breakdown Context: ', networkFault);
+    //         alert('A network exception interrupted data synchronization operations.');
+    //     }
+    // }
 </script>
 
                     <!-- Pagination / Footer Indicators -->
@@ -329,8 +313,9 @@
      * Triggers asynchronous pipeline check to avoid database level composite duplicate constraint rejections
      */
     async function validateRoomNumberUniqueness(roomNumber) {
+       
         if (!roomNumber.trim()) return;
-
+       
         const textFeedback = document.getElementById('validationFeedbackText');
         const iconFeedback = document.getElementById('validationFeedbackIcon');
         const submitBtn = document.getElementById('submitButton');
@@ -343,7 +328,7 @@
 
         try {
             // Adjust this API string path to perfectly match your verification endpoint
-            const checkUrl = `/api/validate-room?hotel_id=${hotelId}&room_number=${encodeURIComponent(roomNumber)}`;
+            const checkUrl = `/hotelAdmin/rooms/verifyRoomExists?room_number=${encodeURIComponent(roomNumber)}`;
             const response = await fetch(checkUrl);
             const data = await response.json();
 
@@ -431,7 +416,7 @@
 
         try {
             // Adjust endpoint string mapping configuration contextual parameters to match your generic POST route setups
-            const actionResponse = await fetch('/rooms', {
+            const actionResponse = await fetch('/hotelAdmin/rooms', {
                 method: 'POST',
                 body: packedPayload
             });
