@@ -479,7 +479,7 @@
                                 <span>Check-in</span>
                             </div>
                             <strong class="text-white text-sm">
-                                <%= query.check_in %>
+                                <%= query.checkIn %>
                             </strong>
                         </div>
                         <div class="flex items-center justify-between py-3 border-b border-slate-700/60">
@@ -488,7 +488,7 @@
                                 <span>Check-out</span>
                             </div>
                             <strong class="text-white text-sm">
-                                <%= query.check_out %>
+                                <%= query.checkOut %>
                             </strong>
                         </div>
                         <div class="flex items-center justify-between py-3 border-b border-slate-700/60">
@@ -546,8 +546,8 @@
     <script type="application/json" id="server-payload">
 <%- JSON.stringify({
     hotelId: hotel.hotel_id,
-    checkIn: query.check_in,
-    checkOut: query.check_out,
+    checkIn: query.checkIn,
+    checkOut: query.checkOut,
     adults: query.adults,
     children: query.children
 }) %>
@@ -567,6 +567,7 @@
         const requestedAdults = parseInt(serverData.adults);
         const requestedChildren = parseInt(serverData.children);
         const checkIn = new Date(serverData.checkIn + "T00:00:00");
+      
         const checkOut = new Date(serverData.checkOut + "T00:00:00");
         const millisecondsPerDay = 1000 * 60 * 60 * 24;
         const totalNights = Math.max(1, Math.round((checkOut - checkIn) / millisecondsPerDay));
@@ -581,6 +582,7 @@
             roomSelects.forEach(select => {
                 const quantity = parseInt(select.value);
                 const price = parseFloat(select.dataset.price);
+             
                 if (quantity > 0) {
                     const roomCard = select.closest(".room-card");
                     const roomName = roomCard.querySelector("h3").innerText;
@@ -636,12 +638,10 @@
             return false;
         }
 
-        /* ── Events ── */
         roomSelects.forEach(select => {
             select.addEventListener("change", () => { updateSummary(); validateCapacity(); });
         });
 
-        /* ── createHold (preserved exactly) ── */
         async function createHold() {
             updateSummary();
             if (!validateCapacity()) return;
@@ -664,6 +664,11 @@
                         rooms,
                     }),
                 });
+if (response.url.includes("/login")) {
+    window.location.href = "/login";
+    return;
+}
+
                 const data = await response.json();
                 if (data.success) { window.location.href = `/bookings/payment-page?hold_id=${data.hold_id}`; }
                 else { alert(data.error || "Failed to hold rooms. Please try again."); }
