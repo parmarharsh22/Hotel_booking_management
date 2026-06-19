@@ -197,3 +197,24 @@ export interface CheckedOutRoom {
     room_id: number;
     room_number: string;
 }
+
+
+export interface renderIncidentals{
+    booking_id: number;
+    booking_reference: string;
+    checkin_date: Date|string;
+    checkout_date:Date|string;
+    first_name:string;
+    last_name:string;
+    status_name:string;
+    total_rooms:number; 
+}
+
+export interface Incidental {
+    incidental_id: number;
+    booking_id: number;
+    description: string;
+    amount: number;
+    added_at: Date;
+    added_by_name: string;
+}
