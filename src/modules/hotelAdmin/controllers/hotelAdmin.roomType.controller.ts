@@ -9,8 +9,7 @@ export class AdminRoomTypeController {
   async listRoomTypes(req: Request, res: Response) {
     try {
       const hotelId = (req as any).hotelId as number;
-      // const hotelId = 1;
-
+      // const hotelId = 25;  
       const roomTypes = await roomTypeService.getAllRoomTypes(hotelId);
       return res.status(200).json({ roomTypes });
     } catch (err: any) {
@@ -19,9 +18,10 @@ export class AdminRoomTypeController {
   }
 
   async showNewRoomType(req: Request, res: Response) {
+    
     try {
       const amenities = await roomTypeService.getAllAmenities();
-      return res.status(200).render("hotelAdmin/room-type-new", { amenities });
+      return res.status(200).render("hotelAdmin/room-type-new", { amenities});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -71,7 +71,7 @@ export class AdminRoomTypeController {
   async showEditRoomType(req: Request, res: Response) {
     try {
       const hotelId = (req as any).hotelId as number;
-      // const hotelId = 1;
+      
       const typeId = parseInt(req.params.typeId as any);
       const roomType = await roomTypeService.getRoomTypeById(typeId, hotelId);
       const amenities = await roomTypeService.getAllAmenities();
@@ -96,9 +96,10 @@ export class AdminRoomTypeController {
         max_adults: parseInt(req.body.max_adults),
         max_children: parseInt(req.body.max_children)
       };
+console.log(data);
 
       await roomTypeService.updateRoomType(typeId, hotelId, data);
-      return res.redirect("/hotelAdmin/room-types");
+      // return res.redirect("/hotelAdmin/room-types");
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

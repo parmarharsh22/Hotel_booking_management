@@ -8,9 +8,10 @@ export class AdminStaffController{
 // GET /admin/staff
   async listStaff(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+      // const hotelId = (req as any).hotelId as number;
+      const hotelId = 1;
       const staff   = await staffService.getAllStaff(hotelId);
-      return res.status(200).render("admin/staff", { staff });
+      return res.status(200).render("admin/staff", { staff , imagekitUrl:process.env.imagekitUrl });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -59,7 +60,8 @@ export class AdminStaffController{
    // GET /admin/staff/:userId/edit
   async showEditStaff(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+     // const hotelId = (req as any).hotelId as number;
+      const hotelId = 1;
       const userId  = parseInt(req.params.userId as any);
       const staff   = await staffService.getStaffById(userId, hotelId);
       return res.status(200).render("admin/staff-edit", { staff });
