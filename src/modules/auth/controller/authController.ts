@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as authServices from "../services/authServices";
 import { storeToken } from "../../../common/utils/jwt_token";
 import { redisClient } from "../../../config/pass_redis";
+import * as roomService from "../../room/services/roomServices"; // ← adjust path to your roomServices
 
 interface LoginBody {
     role: "ADMIN" | "FRONT_DESK" | "GUEST";
@@ -27,20 +28,12 @@ interface RegisterBody {
 }
 
 
-//Render the homePage
-export const showMainPage = (req: Request, res: Response) => {
+export const showMainPage = async (req: Request, res: Response) => {
     const currentUser = res.locals.user;
 
     //get the sessionFlash message and delte the session
     const profileEdited = (req.session as any).profileEdited;
     delete (req.session as any).profileEdited;
-
-    if (currentUser?.roleId === "GUEST") {
-        return res.render("index", {
-            welcome: " Welcome again !",
-            edited: profileEdited
-        });
-    }
 
     if (currentUser?.roleId === "ADMIN") {
         return res.redirect("/hotelAdmin/rooms");
@@ -50,9 +43,30 @@ export const showMainPage = (req: Request, res: Response) => {
         return res.redirect("/frontDesk/home");
     }
 
+    // featured hotels + default booking dates (tomorrow → day after)
+    const featuredHotels = await roomService.getFeaturedHotels();
+
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+    const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 2);
+    const defaultCheckIn  = tomorrow.toISOString().slice(0, 10);
+    const defaultCheckOut = dayAfter.toISOString().slice(0, 10);
+
+    if (currentUser?.roleId === "GUEST") {
+        return res.render("index", {
+            welcome: " Welcome again !",
+            edited: profileEdited,
+            featuredHotels,
+            defaultCheckIn,
+            defaultCheckOut,
+        });
+    }
+
     return res.render("index", {
         welcome: "",
-        edited: ""
+        edited: "",
+        featuredHotels,
+        defaultCheckIn,
+        defaultCheckOut,
     });
 }
 

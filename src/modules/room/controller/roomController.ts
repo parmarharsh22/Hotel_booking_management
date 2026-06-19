@@ -140,3 +140,18 @@ export const redirectPayment = (req: Request, res: Response) => {
 
     res.render('roomsFrontend/paymentPage')
 }
+
+export const renderHome = async (req: Request, res: Response) => {
+    try {
+        const featuredHotels = await roomService.getFeaturedHotels();
+
+        return res.render("home/index", {  // ← your actual home view path
+            user: (req as any).user || null,
+            welcome: /* your existing welcome var */ null,
+            featuredHotels,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Internal Server Error");
+    }
+};

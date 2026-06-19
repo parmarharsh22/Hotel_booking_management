@@ -362,3 +362,24 @@ export const fetchAmenities = async () => {
    
     return rows;
 }
+
+export const getFeaturedHotels = async () => {
+    const [rows] = await db.query<RowDataPacket[]>(
+        `
+        SELECT
+            h.hotel_id,
+            h.name,
+            h.city,
+            h.state,
+            h.cover_url,
+            MIN(rt.base_price) AS starting_price
+        FROM hotels h
+        JOIN room_types rt ON rt.hotel_id = h.hotel_id
+        WHERE h.tenant_status_id = 1
+        GROUP BY h.hotel_id, h.name, h.city, h.state, h.cover_url
+        ORDER BY h.created_at DESC
+        LIMIT 3
+        `
+    );
+    return rows;
+};
