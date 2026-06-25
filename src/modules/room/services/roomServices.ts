@@ -160,3 +160,7 @@ export const fetchFilterRoomTypes = async () => {
 export const fetchAmenities = async () => {
   return await roomModel.fetchAmenities();
 }
+
+export const getFeaturedHotels = async () => {
+    return await roomModel.getFeaturedHotels();
+};

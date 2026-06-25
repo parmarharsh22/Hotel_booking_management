@@ -564,8 +564,8 @@
 
         /* ── Server data ── */
         const serverData = JSON.parse(document.getElementById("server-payload").textContent);
-        const requestedAdults = parseInt(serverData.adults);
-        const requestedChildren = parseInt(serverData.children);
+        const requestedAdults = parseInt(serverData.adults) || 2;
+        const requestedChildren = parseInt(serverData.children) || 0;
         const checkIn = new Date(serverData.checkIn + "T00:00:00");
       
         const checkOut = new Date(serverData.checkOut + "T00:00:00");

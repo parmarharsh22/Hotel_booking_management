@@ -41,4 +41,8 @@ authRouter.post("/checkOtp",checkResetPasswordSession,authController.validateOtp
 //resetPassword
 authRouter.post("/resetPassword",checkResetPasswordSession,authController.updatePassword);
 
+authRouter.get("/legal", (req, res) => {
+  res.render("legal", { user: res.locals.user || null });
+});
+
 export default authRouter;
