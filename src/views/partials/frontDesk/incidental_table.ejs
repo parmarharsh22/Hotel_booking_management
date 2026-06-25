@@ -1,0 +1,148 @@
+<!-- partials/incidental_table.ejs -->
+
+<div class="bg-white rounded-2xl shadow-lg border border-slate-200 mb-6">
+
+    <div class="px-6 py-5 border-b bg-gradient-to-r from-[#031632] to-[#1a2b48]">
+
+        <h2 class="text-lg font-semibold text-white">
+            Existing Charges
+        </h2>
+
+    </div>
+
+    <% if(incidentals.length === 0){ %>
+
+        <div class="p-10 text-center">
+
+            <span class="material-symbols-outlined text-5xl text-slate-300">
+                receipt_long
+            </span>
+
+            <p class="text-slate-500 mt-3">
+                No incidental charges added yet.
+            </p>
+
+        </div>
+
+    <% } else { %>
+
+        <table class="w-full">
+
+            <thead>
+
+                <tr class="bg-slate-50 border-b">
+
+                    <th class="text-left px-6 py-4">
+                        Description
+                    </th>
+
+                    <th class="text-center px-6 py-4">
+                        Amount
+                    </th>
+
+                    <th class="text-center px-6 py-4">
+                        Added By
+                    </th>
+
+                    <th class="text-center px-6 py-4">
+                        Added At
+                    </th>
+
+                    <th class="text-center px-6 py-4">
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <% incidentals.forEach(incidental => { %>
+
+                    <tr class="border-b hover:bg-slate-50">
+
+                        <td class="px-6 py-4">
+
+                            <%= incidental.description %>
+
+                        </td>
+
+                        <td class="px-6 py-4 text-center font-semibold text-green-700">
+
+                            ₹<%= incidental.amount %>
+
+                        </td>
+
+                        <td class="px-6 py-4 text-center">
+
+                            <%= incidental.added_by_name %>
+
+                        </td>
+
+                        <td class="px-6 py-4 text-center">
+
+                            <%= new Date(incidental.added_at)
+                                .toLocaleDateString("en-IN") %>
+
+                        </td>
+
+                        <td class="px-6 py-4 text-center">
+
+                            <form
+                                action="/frontDesk/incidentals/delete/<%= incidental.incidental_id %>"
+                                method="POST"
+                                onsubmit="return confirm('Delete this charge?')">
+
+                                <input type="hidden" name="bookId" value="<%= booking.booking_id %>">
+
+                                <button
+                                    type="submit"
+                                    class="inline-flex items-center gap-1
+                                    bg-red-600 hover:bg-red-700
+                                    text-white px-3 py-2 rounded-lg">
+
+                                    <span class="material-symbols-outlined text-[18px]">
+                                        delete
+                                    </span>
+
+                                    Delete
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                <% }) %>
+
+            </tbody>
+
+            <tfoot>
+
+                <tr class="bg-slate-50">
+
+                    <td colspan="4"
+                        class="text-right font-bold px-6 py-4">
+
+                        Total Charges
+
+                    </td>
+
+                    <td class="font-bold text-green-700 px-6 py-4">
+
+                        ₹<%= totalIncidentals %>
+
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    <% } %>
+
+</div>
