@@ -10,16 +10,16 @@ import { db } from "../../../config/db";
 import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 
 export const searchHotels = async (params: searchHotelReqBody) => {
- const { location, check_in, check_out, rooms, adults, children, price_filter, roomTypes_filter
-    , amenities_filter } = params;
-  
+ const { location, checkIn, checkOut, rooms, adults, children, priceFilter, roomTypesFilter
+    , amenitiesFilter } = params;
+
     const hotels_data = await roomModel.searchHotels(
     location,
-    check_in,
-    check_out,
-    price_filter,
-    roomTypes_filter,
-    amenities_filter
+    checkIn,
+    checkOut,
+    priceFilter,
+    roomTypesFilter,
+    amenitiesFilter
   );
 
   const hotels: Record<string, Hotel> = {};
@@ -82,8 +82,8 @@ export const searchHotels = async (params: searchHotelReqBody) => {
   return result;
 };
 
-export const hotelDetails = async (hotelId: number, check_in: string, check_out: string,price_filter:number|undefined,roomTypes:string[]|undefined,amenities:string[]|undefined) => {
-  const hotelDetails = await roomModel.hotelDetails(hotelId, check_in, check_out,price_filter,roomTypes,amenities);
+export const hotelDetails = async (hotelId: number, checkIn: string, checkOut: string,priceFilter:number|undefined,roomTypes:string[]|undefined,amenities:string[]|undefined) => {
+  const hotelDetails = await roomModel.hotelDetails(hotelId, checkIn, checkOut,priceFilter,roomTypes,amenities);
 
   let hotel: HotelDetails | undefined;
   let room_type: RoomType[] = [];
@@ -160,3 +160,7 @@ export const fetchFilterRoomTypes = async () => {
 export const fetchAmenities = async () => {
   return await roomModel.fetchAmenities();
 }
+
+export const getFeaturedHotels = async () => {
+    return await roomModel.getFeaturedHotels();
+};

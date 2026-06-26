@@ -20,9 +20,57 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
 
 <div class="lg:ml-[260px] min-h-screen">
 
-<%- include('../partials/frontDesk/header',{
-    pageTitle:"Booking Management"
-}) %>
+<!-- Header -->
+<%- include("../partials/frontDesk/header.ejs") %>
+
+<!-- Hero Section -->
+<div class="px-8 py-6">
+
+    <div class="bg-gradient-to-r from-[#031632] via-[#0c234d] to-[#1a2b48]
+                rounded-3xl shadow-xl p-8">
+
+        <div class="flex justify-between items-center">
+
+            <div>
+
+                <div class="flex items-center gap-3 mb-2">
+
+                    <span class="material-symbols-outlined text-yellow-300 text-4xl">
+                        event_note
+                    </span>
+
+                    <h1 class="text-4xl font-bold text-white">
+                        Booking Management
+                    </h1>
+
+                </div>
+
+                <p class="text-yellow-300 text-lg">
+                    View, manage and monitor all guest reservations across the property.
+                </p>
+            </div>
+
+            <div class="hidden lg:flex">
+
+                <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-6 text-center">
+
+                    <p class="text-blue-200 text-sm">
+                        Total Bookings
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-white mt-1">
+                        <%= totalRecords %>
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <main class="p-8">
 
@@ -224,7 +272,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
                         <a
                         href="/frontDesk/checkIn/<%= booking.booking_reference %>?source=past"
                         class="text-[#031632] font-medium">
-
+                        
                             View
 
                         </a>

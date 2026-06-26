@@ -64,4 +64,11 @@ router.get(
   controller.getBookingDetail.bind(controller),
 );
 
+router.get(
+  "/notifications/data",
+  validToken,
+  allowRoles("GUEST"),
+  controller.getNotifications.bind(controller),
+)
+
 export default router;

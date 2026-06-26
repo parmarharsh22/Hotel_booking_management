@@ -8,18 +8,12 @@ const invoiceController = new InvoiceController();
 const router = Router();
 
 // Generate + view invoice
-router.get(
-  "/:bookingId",
-  validToken,
-  allowRoles("FRONT_DESK", "ADMIN"),
-  invoiceController.generateInvoice.bind(invoiceController)
-);
+router.get("/:bookingId",validToken,allowRoles("FRONT_DESK", "ADMIN"),invoiceController.generateInvoice.bind(invoiceController));
 
 // Printable invoice
-router.get(
-  "/:bookingId/download",
+router.get("/:bookingId/:hotelId/download",
   validToken,
-  allowRoles("FRONT_DESK", "ADMIN"),
+  allowRoles("GUEST"),
   invoiceController.downloadInvoice.bind(invoiceController)
 );
 

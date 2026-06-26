@@ -390,9 +390,12 @@
                                 <p class="text-xs text-gray-500 uppercase">
                                     Highest Floor
                                 </p>
-                                <p class="text-lg font-bold text-primary">
-                                    Floor
-                                    <%= floorOccupancy.reduce((a,b)=>a.occupied>b.occupied?a:b).floor %>
+                               <p class="text-lg font-bold text-primary">
+                                Floor
+                                <%= floorOccupancy.length > 0
+                                    ? floorOccupancy.reduce((a, b) => a.occupied > b.occupied ? a : b).floor
+                                    : 'N/A'
+                                %>
                                 </p>
                             </div>
 

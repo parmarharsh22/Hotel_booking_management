@@ -76,9 +76,9 @@
       </div>
       <div class="px-4 py-2.5 flex items-center gap-2 text-slate-600">
         <i class="fa-regular fa-calendar text-slate-400 text-xs"></i>
-        <span><strong class="text-slate-900"><%= query.check_in || "--" %></strong></span>
+        <span><strong class="text-slate-900"><%= query.checkIn || "--" %></strong></span>
         <i class="fa-solid fa-arrow-right text-slate-300 text-xs"></i>
-        <strong class="text-slate-900"><%= query.check_out || "--" %></strong>
+        <strong class="text-slate-900"><%= query.checkOut || "--" %></strong>
       </div>
       <div class="px-4 py-2.5 flex items-center gap-2 text-slate-600">
         <i class="fa-solid fa-users text-slate-400 text-xs"></i>
@@ -139,8 +139,8 @@
 
       <form action="/rooms/searchHotels" method="POST" class="p-5 space-y-6">
         <input type="hidden" name="location" value="<%= query.location %>">
-        <input type="hidden" name="check_in" value="<%= query.check_in %>">
-        <input type="hidden" name="check_out" value="<%= query.check_out %>">
+        <input type="hidden" name="checkIn" value="<%= query.checkIn %>">
+        <input type="hidden" name="checkOut" value="<%= query.checkOut %>">
         <input type="hidden" name="adults" value="<%= query.adults %>">
         <input type="hidden" name="children" value="<%= query.children %>">
         <input type="hidden" name="rooms" value="<%= query.rooms %>">
@@ -153,8 +153,8 @@
               ₹7,750
             </span>
           </div>
-          <input type="range" id="price-slider" name="price_filter" min="500" max="15000"
-                 value="<%= query.price_filter || 7750 %>"
+          <input type="range" id="price-slider" name="priceFilter" min="500" max="15000"
+                 value="<%= query.priceFilter || 7750 %>"
                  class="w-full h-1.5 rounded-full cursor-pointer"
                  oninput="updatePrice(this.value)">
           <div class="flex justify-between text-xs text-slate-400 mt-2">
@@ -166,10 +166,10 @@
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-3">Room Type</label>
           <div class="space-y-2.5">
-            <% const selectedRooms = query.roomTypes_filter || []; %>
+            <% const selectedRooms = query.roomTypesFilter || []; %>
             <% roomTypes.forEach(function(ele){ %>
               <label class="flex items-center gap-3 text-sm text-slate-600 cursor-pointer group">
-                <input type="checkbox" name="roomTypes_filter[]" value="<%= ele.type_name %>"
+                <input type="checkbox" name="roomTypesFilter[]" value="<%= ele.type_name %>"
                        class="rounded border-slate-300 h-4 w-4 cursor-pointer"
                        <%= selectedRooms.includes(ele.type_name) ? 'checked' : '' %>>
                 <span class="group-hover:text-slate-900 transition"><%= ele.type_name %></span>
@@ -182,10 +182,10 @@
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-3">Amenities</label>
           <div class="space-y-2.5">
-            <% const selectedAmenities = query.amenities_filter || []; %>
+            <% const selectedAmenities = query.amenitiesFilter || []; %>
             <% amenities.forEach(function(ele){ %>
               <label class="flex items-center gap-3 text-sm text-slate-600 cursor-pointer group">
-                <input type="checkbox" name="amenities_filter[]" value="<%= ele.amenity_id %>"
+                <input type="checkbox" name="amenitiesFilter[]" value="<%= ele.amenity_id %>"
                        class="rounded border-slate-300 h-4 w-4 cursor-pointer"
                        <%= selectedAmenities.includes(ele.amenity_id.toString()) ? 'checked' : '' %>>
                 <span class="group-hover:text-slate-900 transition"><%= ele.amenity_name %></span>
@@ -326,14 +326,14 @@
 <script type="application/json" id="server-payload">
 <%- JSON.stringify({
     location: query.location,
-    checkIn: query.check_in,
-    checkOut: query.check_out,
+    checkIn: query.checkIn,
+    checkOut: query.checkOut,
     rooms: query.rooms,
     adults: query.adults,
     children: query.children,
-    price_filter: query.price_filter,
-    roomTypes_filter: query.roomTypes_filter,
-    amenities_filter: query.amenities_filter
+    priceFilter: query.priceFilter,
+    roomTypesFilter: query.roomTypesFilter,
+    amenitiesFilter: query.amenitiesFilter
 }) %>
 </script>
 

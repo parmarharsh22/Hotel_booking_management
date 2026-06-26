@@ -28,4 +28,15 @@ export class GuestBookingController {
     }
   }
 
+  // GET /notifications/data  → JSON for the bell dropdown
+  async getNotifications(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user?.userId as number;
+      const notifications = await bookingService.getRecentForNotifications(userId);
+      return res.json({ notifications });
+    } catch (err: any) {
+      return res.status(400).json({ message: err.message });
+    }
+  }
+
 }

@@ -57,6 +57,7 @@ form.addEventListener("submit", async (e) => {
     const childVal = parseInt(childInput.value, 10);
 
     if (!locationVal) { addError("location-input", "Required field"); hasErrors = true; }
+    if (!checkinVal) { addError("checkin-input", "Select check-in"); hasErrors = true; }
     if (!checkoutVal) { addError("checkout-input", "Select check-out"); hasErrors = true; }
     if (isNaN(roomsVal)) { addError("rooms-input", "Enter rooms count"); hasErrors = true; }
     if (isNaN(adultsVal)) { addError("adults-input", "Enter adults count"); hasErrors = true; }
@@ -132,8 +133,8 @@ window.onload = async () => {
         const dropdown = document.getElementById("location-input");
         locations.result.forEach(location => {
             const opt = document.createElement("option");
-            opt.textContent = location.city;
-            opt.value = location.city;
+            opt.textContent = location;
+            opt.value = location;
             opt.classList.add('bg-black')
             dropdown.appendChild(opt);
         })
@@ -160,8 +161,6 @@ async function openProfileModal() {
     try {
         const response = await fetch("/authen/fetchUserDetails");
         const data = await response.json();
-
-        console.log(data);
 
         const imgInput = document.getElementById("avatarPreview");
         const first_name = document.getElementById("first_name");

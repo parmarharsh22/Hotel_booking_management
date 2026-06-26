@@ -25,6 +25,28 @@ frontDeskRouter.get("/showRoomStatuses",validToken,allowRoles("FRONT_DESK"),fron
 // get All bookings of the hotel
 frontDeskRouter.get("/bookings",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getBookingsOfHotel);
 
+//render all the guest that are currently checkedIN
+frontDeskRouter.get("/checkout",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getAllCheckInGuests);
+
+//checkout a particular user ID from Params
+frontDeskRouter.get("/checkout/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.checkOutUser);
+
+//emit a event and release the room
+frontDeskRouter.post("/releaseRoom",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.releaseRoom);
+
+frontDeskRouter.post("/cleanRoom",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.cleanRoom);
+
+frontDeskRouter.get("/incidentals",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showIncidentals);
+
+//manageIncidentals
+frontDeskRouter.get("/showIncidental/:bookingId",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.manageIncidentals);
+
+//addIncidential
+frontDeskRouter.post("/incidentals/add",validToken,allowRoles("FRONT_DESK"),frontDeskController.addIncidental);
+
+//removeIncidental
+frontDeskRouter.post("/incidentals/delete/:incidentalid",validToken,allowRoles("FRONT_DESK"),frontDeskController.removeIncidental);
+
 // logout
 frontDeskRouter.get("/logout",validToken,frontDeskController.logout);
 

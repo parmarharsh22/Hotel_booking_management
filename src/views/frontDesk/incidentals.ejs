@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="max-w-5xl mx-auto p-6">
+
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-primary">
+                Add Incidental Charge
+            </h1>
+            <p class="text-sm text-on-surface-variant mt-1">
+                Add additional charges to a confirmed or checked-in guest booking.
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-xl border border-outline-variant shadow-sm">
+
+            <!-- Booking Selection -->
+            <div class="border-b border-outline-variant p-6">
+
+                <h2 class="text-lg font-semibold mb-4">
+                    Select Booking
+                </h2>
+
+                <div>
+                    <label class="block text-sm font-medium mb-2">
+                        Booking Reference
+                    </label>
+
+                    <select id="bookingSelect"
+                        class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary">
+
+                        <option value="">
+                            Select Booking
+                        </option>
+
+                        <% eligibleBookings.forEach((booking)=> { %>
+
+                            <option value="<%= booking.booking_id %>"
+                                data-name="<%= booking.first_name %> <%= booking.last_name %>"
+                                data-reference="<%= booking.booking_reference %>"
+                                data-room="<%= booking.room_numbers %>" data-status="<%= booking.booking_status %>"
+                                data-checkin="<%= booking.checkin_date %>" data-checkout="<%= booking.checkout_date %>">
+
+                                <%= booking.booking_reference %> -
+                                    <%= booking.first_name %>
+                                        <%= booking.last_name %>
+
+                            </option>
+
+                            <% }) %>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Guest Information -->
+            <div class="p-6">
+
+                <h2 class="text-lg font-semibold mb-4">
+                    Guest Information
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div>
+                        <label class="block text-sm text-on-surface-variant mb-1">
+                            Guest Name
+                        </label>
+
+                        <input id="guestName" type="text" readonly
+                            class="w-full border rounded-lg px-4 py-3 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-on-surface-variant mb-1">
+                            Booking Reference
+                        </label>
+
+                        <input id="bookingReference" type="text" readonly
+                            class="w-full border rounded-lg px-4 py-3 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-on-surface-variant mb-1">
+                            Room Number(s)
+                        </label>
+
+                        <input id="roomNumbers" type="text" readonly
+                            class="w-full border rounded-lg px-4 py-3 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-on-surface-variant mb-1">
+                            Status
+                        </label>
+
+                        <input id="bookingStatus" type="text" readonly
+                            class="w-full border rounded-lg px-4 py-3 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-on-surface-variant mb-1">
+                            Check-In Date
+                        </label>
+
+                        <input id="checkinDate" type="text" readonly
+                            class="w-full border rounded-lg px-4 py-3 bg-gray-50">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-on-surface-variant mb-1">
+                            Check-Out Date
+                        </label>
+
+                        <input id="checkoutDate" type="text" readonly
+                            class="w-full border rounded-lg px-4 py-3 bg-gray-50">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Incidental Form -->
+            <form action="/frontDesk/incidentals/add" method="POST" class="border-t border-outline-variant p-6">
+
+                <input type="hidden" id="bookingId" name="bookingId">
+
+                <h2 class="text-lg font-semibold mb-4">
+                    Incidental Details
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-2">
+                            Description
+                        </label>
+
+                        <input type="text" name="description" required placeholder="Laundry, Extra Bed, Minibar..."
+                            class="w-full border rounded-lg px-4 py-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Amount (₹)
+                        </label>
+
+                        <input type="number" name="amount" min="0" step="0.01" required placeholder="0.00"
+                            class="w-full border rounded-lg px-4 py-3">
+                    </div>
+
+                </div>
+
+                <div class="mt-6 flex justify-end">
+
+                    <button type="submit"
+                        class="bg-primary text-white px-6 py-3 rounded-lg hover:opacity-90 transition">
+
+                        Add Charge
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const bookingSelect =
+            document.getElementById("bookingSelect");
+
+        bookingSelect.addEventListener("change", function () {
+
+            const selected =
+                this.options[this.selectedIndex];
+
+            document.getElementById("bookingId").value =
+                selected.value || "";
+
+            document.getElementById("guestName").value =
+                selected.dataset.name || "";
+
+            document.getElementById("bookingReference").value =
+                selected.dataset.reference || "";
+
+            document.getElementById("roomNumbers").value =
+                selected.dataset.room || "";
+
+            document.getElementById("bookingStatus").value =
+                selected.dataset.status || "";
+
+            document.getElementById("checkinDate").value =
+                selected.dataset.checkin || "";
+
+            document.getElementById("checkoutDate").value =
+                selected.dataset.checkout || "";
+
+        });
+
+    </script>
+</body>
+
+</html>
