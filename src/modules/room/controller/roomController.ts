@@ -10,7 +10,7 @@ const roomCache=new NodeCache({stdTTL:86400});
 
 export const searchHotels = async (req: Request, res: Response) => {
     try {
-        const cacheKey = "unique_room_types";
+        const cacheKey = "unique_room_types"; 
         let roomTypes:RoomTypeRow[]|undefined = roomCache.get(cacheKey);
 
         if (!roomTypes) {
@@ -38,6 +38,7 @@ export const searchHotels = async (req: Request, res: Response) => {
             roomTypesFilter:data.roomTypesFilter,
             amenitiesFilter:data.amenitiesFilter
         };
+       console.log(hotels);
        
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
@@ -105,9 +106,9 @@ export const hotelDetails = async (req: Request, res: Response) => {
         res.render("roomsFrontend/hotelDetails", {
             hotel,
             room_type,
-            query,
+            query,  
             
-        });
+        }); 
     } catch (error) { console.error(error); }
 };
 

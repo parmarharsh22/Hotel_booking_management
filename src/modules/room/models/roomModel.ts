@@ -48,6 +48,7 @@ export const searchHotels = async  (
             h.city,
             h.state,
             h.country,
+            h.logo_url,
             avail.room_type_id,
             avail.type_name,
             avail.base_price,
