@@ -57,6 +57,7 @@ export const searchHotels = async (req: Request, res: Response) => {
 
 export const hotelDetails = async (req: Request, res: Response) => {
     try {
+       
         const hotelId = req.params["hotelId"] as string;
        
         const { location, checkIn, checkOut, hotelName, rooms, adults, children, priceFilter } =
@@ -105,6 +106,7 @@ export const hotelDetails = async (req: Request, res: Response) => {
             hotel,
             room_type,
             query,
+            
         });
     } catch (error) { console.error(error); }
 };

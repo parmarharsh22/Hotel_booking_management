@@ -9,6 +9,7 @@ const router = express.Router();
 /**
  * BASE: /superadmin/hotels
  */
+
 router.use("/hotels", tenantRoutes);
 router.use("/auth",superAdminAuthRoutes)
 router.use("/dashboard", dashboardRoutes)

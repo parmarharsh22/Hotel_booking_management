@@ -1,52 +1,119 @@
+```ejs
 <%
   pageTitle  = "Dashboard — HBMS";
   activePage = "dashboard";
 %>
 <%- include('_layout_start') %>
 
-<div class="px-8 py-5 border-b border-surface-border flex items-center justify-between">
+<style>
+  .glass-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-card:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  .stat-glow {
+    position: absolute;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.08;
+    pointer-events: none;
+    top: -30px; right: -30px;
+  }
+
+  .stat-icon-chip {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .pulse-ring {
+    position: relative;
+  }
+  .pulse-ring::before {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    top: 50%; left: -12px;
+    transform: translateY(-50%);
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.4; transform: translateY(-50%) scale(0.9); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.15); }
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.4s ease infinite;
+    border-radius: 1rem;
+  }
+  @keyframes skeleton-loading {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+  }
+
+  .table-row-hover:hover {
+    background: #f9fafb;
+  }
+
+  .mini-bar {
+    width: 4px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(79,142,247,0.9), rgba(79,142,247,0.2));
+  }
+</style>
+
+<div class="px-8 py-5 border-b border-gray-200 flex items-center justify-between sticky top-0 z-30 backdrop-blur-xl bg-white/80">
   <div>
-    <h1 class="text-lg font-semibold ">Dashboard</h1>
-    <p class="text-xs text-muted mt-0.5">Platform overview</p>
+    <h1 class="text-lg font-semibold tracking-tight text-black">Dashboard</h1>
+    <p class="text-xs text-gray-500 mt-0.5">Platform overview</p>
   </div>
-  <span class="text-xs font-mono text-muted bg-surface-2 border border-surface-border px-3 py-1 rounded-full" id="live-time"></span>
+  <div class="flex items-center gap-3">
+    <span class="pulse-ring text-xs font-mono text-gray-600 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full" id="live-time" style="--tw-content:''"></span>
+  </div>
 </div>
 
 <div class="px-8 py-6 space-y-6" id="dashboard-root">
-  <div class="text-center text-muted py-20 text-sm">Loading dashboard...</div>
+  <div class="grid grid-cols-4 gap-4">
+    <div class="skeleton h-32"></div>
+    <div class="skeleton h-32"></div>
+    <div class="skeleton h-32"></div>
+    <div class="skeleton h-32"></div>
+  </div>
+  <div class="grid grid-cols-3 gap-4">
+    <div class="skeleton h-24"></div>
+    <div class="skeleton h-24"></div>
+    <div class="skeleton h-24"></div>
+  </div>
+  <div class="skeleton h-72"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Live clock
   setInterval(() => {
     const el = document.getElementById('live-time');
     if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
   }, 1000);
 
-  const bookingStatusColors = {
-    PENDING:     '#f59e0b',
-    CONFIRMED:   '#4f8ef7',
-    CHECKED_IN:  '#22c55e',
-    CHECKED_OUT: '#64748b',
-    CANCELLED:   '#ef4444',
-  };
-
-  const roomStatusColors = {
-    AVAILABLE:   '#22c55e',
-    OCCUPIED:    '#4f8ef7',
-    DIRTY:       '#f59e0b',
-    MAINTENANCE: '#ef4444',
-  };
-
-  function fmt(n) {
-    return Number(n || 0).toLocaleString();
-  }
-
-  function fmtMoney(n) {
-    return '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 });
-  }
-
+  function fmt(n) { return Number(n || 0).toLocaleString(); }
+  function fmtMoney(n) { return '₹' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }); }
   function fmtDate(d) {
     if (!d) return '—';
     return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
@@ -54,133 +121,175 @@
 
   function bookingBadge(status) {
     const colors = {
-      PENDING:     'bg-yellow-950 border-yellow-800 text-yellow-300',
-      CONFIRMED:   'bg-blue-950 border-blue-800 text-blue-300',
-      CHECKED_IN:  'bg-green-950 border-green-800 text-green-300',
-      CHECKED_OUT: 'bg-slate-800 border-slate-700 text-slate-400',
-      CANCELLED:   'bg-red-950 border-red-800 text-red-300',
+      PENDING:     'bg-yellow-50 border-yellow-200 text-yellow-700',
+      CONFIRMED:   'bg-blue-50 border-blue-200 text-blue-700',
+      CHECKED_IN:  'bg-green-50 border-green-200 text-green-700',
+      CHECKED_OUT: 'bg-gray-50 border-gray-200 text-gray-600',
+      CANCELLED:   'bg-red-50 border-red-200 text-red-700',
     };
     const cls = colors[status] || colors.PENDING;
-    return `<span class="text-xs font-mono px-2 py-0.5 rounded-md border ${cls}">${status}</span>`;
+    return `<span class="text-xs font-mono px-2.5 py-1 rounded-full border ${cls}">${status}</span>`;
   }
 
   async function loadDashboard() {
     try {
-      const res  = await fetch('/superadmin/dashboard/stats');
-      const d    = await res.json();
+      const res = await fetch('/superadmin/dashboard/stats');
+      const d   = await res.json();
 
       document.getElementById('dashboard-root').innerHTML = `
 
         <!-- Top stat cards -->
-        <div class="grid grid-cols-4 gap-4">
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Hotels</p>
-            <p class="text-3xl font-semibold text-accent">${fmt(d.hotels.total)}</p>
-            <div class="flex gap-3 mt-3 text-xs text-muted">
-              <span class="text-success">● ${fmt(d.hotels.active)} active</span>
-              <span class="text-warning">● ${fmt(d.hotels.pending)} pending</span>
+        <div class="grid grid-cols-4 gap-4 fade-in-up">
+
+          <div class="glass-card relative overflow-hidden rounded-2xl p-5">
+            <div class="stat-glow" style="background:#3b82f6"></div>
+            <div class="flex items-start justify-between mb-4">
+              <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Total Hotels</p>
+              <div class="stat-icon-chip bg-blue-50">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              </div>
+            </div>
+            <p class="text-3xl font-semibold tracking-tight text-black">${fmt(d.hotels.total)}</p>
+            <div class="flex gap-3 mt-3 text-xs text-gray-600">
+              <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>${fmt(d.hotels.active)} active</span>
+              <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>${fmt(d.hotels.pending)} pending</span>
             </div>
           </div>
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Users</p>
-            <p class="text-3xl font-semibold ">${fmt(d.users.total)}</p>
-            <div class="flex gap-3 mt-3 text-xs text-muted">
+
+          <div class="glass-card relative overflow-hidden rounded-2xl p-5">
+            <div class="stat-glow" style="background:#8b5cf6"></div>
+            <div class="flex items-start justify-between mb-4">
+              <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Total Users</p>
+              <div class="stat-icon-chip bg-violet-50">
+                <svg class="w-4 h-4 text-violet-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+              </div>
+            </div>
+            <p class="text-3xl font-semibold tracking-tight text-black">${fmt(d.users.total)}</p>
+            <div class="flex gap-3 mt-3 text-xs text-gray-600">
               <span>Admins: ${fmt(d.users.hotel_admins)}</span>
               <span>Guests: ${fmt(d.users.guests)}</span>
             </div>
           </div>
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Bookings</p>
-            <p class="text-3xl font-semibold ">${fmt(d.bookings.total)}</p>
+
+          <div class="glass-card relative overflow-hidden rounded-2xl p-5">
+            <div class="stat-glow" style="background:#10b981"></div>
+            <div class="flex items-start justify-between mb-4">
+              <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Total Bookings</p>
+              <div class="stat-icon-chip bg-green-50">
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+            </div>
+            <p class="text-3xl font-semibold tracking-tight text-black">${fmt(d.bookings.total)}</p>
             <div class="flex gap-3 mt-3 text-xs">
-              <span class="text-success">● ${fmt(d.bookings.checked_in)} in-house</span>
-              <span class="text-danger">● ${fmt(d.bookings.cancelled)} cancelled</span>
+              <span class="flex items-center gap-1 text-green-600"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>${fmt(d.bookings.checked_in)} in-house</span>
+              <span class="flex items-center gap-1 text-red-600"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>${fmt(d.bookings.cancelled)} cancelled</span>
             </div>
           </div>
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-3">Total Rooms</p>
-            <p class="text-3xl font-semibold ">${fmt(d.rooms.total)}</p>
+
+          <div class="glass-card relative overflow-hidden rounded-2xl p-5">
+            <div class="stat-glow" style="background:#f59e0b"></div>
+            <div class="flex items-start justify-between mb-4">
+              <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Total Rooms</p>
+              <div class="stat-icon-chip bg-amber-50">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 7v11m0-11l9-4 9 4M3 7l9 4m9-4v11m0-11l-9 4m0 0v11"/></svg>
+              </div>
+            </div>
+            <p class="text-3xl font-semibold tracking-tight text-black">${fmt(d.rooms.total)}</p>
             <div class="flex gap-3 mt-3 text-xs">
-              <span class="text-success">● ${fmt(d.rooms.available)} free</span>
-              <span class="text-accent">● ${fmt(d.rooms.occupied)} occupied</span>
+              <span class="flex items-center gap-1 text-green-600"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>${fmt(d.rooms.available)} free</span>
+              <span class="flex items-center gap-1 text-blue-600"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>${fmt(d.rooms.occupied)} occupied</span>
             </div>
           </div>
         </div>
 
         <!-- Revenue cards -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-2">Today's Revenue</p>
-            <p class="text-2xl font-semibold text-success">${fmtMoney(d.revenue.today)}</p>
+        <div class="grid grid-cols-3 gap-4 fade-in-up" style="animation-delay:0.05s">
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-green-500 to-transparent"></div>
+            <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">Today's Revenue</p>
+            <p class="text-2xl font-semibold text-green-600 tracking-tight">${fmtMoney(d.revenue.today)}</p>
           </div>
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-2">This Month</p>
-            <p class="text-2xl font-semibold text-accent">${fmtMoney(d.revenue.this_month)}</p>
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-500 to-transparent"></div>
+            <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">This Month</p>
+            <p class="text-2xl font-semibold text-blue-600 tracking-tight">${fmtMoney(d.revenue.this_month)}</p>
           </div>
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-2">Pending Payments</p>
-            <p class="text-2xl font-semibold text-warning">${fmtMoney(d.revenue.pending_payments)}</p>
+          <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-amber-500 to-transparent"></div>
+            <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">Pending Payments</p>
+            <p class="text-2xl font-semibold text-amber-600 tracking-tight">${fmtMoney(d.revenue.pending_payments)}</p>
           </div>
         </div>
 
         <!-- Charts row -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="card p-5 col-span-2">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">Revenue — Last 7 Days</p>
+        <div class="grid grid-cols-3 gap-4 fade-in-up" style="animation-delay:0.1s">
+          <div class="glass-card rounded-2xl p-5 col-span-2">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Revenue — Last 7 Days</p>
+              <span class="text-xs text-green-500 font-mono">●</span>
+            </div>
             <canvas id="revenueChart" height="100"></canvas>
           </div>
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">Booking Status</p>
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Booking Status</p>
             <canvas id="bookingDonut" height="180"></canvas>
           </div>
         </div>
 
         <!-- Room status + bookings chart row -->
-        <div class="grid grid-cols-3 gap-4">
-          <div class="card p-5">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">Room Status</p>
+        <div class="grid grid-cols-3 gap-4 fade-in-up" style="animation-delay:0.15s">
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Room Status</p>
             <canvas id="roomDonut" height="180"></canvas>
           </div>
-          <div class="card p-5 col-span-2">
-            <p class="text-xs font-mono text-muted uppercase tracking-widest mb-4">Bookings — Last 7 Days</p>
+          <div class="glass-card rounded-2xl p-5 col-span-2">
+            <p class="text-xs font-mono text-gray-500 uppercase tracking-widest mb-4">Bookings — Last 7 Days</p>
             <canvas id="bookingChart" height="100"></canvas>
           </div>
         </div>
 
         <!-- Recent bookings table -->
-        <div class="card overflow-hidden">
-          <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
-            <h2 class="text-sm font-semibold ">Recent Bookings</h2>
+        <div class="glass-card rounded-2xl overflow-hidden fade-in-up" style="animation-delay:0.2s">
+          <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-sm font-semibold tracking-tight text-black">Recent Bookings</h2>
+            <span class="text-xs text-gray-500 font-mono">${d.recentBookings.length} shown</span>
           </div>
+          <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-surface-border bg-surface-2 text-left">
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Reference</th>
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Guest</th>
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Hotel</th>
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Check-in</th>
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Check-out</th>
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Amount</th>
-                <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Status</th>
+              <tr class="border-b border-gray-200 bg-gray-50 text-left">
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Reference</th>
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Guest</th>
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Hotel</th>
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Check-in</th>
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Check-out</th>
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Amount</th>
+                <th class="px-6 py-3 text-xs font-mono text-gray-600 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody>
               ${d.recentBookings.length === 0
-                ? `<tr><td colspan="7" class="px-6 py-8 text-center text-muted">No bookings yet</td></tr>`
+                ? `<tr><td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                     <div class="flex flex-col items-center gap-2">
+                       <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                       <span>No bookings yet</span>
+                     </div>
+                   </td></tr>`
                 : d.recentBookings.map(b => `
-                  <tr class="table-row border-b border-surface-border last:border-0">
-                    <td class="px-6 py-3.5 font-mono text-xs text-accent">${b.booking_reference}</td>
-                    <td class="px-6 py-3.5 ">${b.first_name} ${b.last_name}</td>
-                    <td class="px-6 py-3.5 text-slate-400 text-xs">${b.hotel_name}</td>
-                    <td class="px-6 py-3.5 text-slate-400 text-xs">${fmtDate(b.checkin_date)}</td>
-                    <td class="px-6 py-3.5 text-slate-400 text-xs">${fmtDate(b.checkout_date)}</td>
-                    <td class="px-6 py-3.5  text-xs font-mono">${fmtMoney(b.total_amount)}</td>
+                  <tr class="table-row-hover border-b border-gray-100 last:border-0 transition-colors">
+                    <td class="px-6 py-3.5 font-mono text-xs text-blue-600">${b.booking_reference}</td>
+                    <td class="px-6 py-3.5 text-black font-medium">${b.first_name} ${b.last_name}</td>
+                    <td class="px-6 py-3.5 text-gray-600 text-xs">${b.hotel_name}</td>
+                    <td class="px-6 py-3.5 text-gray-600 text-xs">${fmtDate(b.checkin_date)}</td>
+                    <td class="px-6 py-3.5 text-gray-600 text-xs">${fmtDate(b.checkout_date)}</td>
+                    <td class="px-6 py-3.5 text-xs font-mono text-black">${fmtMoney(b.total_amount)}</td>
                     <td class="px-6 py-3.5">${bookingBadge(b.status_name)}</td>
                   </tr>
                 `).join('')
               }
             </tbody>
           </table>
+          </div>
         </div>
       `;
 
@@ -188,52 +297,85 @@
 
     } catch (err) {
       document.getElementById('dashboard-root').innerHTML =
-        `<div class="text-center text-danger py-20 text-sm">Failed to load dashboard</div>`;
+        `<div class="glass-card rounded-2xl text-center py-20">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="text-black text-sm font-medium">Failed to load dashboard</div>
+              <div class="text-gray-500 text-xs mt-1">Please check your connection and try again</div>
+            </div>
+            <button onclick="loadDashboard()" class="mt-2 px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">Retry</button>
+          </div>
+        </div>`;
     }
   }
 
   function buildCharts(d) {
-    const gridColor = '#2a3449';
-    const textColor = '#64748b';
+    const gridColor = 'rgba(0,0,0,0.06)';
+    const textColor = '#6b7280';
+    const fontFamily = 'DM Mono';
 
-    // Fill missing dates for last 7 days
     function fillDates(data, valueKey) {
       const map = {};
       data.forEach(r => { map[r.date?.slice(0,10)] = Number(r[valueKey] || 0); });
       const labels = [], values = [];
       for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const key = d.toISOString().slice(0, 10);
-        labels.push(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
+        const dt = new Date();
+        dt.setDate(dt.getDate() - i);
+        const key = dt.toISOString().slice(0, 10);
+        labels.push(dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
         values.push(map[key] || 0);
       }
       return { labels, values };
     }
 
-    // Revenue line chart
+    // Revenue line chart -- gradient fill
+    const revCanvas = document.getElementById('revenueChart');
+    const revCtx = revCanvas.getContext('2d');
+    const gradient = revCtx.createLinearGradient(0, 0, 0, 220);
+    gradient.addColorStop(0, 'rgba(59,130,246,0.15)');
+    gradient.addColorStop(1, 'rgba(59,130,246,0.0)');
+
     const rev = fillDates(d.revenueChart, 'revenue');
-    new Chart(document.getElementById('revenueChart'), {
+    new Chart(revCanvas, {
       type: 'line',
       data: {
         labels: rev.labels,
         datasets: [{
           label: 'Revenue',
           data: rev.values,
-          borderColor: '#4f8ef7',
-          backgroundColor: 'rgba(79,142,247,0.08)',
-          borderWidth: 2,
-          pointBackgroundColor: '#4f8ef7',
+          borderColor: '#3b82f6',
+          backgroundColor: gradient,
+          borderWidth: 2.5,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#3b82f6',
+          pointBorderWidth: 2,
           pointRadius: 4,
+          pointHoverRadius: 6,
           fill: true,
-          tension: 0.4,
+          tension: 0.42,
         }]
       },
       options: {
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(255,255,255,0.98)',
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            padding: 10,
+            titleFont: { family: fontFamily, size: 11, color: '#000' },
+            bodyFont: { family: fontFamily, size: 12, color: '#000' },
+            titleColor: '#000',
+            bodyColor: '#000',
+            displayColors: false,
+          }
+        },
         scales: {
-          x: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: 'DM Mono', size: 11 } } },
-          y: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: 'DM Mono', size: 11 } } },
+          x: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: fontFamily, size: 11 } } },
+          y: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: fontFamily, size: 11 } } },
         }
       }
     });
@@ -247,17 +389,31 @@
         datasets: [{
           label: 'Bookings',
           data: book.values,
-          backgroundColor: 'rgba(79,142,247,0.5)',
-          borderColor: '#4f8ef7',
-          borderWidth: 1,
-          borderRadius: 4,
+          backgroundColor: 'rgba(59,130,246,0.2)',
+          borderColor: '#3b82f6',
+          borderWidth: 1.5,
+          borderRadius: 6,
+          hoverBackgroundColor: 'rgba(59,130,246,0.35)',
         }]
       },
       options: {
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(255,255,255,0.98)',
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            padding: 10,
+            titleFont: { family: fontFamily, size: 11 },
+            bodyFont: { family: fontFamily, size: 12 },
+            titleColor: '#000',
+            bodyColor: '#000',
+            displayColors: false,
+          }
+        },
         scales: {
-          x: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: 'DM Mono', size: 11 } } },
-          y: { grid: { color: gridColor }, ticks: { color: textColor, font: { family: 'DM Mono', size: 11 }, stepSize: 1 } },
+          x: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: fontFamily, size: 11 } } },
+          y: { grid: { color: gridColor, drawBorder: false }, ticks: { color: textColor, font: { family: fontFamily, size: 11 }, stepSize: 1 } },
         }
       }
     });
@@ -272,17 +428,26 @@
             d.bookings.pending, d.bookings.confirmed,
             d.bookings.checked_in, d.bookings.checked_out, d.bookings.cancelled
           ],
-          backgroundColor: ['#f59e0b','#4f8ef7','#22c55e','#64748b','#ef4444'],
-          borderWidth: 0,
-          hoverOffset: 6,
+          backgroundColor: ['#f59e0b','#3b82f6','#10b981','#6b7280','#ef4444'],
+          borderWidth: 3,
+          borderColor: '#ffffff',
+          hoverOffset: 8,
         }]
       },
       options: {
-        cutout: '70%',
+        cutout: '72%',
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { color: textColor, font: { family: 'DM Mono', size: 10 }, padding: 12, boxWidth: 10 }
+            labels: { color: textColor, font: { family: fontFamily, size: 10 }, padding: 12, boxWidth: 8, usePointStyle: true, pointStyle: 'circle' }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255,255,255,0.98)',
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            padding: 10,
+            titleColor: '#000',
+            bodyColor: '#000',
           }
         }
       }
@@ -295,17 +460,26 @@
         labels: ['Available','Occupied','Dirty','Maintenance'],
         datasets: [{
           data: [d.rooms.available, d.rooms.occupied, d.rooms.dirty, d.rooms.maintenance],
-          backgroundColor: ['#22c55e','#4f8ef7','#f59e0b','#ef4444'],
-          borderWidth: 0,
-          hoverOffset: 6,
+          backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444'],
+          borderWidth: 3,
+          borderColor: '#ffffff',
+          hoverOffset: 8,
         }]
       },
       options: {
-        cutout: '70%',
+        cutout: '72%',
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { color: textColor, font: { family: 'DM Mono', size: 10 }, padding: 12, boxWidth: 10 }
+            labels: { color: textColor, font: { family: fontFamily, size: 10 }, padding: 12, boxWidth: 8, usePointStyle: true, pointStyle: 'circle' }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255,255,255,0.98)',
+            borderColor: 'rgba(0,0,0,0.1)',
+            borderWidth: 1,
+            padding: 10,
+            titleColor: '#000',
+            bodyColor: '#000',
           }
         }
       }
@@ -316,3 +490,4 @@
 </script>
 
 <%- include('_layout_end') %>
+```
