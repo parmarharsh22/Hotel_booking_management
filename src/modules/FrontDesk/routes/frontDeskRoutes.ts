@@ -47,6 +47,12 @@ frontDeskRouter.post("/incidentals/add",validToken,allowRoles("FRONT_DESK"),fron
 //removeIncidental
 frontDeskRouter.post("/incidentals/delete/:incidentalid",validToken,allowRoles("FRONT_DESK"),frontDeskController.removeIncidental);
 
+//Payements
+frontDeskRouter.get("/payments",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getPayments);
+
+//invoices
+frontDeskRouter.get("/invoices",validToken,allowRoles("FRONT_DESK"),frontDeskContext,frontDeskController.getInvoices);
+
 // logout
 frontDeskRouter.get("/logout",validToken,frontDeskController.logout);
 

@@ -2,7 +2,7 @@ import * as frontDeskModel from "../models/frondDeskModel";
 import { db } from "../../../config/db";
 import { redis } from "../../../config/redis";
 import type { DashboardData, Shift, BookingDetailRow, VerificationPageRow, VerificationStatus, CheckedOutRoom, renderIncidentals, Incidental, } from "../types/frontDesk.types";
-import type { RoomInventoryRow, BookingFilters, getAllCheckInGuest, } from "../types/frontDesk.types";
+import type { RoomInventoryRow, BookingFilters, getAllCheckInGuest, PaymentList,InvoiceList } from "../types/frontDesk.types";
 
 // dashboard data via parallel queries
 export const getDashBoardData = async (
@@ -311,12 +311,22 @@ export const getAllDirtyRooms = async (): Promise<{ room_id: number; hotel_id: n
 };
 
 //get the all the eligibleGuest from the db
-export const getEligbleGuests = async (hotelId:number):Promise<renderIncidentals[]> => {
-    const eligibleGuests:renderIncidentals[] = await frontDeskModel.renderIncidential(hotelId);
+export const getEligbleGuests = async (hotelId: number): Promise<renderIncidentals[]> => {
+    const eligibleGuests: renderIncidentals[] = await frontDeskModel.renderIncidential(hotelId);
     return eligibleGuests
 }
 
-export const manageIncidentals = async (hotelId:number,bookingId:number):Promise<Incidental[]> => {
-    const guestDetails:Incidental[] = await frontDeskModel.getBookingIncidentals(hotelId,bookingId);
+export const manageIncidentals = async (hotelId: number, bookingId: number): Promise<Incidental[]> => {
+    const guestDetails: Incidental[] = await frontDeskModel.getBookingIncidentals(hotelId, bookingId);
     return guestDetails
-} 
+}
+
+// get all the payements made from the db
+export const getPayments = async (hotelId: number): Promise<PaymentList[]> => {
+    return await frontDeskModel.getPayments(hotelId);
+};
+
+//get all the invoice data
+export const getInvoices = async (hotelId: number): Promise<InvoiceList[]> => {
+    return await frontDeskModel.getInvoices(hotelId);
+}
