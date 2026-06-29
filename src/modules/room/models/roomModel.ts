@@ -4,7 +4,7 @@ import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
 import { AmenityTypes } from "../interfaces/room.AmenityTypes.inaterface";
 
-export const searchHotels = async (
+export const searchHotels = async  (
     location: string,
     checkIn: string,
     checkOut: string,
