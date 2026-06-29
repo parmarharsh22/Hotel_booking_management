@@ -127,9 +127,10 @@ export class RoomTypeModel {
 
   // DELETE /admin/room-types/:typeId  →  deleteRoomType
     static async deleteRoomType(typeId: number, hotelId: number): Promise<boolean> {
+      
     try {
       const [result]: any = await db.query(
-        `DELETE FROM room_types 
+        `DELETE FROM room_types   
          WHERE room_type_id = ? AND hotel_id = ?`,
         [typeId, hotelId]
       );

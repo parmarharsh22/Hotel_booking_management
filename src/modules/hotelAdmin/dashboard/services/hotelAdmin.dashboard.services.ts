@@ -13,7 +13,7 @@ export interface RevenueTrendResponse {
 
 export class DashboardService {
 
-  async getRevenueTrend(
+  async  getRevenueTrend(
     hotelId: number,
     period: RevenuePeriod = "daily"
   ): Promise<RevenueTrendResponse> {

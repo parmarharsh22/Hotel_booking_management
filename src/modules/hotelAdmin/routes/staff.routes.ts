@@ -8,7 +8,7 @@ const staffController = new AdminStaffController();
 
 const router = Router();
 
-router.get("/ ",validToken,allowRoles("ADMIN"),staffController.listStaff.bind(staffController));
+router.get("/staff",validToken,allowRoles("ADMIN"),staffController.listStaff.bind(staffController));
 router.get("/staff/new",validToken,allowRoles("ADMIN"),staffController.showNewStaff.bind(staffController));  // before /:userId
 router.post("/staff",validToken,allowRoles("ADMIN"),
   uploadProfilePhoto.fields([{ name: "staff_photo", maxCount: 1 }]),
