@@ -1,3 +1,8 @@
+
+
+
+
+
 <%
   const inr = n => "₹" + Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2 });
   const fmtDate = d => {
@@ -902,6 +907,246 @@ body{
   }
 }
   </style>
+
+
+
+<!-- Beautiful Embedded Styling based on image_a33779.png -->
+<style>
+  :root {
+    --primary-accent: #a36224;
+    --primary-bg-light: #fffdf9;
+    --border-light: #f3ece2;
+    --text-main: #1f2937;
+    --text-muted: #8c9ba5;
+    --text-blue: #1d70b8;
+  }
+
+  .booking-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-width: 550px;
+    margin: 20px auto;
+    overflow: hidden;
+    color: var(--text-main);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 28px 16px 28px;
+  }
+
+  .lbl-caps {
+    display: block;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .ref-id {
+    color: var(--primary-accent);
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    font-family: serif; /* Elegant look matching reference photo */
+  }
+
+  .val-date {
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .divider {
+    border: 0;
+    border-top: 1px solid #f1f1f1;
+    margin: 0 28px;
+  }
+
+  .card-body {
+    padding: 28px;
+  }
+
+  /* Dates Timeline layout */
+  .dates-timeline-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+
+  .date-box {
+    background: var(--primary-bg-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 14px 20px;
+    width: 42%;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .date-box:hover {
+    border-color: var(--primary-accent);
+    box-shadow: 0 4px 12px rgba(163, 98, 36, 0.06);
+  }
+
+  .date-box-lbl {
+    display: block;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    color: var(--primary-accent);
+    font-weight: 700;
+    margin-bottom: 6px;
+    cursor: pointer;
+  }
+
+  .date-input-hidden {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 100%;
+    left: 0;
+    bottom: 10px;
+  }
+
+  .date-display-trigger {
+    text-align: center;
+  }
+
+  .display-date-str {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  .display-day-name {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .timeline-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 16%;
+  }
+
+  .nights-pill {
+    background: var(--primary-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 3px 6px rgba(163, 98, 36, 0.2);
+  }
+
+  .arrow-indicator {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  /* Information Lists */
+  .details-section {
+    border-top: 1px solid #f5f5f5;
+    padding-top: 15px;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f9f9f9;
+  }
+
+  .info-row:last-of-type {
+    border-bottom: none;
+  }
+
+  .info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 14px;
+  }
+
+  .blue-icon { color: #3b82f6; }
+  .global-icon { color: #10b981; }
+
+  .info-content {
+    flex-grow: 1;
+  }
+
+  .info-lbl {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .info-val-highlight {
+    font-weight: 700;
+    font-size: 14px;
+    color: #111;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .styled-number-input {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-size: 14px;
+    font-weight: 700;
+    width: 45px;
+    color: #111;
+  }
+
+  .input-suffix {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* Special notes styled alert box */
+  .special-notes-box {
+    display: flex;
+    background: #fdfaf6;
+    border-left: 4px solid var(--primary-accent);
+    padding: 12px 16px;
+    border-radius: 4px 12px 12px 4px;
+    margin-top: 20px;
+  }
+
+  .note-emoji {
+    margin-right: 10px;
+    font-size: 16px;
+  }
+
+  .note-body {
+    font-size: 13px;
+    color: #555;
+  }
+  .note-body p { margin: 4px 0 0 0; }
+</style>
 </head>
 <body>
 
@@ -943,178 +1188,261 @@ body{
   <!-- LEFT column -->
   <div>
 
-    <!-- booking reference -->
-    <div class="dcard">
-      <div class="ref-block">
-        <div>
-          <div class="ref-lbl">Booking Reference</div>
-          <div class="ref-val"># <%= booking.booking_reference %></div>
-        </div>
-        <div class="booked-on">
-          <div class="lbl">Booked on</div>
-          <div class="val"><%= fmtDate(booking.created_at) %></div>
-        </div>
-      </div>
-
-      <!-- dates timeline -->
-      <div style="padding:20px">
-        <div class="dates-timeline">
-          <div class="dt-cell">
-            <div class="dt-label">Check-in</div>
-            <div class="dt-date"><%= fmtDate(booking.checkin_date) %></div>
-            <div class="dt-day"><%= new Date(booking.checkin_date).toLocaleDateString("en-IN",{weekday:"long"}) %></div>
-          </div>
-          <div class="dt-mid">
-            <div class="nights-bubble"><%= nights %> Night<%= nights > 1 ? "s" : "" %></div>
-            <div class="arr">→</div>
-          </div>
-          <div class="dt-cell">
-            <div class="dt-label">Check-out</div>
-            <div class="dt-date"><%= fmtDate(booking.checkout_date) %></div>
-            <div class="dt-day"><%= new Date(booking.checkout_date).toLocaleDateString("en-IN",{weekday:"long"}) %></div>
-          </div>
-        </div>
-
-        <!-- info rows -->
-        <div class="info-row">
-          <div class="info-icon">👥</div>
-          <div>
-            <div class="info-lbl">Guests</div>
-            <div class="info-val">
-              <%= booking.adults %> Adult<%= booking.adults > 1 ? "s" : "" %>
-              <% if (booking.children > 0) { %> · <%= booking.children %> Child<%= booking.children > 1 ? "ren" : "" %><% } %>
-            </div>
-          </div>
-        </div>
-        <div class="info-row">
-          <div class="info-icon">🌐</div>
-          <div>
-            <div class="info-lbl">Booking Source</div>
-            <div class="info-val"><%= booking.source_name %></div>
-          </div>
-        </div>
-
-        <% if (booking.special_requests) { %>
-          <div class="note-box">
-            <div class="note-icon">📝</div>
-            <p><strong>Special Requests:</strong> <%= booking.special_requests %></p>
-          </div>
-        <% } %>
-      </div>
+   <!-- Booking Card Container -->
+<div class="booking-card">
+  
+  <!-- Header: Booking Reference & Booked On Date -->
+  <div class="card-header">
+    <div class="header-left">
+      <span class="lbl-caps">Booking Reference</span>
+      <h2 class="ref-id"># <%= booking.booking_reference %></h2>
     </div>
+    <div class="header-right">
+      <span class="lbl-caps">Booked on</span>
+      <span class="val-date"><%= fmtDate(booking.created_at) %></span>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Form Fields & Interactive Timeline -->
+  <form id="bookingUpdateForm" class="card-body">
+    
+    <!-- Dates Interactive Timeline -->
+    <div class="dates-timeline-container">
+      
+      <!-- Check-In Box -->
+      <div class="date-box">
+        <label class="date-box-lbl" for="checkin_date">Check-In</label>
+        <input 
+          type="date" 
+          id="checkin_date"
+          name="checkin_date" 
+          class="date-input-hidden"
+          value="<%= booking.checkin_date.toISOString().split('T')[0] %>"
+        />
+        <div class="date-display-trigger" onclick="document.getElementById('checkin_date').showPicker()">
+          <div class="display-date-str" id="checkin_display_date">-- --- ----</div>
+          <div class="display-day-name" id="checkin_display_day">Monday</div>
+        </div>
+      </div>
+
+      <!-- Nights Bubble Indicator -->
+      <div class="timeline-connector">
+        <div class="nights-pill" id="nights_bubble"><%= nights %> Night<%= nights > 1 ? "s" : "" %></div>
+        <span class="arrow-indicator">→</span>
+      </div>
+
+      <!-- Check-Out Box -->
+      <div class="date-box">
+        <label class="date-box-lbl" for="checkout_date">Check-Out</label>
+        <input 
+          type="date" 
+          id="checkout_date"
+          name="checkout_date" 
+          class="date-input-hidden"
+          value="<%= booking.checkout_date.toISOString().split('T')[0] %>"
+        />
+        <div class="date-display-trigger" onclick="document.getElementById('checkout_date').showPicker()">
+          <div class="display-date-str" id="checkout_display_date">-- --- ----</div>
+          <div class="display-day-name" id="checkout_display_day">Wednesday</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Info Detail Rows -->
+    <div class="details-section">
+      
+      <!-- Guests Input Row -->
+      <div class="info-row">
+        <div class="info-icon blue-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-3-8-3z"/>
+          </svg>
+        </div>
+        <div class="info-content">
+          <label class="info-lbl" for="adults">Guests</label>
+          <div class="input-wrapper">
+            <input 
+              type="number" 
+              id="adults"
+              name="adults" 
+              min="1" 
+              max="10" 
+              class="styled-number-input"
+              value="<%= booking.adults %>"
+            >
+            
+            <span class="input-suffix">Adults</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking Source Row -->
+      <div class="info-row">
+        <div class="info-icon global-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.31.79 2.51 1.38 3.56A8.03 8.03 0 0 1 5.08 16zm2.95-8H5.08a8.03 8.03 0 0 1 3.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.34.16-2h4.68c.09.66.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.59-1.05 1.06-2.25 1.38-3.56h2.95a8.03 8.03 0 0 1-3.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/>
+          </svg>
+        </div>
+        <div class="info-content">
+          <label class="info-lbl">Booking Source</label>
+          <div class="info-val-highlight">ONLINE</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Special Requests -->
+    <% if (booking.special_requests) { %>
+      <div class="special-notes-box">
+        <span class="note-emoji">📝</span>
+        <div class="note-body">
+          <strong>Special Requests:</strong> 
+          <p><%= booking.special_requests %></p>
+        </div>
+      </div>
+    <% } %>
+
+  </form>
+</div>
+
+
 
     <!-- rooms -->
-    <div class="dcard">
-      <div class="dcard-header">
-        <div class="dcard-icon">🛏</div>
-        <h2>Rooms Booked</h2>
-      </div>
-      <div class="dcard-body">
-        <% booking.rooms.forEach(r => {
-             const rate = parseFloat(r.rate_per_night);
-             const sub  = rate * nights;
-        %>
-          <div class="rcard">
-            <div class="rcard-img" style="height:100px">
-              <% if (isHttp(r.room_photo)) { %>
-                <img src="<%= r.room_photo %>" alt="<%= r.type_name %>"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-                <div class="rcard-fallback" style="display:none">🛏</div>
-              <% } else { %>
-                <div class="rcard-fallback">🛏</div>
-              <% } %>
-            </div>
-            <div class="rcard-info">
-              <div class="rcard-left">
-                <div class="rcard-num">Room <%= r.room_number %></div>
-                <div class="rcard-type"><%= r.type_name %></div>
-              </div>
-              <div class="rcard-right">
-                <div class="rcard-rate"><%= inr(rate) %></div>
-                <div class="rcard-per">per night</div>
-                <div class="rcard-sub"><%= inr(sub) %> · <%= nights %>N</div>
-              </div>
-            </div>
-          </div>
-        <% }) %>
-      </div>
-    </div>
-
-  </div>
+   
 
   <!-- RIGHT sidebar -->
   <div>
 
-    <!-- price card -->
-    <div class="price-card">
-      <h3>Total Amount</h3>
-      <div class="price-main"><%= inr(booking.total_amount) %></div>
-      <div class="price-note">for <%= nights %> night<%= nights > 1 ? "s" : "" %> · <%= booking.adults %> guest<%= booking.adults > 1 ? "s" : "" %></div>
-      <hr class="price-divider"/>
-      <% booking.rooms.forEach(r => { %>
-        <div class="price-row">
-          <span class="pl">Room <%= r.room_number %> (<%= r.type_name %>)</span>
-          <span class="pr"><%= inr(parseFloat(r.rate_per_night) * nights) %></span>
-        </div>
-      <% }) %>
-    </div>
+   
+<form id="bookingEditForm">
 
-    <!-- status -->
-    <div class="dcard" style="margin-bottom:16px">
-      <div class="dcard-body">
-        <div class="status-badge-lg" style="background:<%= sc.bg %>;color:<%= sc.color %>">
-          <span style="font-size:18px">
-            <% if (sc.label==="Confirmed") { %>✓<% } else if (sc.label==="Checked In") { %>🏠<% } else if (sc.label==="Checked Out") { %>✔<% } else if (sc.label==="Cancelled") { %>✕<% } else { %>⏳<% } %>
-          </span>
-          <%= sc.label %>
-        </div>
-        <div style="font-size:12px;color:var(--muted);text-align:center">
-          Booking created <%= fmtDate(booking.created_at) %> via <%= booking.source_name %>
-        </div>
-      </div>
-    </div>
+<input
+type="date"
+name="checkin_date"
+value="<%= booking.checkin_date.toISOString().split('T')[0] %>">
+<input
+type="date"
+name="checkout_date"
+value="<%= booking.checkout_date.toISOString().split('T')[0] %>">
+<input
+type="number"
+name="adults"
+min="1"
+max="10"
+value="<%= booking.adults %>">
+<input
+type="number"
+name="children"
+min="0"
+max="10"
+value="<%= booking.children %>">
+<select name="room_id">
 
-    <!-- actions -->
-   <div class="action-btns">
+<% rooms.forEach(room=>{ %>
 
-  <%if(booking.booking_status_id==2){%> 
+<option
+value="<%= room.room_id %>"
+<%= room.room_id===booking.room_id ? "selected":"" %>>
 
-        <a
-            href="/mybookings/<%= booking.booking_id %>/edit"
-            class="btn-primary">
-            ✏️ Modify Booking
-        </a>
+Room <%= room.room_number %>
+(<%= room.type_name %>)
 
-        <a
-            id="cancelBookingBtn"
-             href="/mybookings/<%= booking.booking_id %>/cancel"
-            class="btn-primary">
-            ❌ Cancel Booking
-        </a>
+</option>
 
-    <%}%>   
+<% }) %>
 
-    <a
-        href="/invoices/<%= booking.booking_id %>/<%= booking.hotel_id %>/download"
-        class="btn-ghost">
+</select>
 
-        🧾 Invoice
+</form>
 
-    </a>
-
-    <a
-        href="/bookings/all"
-        class="btn-ghost">
-
-        ← Back
-
-    </a>
-
-</div>
+   
     
 
   </div>
 
 </div>
+
+
+<!-- Dynamic Reactive Interface JavaScript Logic -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkinInput = document.getElementById("checkin_date");
+    const checkoutInput = document.getElementById("checkout_date");
+    
+    const checkinDateStr = document.getElementById("checkin_display_date");
+    const checkinDayStr = document.getElementById("checkin_display_day");
+    
+    const checkoutDateStr = document.getElementById("checkout_display_date");
+    const checkoutDayStr = document.getElementById("checkout_display_day");
+    
+    const nightsBubble = document.getElementById("nights_bubble");
+
+    // Formatter configurations
+    const dayFormatter = new Intl.DateTimeFormat("en-IN", { weekday: "long" });
+    const dateFormatter = new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+
+    function updateTimelineMetrics() {
+      if (!checkinInput.value || !checkoutInput.value) return;
+
+      const checkinDate = new Date(checkinInput.value);
+      const checkoutDate = new Date(checkoutInput.value);
+
+      // 1. Update text formats visually
+      checkinDateStr.textContent = dateFormatter.format(checkinDate);
+      checkinDayStr.textContent = dayFormatter.format(checkinDate);
+
+      checkoutDateStr.textContent = dateFormatter.format(checkoutDate);
+      checkoutDayStr.textContent = dayFormatter.format(checkoutDate);
+
+      // 2. Compute dynamic time difference
+      const timeDifference = checkoutDate.getTime() - checkinDate.getTime();
+      const calculatedNights = Math.ceil(timeDifference / (1000 * 3600 * 24));
+
+      // 3. Keep nights validation intact & update bubble representation
+      if (calculatedNights > 0) {
+        nightsBubble.textContent = `${calculatedNights} Night${calculatedNights > 1 ? 's' : ''}`;
+        nightsBubble.style.background = "var(--primary-accent)";
+      } else {
+        nightsBubble.textContent = "Invalid Dates";
+        nightsBubble.style.background = "#ef4444";
+      }
+    }
+
+    // Attach reactive input event listeners
+    checkinInput.addEventListener("change", function() {
+      // Set minimum threshold for checkout to prevent logic issues
+      checkoutInput.min = checkinInput.value;
+      updateTimelineMetrics();
+    });
+
+    checkoutInput.addEventListener("change", updateTimelineMetrics);
+
+    // Bootstrap values on initial load context setup
+    updateTimelineMetrics();
+  });
+</script>
+
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

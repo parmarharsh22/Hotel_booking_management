@@ -64,4 +64,23 @@ router.get(
   controller.getBookingDetail.bind(controller),
 );
 
+
+
+
+router.get(
+  "/:bookingId/edit",
+  // validToken,
+  // allowRoles("Guest"),
+  (req,res)=>{
+const booking = {
+  checkin_date: new Date(),
+  checkout_date:new Date()
+}
+const rooms:any = [];
+    res.render("myBookings/edit",{booking,rooms})
+
+  }
+
+)
+
 export default router;

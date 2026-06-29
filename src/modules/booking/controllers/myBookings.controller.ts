@@ -8,7 +8,9 @@ export class GuestBookingController {
   // GET /bookings
   async listMyBookings(req: Request, res: Response) {
     try {
+      
       const userId = (req as any).user?.userId as number;
+     
       const bookings = await bookingService.getBookingsByUser(userId);
       return res.status(200).render("myBookings/bookings", { bookings });
     } catch (err: any) {
@@ -28,5 +30,11 @@ export class GuestBookingController {
       return res.status(404).json({ message: err.message });
     }
   }
+
+
+
+
+
+  
 
 }

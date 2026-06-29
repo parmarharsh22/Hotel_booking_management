@@ -67,6 +67,7 @@ export class GuestBookingModel {
         `SELECT
            b.booking_id,
            b.booking_reference,
+           b.booking_status_id,
            b.checkin_date,
            b.checkout_date,
            b.adults,

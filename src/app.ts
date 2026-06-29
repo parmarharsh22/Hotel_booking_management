@@ -13,7 +13,8 @@ import BookingRoutes from "./modules/booking/routes/booking.routes";
 import frontDeskRouter from "./modules/FrontDesk/routes/frontDeskRoutes";
 import invoice from "./modules/invoices/invoiceMain.routes";
 import { startDirtyRoomWorker } from "./modules/FrontDesk/workers/dirtyRoomWorker";
-
+import BookingModificationRoutes from './modules/Booking_Cancellation_Modification/Routes/bookingRoutes.routes'
+import CancellationRoutes from './modules/Booking_Cancellation_Modification/Routes/bookingCancellation.routes'
 const app = express();
 
 //cookie
@@ -47,6 +48,7 @@ app.use("/invoices",invoice);
 //All the unproctedRoutes
 app.use("/",authRouter);
 app.use('/rooms',roomRouter);
-
+app.use("/mybookings",BookingModificationRoutes)
+app.use("/mybookings" ,CancellationRoutes )
 
 export default app;

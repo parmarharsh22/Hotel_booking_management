@@ -19,7 +19,7 @@ export class AdminPolicyController {
   // GET /admin/policies/new
   async showNewPolicy(req: Request, res: Response) {
     try {
-      return res.status(200).render("admin/policy-new");
+      return res.status(200).render("admin/policy-new" , {hotel_id:1});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
