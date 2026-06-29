@@ -4,7 +4,7 @@ import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
 import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
 import { AmenityTypes } from "../interfaces/room.AmenityTypes.inaterface";
 
-export const searchHotels = async (
+export const searchHotels = async  (
     location: string,
     checkIn: string,
     checkOut: string,
@@ -12,96 +12,105 @@ export const searchHotels = async (
     roomTypesFilter: string[] | undefined,
     amenitiesFilter: string[] | undefined
 ) => {
-    // Core parameters matched to the base WHERE clause placeholders
-    const paramsArray = [location, checkOut, checkIn, checkOut, checkIn];
+    const paramsArray: any[] = [checkOut, checkIn, checkOut, checkIn];
 
     let priceSqlBlock = '';
     let roomTypeSqlBlock = '';
-    let amenitiesFilterSqlBlock = '';
-    let havingSqlBlock = '';
+    let amenitiesJoinBlock = '';
+    let amenitiesWhereBlock = '';
+    let amenitiesHavingBlock = '';
 
     if (priceFilter !== undefined) {
-        priceSqlBlock += ' AND rt.base_price <= ?';
-        paramsArray.push(priceFilter.toString());
+        priceSqlBlock = 'AND rt.base_price <= ?';
+        paramsArray.push(priceFilter);
     }
 
-    if (roomTypesFilter !== undefined && roomTypesFilter.length > 0) {
-        roomTypeSqlBlock += ` AND rt.type_name IN (${roomTypesFilter.map(() => '?').join(', ')})`;
-        roomTypesFilter.forEach(val => {
-            paramsArray.push(val);
-        });
+    if (roomTypesFilter && roomTypesFilter.length > 0) {
+        roomTypeSqlBlock = `AND rt.type_name IN (${roomTypesFilter.map(() => '?').join(', ')})`;
+        roomTypesFilter.forEach(val => paramsArray.push(val));
     }
 
-    // Cleaned up filter: Inject only the WHERE constraint here
-    if (amenitiesFilter !== undefined && amenitiesFilter.length > 0) {
-        amenitiesFilterSqlBlock += ` AND rte.amenity_id IN (${amenitiesFilter.map(() => '?').join(', ')})`;
-        amenitiesFilter.forEach(val => {
-            paramsArray.push(val);
-        });
-        
-        // Push HAVING logic to its own block evaluated after GROUP BY
-        havingSqlBlock += ' HAVING COUNT(DISTINCT rte.amenity_id) = ?';
-        paramsArray.push(amenitiesFilter.length.toString());
+    if (amenitiesFilter && amenitiesFilter.length > 0) {
+        amenitiesJoinBlock = 'JOIN room_type_amenities rta ON rta.room_type_id = rt.room_type_id';
+        amenitiesWhereBlock = `AND rta.amenity_id IN (${amenitiesFilter.map(() => '?').join(', ')})`;
+        amenitiesHavingBlock = 'HAVING COUNT(DISTINCT rta.amenity_id) = ?';
+        amenitiesFilter.forEach(val => paramsArray.push(val));
+        paramsArray.push(amenitiesFilter.length);
     }
+
+    paramsArray.push(location);
 
     const [rows] = await db.query<RowDataPacket[]>(
         `
-SELECT
-    h.hotel_id,
-    h.name,
-    h.city,
-    h.state,
-    h.country,
-    rt.room_type_id,
-    rt.type_name,
-    rt.base_price,
-    rt.max_adults,
-    rt.max_children,
-    r.room_id
-FROM hotels h
-JOIN room_types rt
-    ON rt.hotel_id = h.hotel_id
-JOIN rooms r
-    ON r.room_type_id = rt.room_type_id AND r.hotel_id=h.hotel_id
-${amenitiesFilter?.length ? 'JOIN room_type_amenities rte ON rt.room_type_id = rte.room_type_id' : ''}
-WHERE
-    h.tenant_status_id = 1 
-    AND (
-        LOWER(h.city) LIKE LOWER(CONCAT('%', ?, '%'))
-       
-    )
-    AND r.room_status_id = 1
-    AND r.room_id NOT IN (
-        SELECT br.room_id
-        FROM booking_rooms br
-        JOIN bookings b ON b.booking_id = br.booking_id
-        WHERE b.booking_status_id IN (1,2,3)
-          AND b.checkin_date < ?
-          AND b.checkout_date > ?
-    )
-    AND r.room_id NOT IN (
-        SELECT bh.room_id
-        FROM booking_holds bh
-        WHERE bh.expires_at > NOW()
-          AND bh.checkin_date < ?
-          AND bh.checkout_date > ?
-    )
-    ${priceSqlBlock}
-    ${roomTypeSqlBlock}
-    ${amenitiesFilterSqlBlock}
+        SELECT
+            h.hotel_id,
+            h.name,
+            h.city,
+            h.state,
+            h.country,
+            avail.room_type_id,
+            avail.type_name,
+            avail.base_price,
+            avail.max_adults,
+            avail.max_children,
+            avail.available_room_id AS room_id
+        FROM hotels h
 
-GROUP BY
-    h.hotel_id,
-    rt.room_type_id,
-    r.room_id
-${havingSqlBlock}
-;`,
-        paramsArray,
+        JOIN (
+            SELECT
+                rt.hotel_id,
+                rt.room_type_id,
+                rt.type_name,
+                rt.base_price,
+                rt.max_adults,
+                rt.max_children,
+                MIN(r.room_id) AS available_room_id   -- one representative available room
+            FROM room_types rt
+            JOIN rooms r
+                ON r.room_type_id = rt.room_type_id
+                AND r.hotel_id = rt.hotel_id
+                AND r.room_status_id = 1              -- AVAILABLE rooms only
+                AND r.room_id NOT IN (
+                    SELECT br.room_id
+                    FROM booking_rooms br
+                    JOIN bookings b ON b.booking_id = br.booking_id
+                    WHERE b.booking_status_id IN (1, 2, 3)
+                      AND b.checkin_date < ?
+                      AND b.checkout_date > ?
+                )
+                AND r.room_id NOT IN (
+                    SELECT bh.room_id
+                    FROM booking_holds bh
+                    WHERE bh.expires_at > NOW()
+                      AND bh.checkin_date < ?
+                      AND bh.checkout_date > ?
+                )
+            ${amenitiesJoinBlock}
+            WHERE 1=1
+            ${priceSqlBlock}
+            ${roomTypeSqlBlock}
+            ${amenitiesWhereBlock}
+            GROUP BY
+                rt.hotel_id,
+                rt.room_type_id,
+                rt.type_name,
+                rt.base_price,
+                rt.max_adults,
+                rt.max_children
+            ${amenitiesHavingBlock}
+        ) avail ON avail.hotel_id = h.hotel_id
+
+        WHERE
+            h.tenant_status_id = 1
+            AND LOWER(h.city) LIKE LOWER(CONCAT('%', ?, '%'))
+
+        ORDER BY h.hotel_id, avail.room_type_id
+        `,
+        paramsArray
     );
 
     return rows;
 };
-
 
 export const hotelDetails = async (
     hotelId: number,
@@ -111,7 +120,7 @@ export const hotelDetails = async (
     roomTypesFilter: string[] | undefined,
     amenitiesFilter: string[] | undefined
 ) => {
-    const paramsArray=[hotelId, checkOut, checkIn, checkOut, checkIn]
+    const paramsArray = [hotelId, checkOut, checkIn, checkOut, checkIn]
     let priceSqlBlock = '';
     let roomTypeSqlBlock = '';
     let amenitiesExistsSql = '';
@@ -139,9 +148,9 @@ export const hotelDetails = async (
         ) = ?
     `;
 
-    amenitiesFilter.forEach(val => paramsArray.push(val));
+        amenitiesFilter.forEach(val => paramsArray.push(val));
 
-    paramsArray.push(amenitiesFilter.length);
+        paramsArray.push(amenitiesFilter.length);
     }
     const [rows] = await db.query<RowDataPacket[]>(
         `
@@ -353,13 +362,13 @@ export const insertRoomHolds = async (
 
 export const fetchFilterRoomTypes = async () => {
     const [rows] = await db.query<RoomTypeRow[]>('SELECT DISTINCT type_name FROM room_types ORDER BY type_name ASC');
-  
+
     return rows;
 }
 
 export const fetchAmenities = async () => {
     const [rows] = await db.query<AmenityTypes[]>('SELECT amenity_id,amenity_name FROM amenities ORDER BY amenity_name ASC');
-   
+
     return rows;
 }
 
