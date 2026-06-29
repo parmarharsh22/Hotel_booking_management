@@ -63,15 +63,12 @@ export class SuperAdminController {
         return res.status(400).json({ message: "Password is incorrect" });
       }
 
-      // ✅ Payload must match UserTokenPayload interface:
-      // { userId: number, roleId: string, hotel_id?: string }
       const payload = {
         userId: superAdminData.user_id, // validToken reads this
         roleId: "SUPER_ADMIN", // allowRoles checks this
         hotel_id: superAdminData.hotel_id, // optional, passed through by validToken
       };
       console.log(payload);
-      
 
       const token = jwt.sign(payload, process.env.JWT_SECRET!, {
         expiresIn: "1d",
@@ -80,7 +77,7 @@ export class SuperAdminController {
       // Store in httpOnly cookie — validToken reads from req.cookies.token
       storeToken(token, res);
 
-      return res.status(200).json({ message: "Login successful" });
+      return res.redirect("/superadmin/dashboard");
     } catch (err: any) {
       res.status(500).json({ message: err.message });
     }
@@ -102,4 +99,41 @@ export class SuperAdminController {
       res.status(400).json(err);
     }
   }
+
+  async fetchUserDetails(req: Request, res: Response) {
+  try {
+
+    const userId = (req as any).user.userId;
+
+    const user = await superAdminSerive.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "User details fetched successfully",
+      data: {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        hotel_id: user.hotel_id,
+        role: "SUPER_ADMIN",
+      },
+    });
+
+  } catch (err: any) {
+
+    return res.status(500).json({
+      message: err.message,
+    });
+
+  }
 }
+}
+
+
