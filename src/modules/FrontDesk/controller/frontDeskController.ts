@@ -379,7 +379,7 @@ export const addIncidental = async (req: Request, res: Response): Promise<void> 
     }
 }
 
-export const removeIncidental = async (req: Request<delincidentalParams>,res: Response): Promise<void> => {
+export const removeIncidental = async (req: Request<delincidentalParams>, res: Response): Promise<void> => {
     try {
         const hotelId = getJwtTokenValue("hotel_id", req) as number;
         const incidentalId = parseInt(req.params.incidentalid);
@@ -398,6 +398,37 @@ export const removeIncidental = async (req: Request<delincidentalParams>,res: Re
             "Incidental can't be deleted";
 
         return res.redirect("/frontDesk/showBookings");
+    }
+};
+
+// show the payements table
+export const getPayments = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const payments = await frontDeskServices.getPayments(hotelId);
+        res.render("frontDesk/payments", { payments });
+
+    } catch (err) {
+        console.log("Error at [getPayements]", err);
+        (req.session as any).failure = "Payements can't be fetched";
+        return res.redirect("/frontDesk/home");
+    }
+};
+
+// show the invoices from the db
+export const getInvoices = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const invoices = await frontDeskServices.getInvoices(hotelId);
+        res.render("frontDesk/invoices", { invoices }
+        );
+    } catch (err) {
+        console.log("Error at [getInvoices]", err);
+        (req.session as any).failure = "Invoices can't be fetched";
+        return res.redirect("/frontDesk/home");
     }
 };
 
