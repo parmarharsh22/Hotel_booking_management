@@ -1,3 +1,5 @@
+import { RowDataPacket } from "mysql2";
+
 export type Shift = "Morning" | "Evening" | "Night";
 
 export type VerificationStatus = "APPROVED" | "FAILED";
@@ -54,7 +56,7 @@ export interface DashboardData {
     arrivalForecast: ArrivalForecastRow[];
 }
 
-export interface BookingDetailRow {
+export interface BookingDetailRow extends RowDataPacket {
     booking_id: number;
     booking_reference: string;
     checkin_date: Date | string;
@@ -94,7 +96,7 @@ export interface BookingDetailRow {
     state: string;
 }
 
-export interface VerificationPageRow {
+export interface VerificationPageRow extends RowDataPacket {
     booking_id: number;
     booking_reference: string;
     user_id: number;
@@ -140,7 +142,7 @@ export interface CaptureGuestLocals {
     booking: VerificationPageRow;
 }
 
-export interface RoomInventoryRow {
+export interface RoomInventoryRow extends RowDataPacket {
     room_number: string;
     capacity: number;
     floor: number;
@@ -151,23 +153,23 @@ export interface RoomInventoryRow {
     checkout_date: Date | string | null;
 }
 
-export interface DashboardCounts {
+export interface DashboardCounts extends RowDataPacket {
     occupied: number;
     vacant: number;
     maintenance: number;
 }
 
-export interface FloorOccupancyRow {
+export interface FloorOccupancyRow extends RowDataPacket {
     floor: number;
     occupied: number;
 }
 
-export interface RoomTypeUtilizationRow {
+export interface RoomTypeUtilizationRow extends RowDataPacket {
     type_name: string;
     occupied: number;
 }
 
-export interface ArrivalForecastRow {
+export interface ArrivalForecastRow extends RowDataPacket {
     arrival_date: string;
     total: number;
 }
@@ -182,7 +184,7 @@ export interface BookingFilters {
     offset: number;
 }
 
-export interface getAllCheckInGuest {
+export interface getAllCheckInGuest extends RowDataPacket {
     booking_id: number;
     booking_reference: string;
     first_name: string;
@@ -193,13 +195,13 @@ export interface getAllCheckInGuest {
 }
 
 // shape of a room row returned after checkout (used for redis dirty tracking)
-export interface CheckedOutRoom {
+export interface CheckedOutRoom extends RowDataPacket {
     room_id: number;
     room_number: string;
 }
 
 
-export interface renderIncidentals{
+export interface renderIncidentals extends RowDataPacket {
     booking_id: number;
     booking_reference: string;
     checkin_date: Date|string;
@@ -210,11 +212,40 @@ export interface renderIncidentals{
     total_rooms:number; 
 }
 
-export interface Incidental {
+export interface Incidental extends RowDataPacket {
     incidental_id: number;
     booking_id: number;
     description: string;
     amount: number;
     added_at: Date;
     added_by_name: string;
+}
+
+export interface PaymentList extends RowDataPacket{
+    payment_id: number;
+    booking_id: number;
+    booking_reference: string;
+    guest_name: string;
+    room_number: string;
+    amount: number;
+    payment_method: string;
+    payment_status: string;
+    is_bypassed: boolean;
+    paid_at: Date | null;
+    created_at: Date;
+}
+
+export interface InvoiceList extends RowDataPacket {
+
+    invoice_id: number;
+    booking_id: number;
+    booking_reference: string;
+    guest_name: string;
+    room_number: string;
+    room_charges: number;
+    incidentals: number;
+    tax_amount: number;
+    total_amount: number;   
+    generated_at: Date;
+
 }
