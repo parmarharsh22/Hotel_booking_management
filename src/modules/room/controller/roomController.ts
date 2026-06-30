@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { searchHotelReqBody } from "../interfaces/room.searchHotelReqBody.interface";
+import { searchHotelReqBody } from "../interfaces";
 import * as roomService from "../services/roomServices";
-import { BookigData } from "../interfaces/room.selectedRoomType.interface";
+import { BookigData } from "../interfaces";
 import { getJwtTokenValue } from "../../../common/utils/getRequestVariables";
 import NodeCache from 'node-cache';
-import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
+import { RoomTypeRow } from "../interfaces";
 
 const roomCache=new NodeCache({stdTTL:86400});
 
@@ -38,7 +38,6 @@ export const searchHotels = async (req: Request, res: Response) => {
             roomTypesFilter:data.roomTypesFilter,
             amenitiesFilter:data.amenitiesFilter
         };
-       console.log(hotels);
        
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
