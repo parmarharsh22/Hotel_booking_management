@@ -6,20 +6,35 @@ const policyService = new PolicyService();
 export class AdminPolicyController {
 
   // GET /admin/policies
-  async listPolicies(req: Request, res: Response) {
+  // async listPolicies(req: Request, res: Response) {
+  //   try {
+  //     const hotelId = (req as any).hotelId as number;
+  //     const policies = await policyService.getAllPoliciesByHotel(hotelId);
+  //     return res.status(200).render("admin/policies", { policies });
+  //   } catch (err: any) {
+  //     return res.status(400).json({ message: err.message });
+  //   }
+  // }
+
+async listPolicies(req: Request, res: Response) {
     try {
       const hotelId = (req as any).hotelId as number;
       const policies = await policyService.getAllPoliciesByHotel(hotelId);
-      return res.status(200).render("admin/policies", { policies });
+      
+      // Return JSON instead of rendering a view
+      return res.status(200).json({ policies }); 
+      
     } catch (err: any) {
-      return res.status(400).json({ message: err.message });
+      // The frontend will catch this and display the error message
+      return res.status(400).json({ message: err.message || 'Failed to load policies' });
     }
-  }
+}
+
 
   // GET /admin/policies/new
   async showNewPolicy(req: Request, res: Response) {
     try {
-      return res.status(200).render("admin/policy-new");
+      return res.status(200).render("admin/policy-new" , {hotel_id:1});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

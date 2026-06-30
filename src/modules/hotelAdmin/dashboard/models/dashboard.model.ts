@@ -1,4 +1,4 @@
-import { db } from "../../../../config/db";
+  import { db } from "../../../../config/db";
 
 export type RevenuePeriod = "daily" | "monthly" | "yearly";
 
@@ -16,7 +16,7 @@ export class DashboardModel {
 
     try {
 
-      const validStatuses = [2, 3, 4];
+      const validStatuses = [2, 3,4];
 
       let query = "";
       let params: any[] = [];
