@@ -1,8 +1,8 @@
 import { db } from "../../../config/db";
 import { PoolConnection, RowDataPacket } from "mysql2/promise";
-import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
-import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
-import { AmenityTypes } from "../interfaces/room.AmenityTypes.inaterface";
+import { RoomRow } from "../interfaces";
+import { RoomTypeRow } from "../interfaces";
+import { AmenityTypes } from "../interfaces";
 
 export const searchHotels = async  (
     location: string,

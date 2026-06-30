@@ -1,13 +1,13 @@
 import * as roomModel from "../models/roomModel";
-import { searchHotelReqBody } from "../interfaces/room.searchHotelReqBody.interface";
+import { searchHotelReqBody } from "../interfaces";
 import {
   FilteredHotelResult,
   Hotel,
-} from "../interfaces/room.avalibaleHotel.interface";
-import { HotelDetails, RoomType } from "../interfaces/room.hotelDetails.interface";
-import { BookigData } from "../interfaces/room.selectedRoomType.interface";
+} from "../interfaces";
+import { HotelDetails, RoomType } from "../interfaces";
+import { BookigData } from "../interfaces";
 import { db } from "../../../config/db";
-import { RoomRow } from "../interfaces/room.availableRoomsRow.interface";
+import { RoomRow } from "../interfaces";
 
 export const searchHotels = async (params: searchHotelReqBody) => {
  const { location, checkIn, checkOut, rooms, adults, children, priceFilter, roomTypesFilter
