@@ -127,9 +127,10 @@ export class RoomTypeModel {
 
   // DELETE /admin/room-types/:typeId  →  deleteRoomType
     static async deleteRoomType(typeId: number, hotelId: number): Promise<boolean> {
+      
     try {
       const [result]: any = await db.query(
-        `DELETE FROM room_types 
+        `DELETE FROM room_types   
          WHERE room_type_id = ? AND hotel_id = ?`,
         [typeId, hotelId]
       );
@@ -183,7 +184,28 @@ export class RoomTypeModel {
     }
   }
 
+static async updateAmenities(typeId: number, amenityIds: number[]): Promise<boolean> {
+    try {
+      // 1. Delete all existing amenities linked to this room type
+      await db.query(
+        `DELETE FROM room_type_amenities WHERE room_type_id = ?`,
+        [typeId]
+      );
 
+      // 2. Insert the newly selected amenities (if any)
+      if (amenityIds.length > 0) {
+        const values = amenityIds.map(id => [typeId, id]);
+        await db.query(
+          `INSERT INTO room_type_amenities (room_type_id, amenity_id) VALUES ?`,
+          [values]
+        );
+      }
+      
+      return true;
+    } catch (err: any) {
+      throw err;
+    }
+  }
 
 
 

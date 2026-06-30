@@ -8,8 +8,8 @@ export class AdminStaffController{
 // GET /admin/staff
   async listStaff(req: Request, res: Response) {
     try {
-      // const hotelId = (req as any).hotelId as number;
-      const hotelId = 1;
+      const hotelId = (req as any).hotelId as number;
+      // const hotelId = 1;
       const staff   = await staffService.getAllStaff(hotelId);
       return res.status(200).render("admin/staff", { staff , imagekitUrl:process.env.imagekitUrl });
     } catch (err: any) {
@@ -60,8 +60,8 @@ export class AdminStaffController{
    // GET /admin/staff/:userId/edit
   async showEditStaff(req: Request, res: Response) {
     try {
-     // const hotelId = (req as any).hotelId as number;
-      const hotelId = 1;
+     const hotelId = (req as any).hotelId as number;
+      // const hotelId = 1;
       const userId  = parseInt(req.params.userId as any);
       const staff   = await staffService.getStaffById(userId, hotelId);
       return res.status(200).render("admin/staff-edit", { staff });
@@ -87,9 +87,13 @@ export class AdminStaffController{
         photo_url,
       };
       await staffService.updateStaff(userId, hotelId, data);
-      return res.redirect("/admin/staff");
+      
+      // return res.redirect("/admin/staff");
     } catch (err: any) {
+      console.log(err);
+      
       return res.status(400).json({ message: err.message });
+
     }
   }
 
@@ -100,7 +104,8 @@ export class AdminStaffController{
       const hotelId = (req as any).hotelId as number;
       const userId  = parseInt(req.params.userId as any);
       await staffService.deactivateStaff(userId, hotelId);
-      return res.redirect("/admin/staff");
+      res.status(200).json({ status:200, message:"Deletion Success "})
+      // return res.redirect("/admin/staff");
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

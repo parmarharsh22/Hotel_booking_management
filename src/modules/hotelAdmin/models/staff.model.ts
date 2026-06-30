@@ -137,7 +137,7 @@ export class StaffModel{
              email      = ?,
              phone      = ?,
              photo_url  = ?,
-             address    = ?,
+             address    = ?
          WHERE user_id = ? AND hotel_id = ?`,
         [
           data.first_name,

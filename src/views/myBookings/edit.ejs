@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Modify Booking</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-slate-100">
+
+<!-- ========================================= -->
+<!-- HERO -->
+<!-- ========================================= -->
+
+<section class="relative h-80 overflow-hidden">
+
+    <% if (booking.cover_url) { %>
+
+        <img
+            src="<%= booking.cover_url %>"
+            class="absolute inset-0 w-full h-full object-cover">
+
+    <% } %>
+
+    <div
+        class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70">
+    </div>
+
+    <div
+        class="relative z-10 max-w-7xl mx-auto h-full px-8 flex flex-col justify-between py-8">
+
+        <!-- Top -->
+
+        <div>
+
+            <a
+
+                href="/bookings/<%= booking.booking_id %>"
+
+                class="inline-flex items-center gap-2
+                rounded-full
+                bg-white/20
+                backdrop-blur
+                text-white
+                px-5
+                py-2
+                hover:bg-white/30
+                duration-200">
+
+                ← Back to Booking
+
+            </a>
+
+        </div>
+
+        <!-- Bottom -->
+
+        <div class="flex justify-between items-end">
+
+            <div class="flex items-center gap-5">
+
+                <div
+
+                    class="w-20 h-20
+                    rounded-xl
+                    bg-white
+                    flex
+                    items-center
+                    justify-center
+                    shadow-xl">
+
+                    <% if(booking.logo_url){ %>
+
+                        <img
+
+                            src="<%= booking.logo_url %>"
+
+                            class="w-full h-full object-cover rounded-xl">
+
+                    <% }else{ %>
+
+                        <span
+
+                            class="text-3xl font-bold text-amber-700">
+
+                            <%= booking.name.charAt(0) %>
+
+                        </span>
+
+                    <% } %>
+
+                </div>
+
+                <div>
+
+                    <h1
+
+                        class="text-4xl font-bold text-white">
+
+                        Modify Booking
+
+                    </h1>
+
+                    <p
+
+                        class="text-slate-200 mt-2">
+
+                        <%= booking.hotel_name %>
+
+                        •
+
+                        <%= booking.hotel_city %>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div>
+
+                <span
+
+                    class="rounded-full
+
+                    bg-green-100
+
+                    text-green-700
+
+                    px-5
+
+                    py-2
+
+                    font-semibold">
+
+                    Confirmed Booking
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ========================================= -->
+<!-- MAIN -->
+<!-- ========================================= -->
+
+<section
+
+class="max-w-7xl
+
+mx-auto
+
+px-6
+
+py-10">
+
+<div
+
+class="grid
+
+grid-cols-12
+
+gap-8">
+
+<!-- ========================================= -->
+<!-- LEFT -->
+<!-- ========================================= -->
+
+<div
+
+class="col-span-8">
+
+<form
+
+id="bookingEditForm"
+
+class="space-y-6">
+
+<input
+
+type="hidden"
+
+name="booking_id"
+
+value="<%= booking.booking_id %>">
+
+<!-- ========================================= -->
+<!-- BOOKING DETAILS -->
+<!-- ========================================= -->
+
+<div
+
+class="bg-white
+
+rounded-2xl
+
+shadow-sm
+
+border">
+
+<div
+
+class="border-b
+
+px-8
+
+py-6">
+
+<h2
+
+class="text-xl
+
+font-semibold">
+
+Booking Information
+
+</h2>
+
+<p
+
+class="text-sm
+
+text-slate-500
+
+mt-1">
+
+Update your reservation details below.
+
+</p>
+
+</div>
+
+<div
+
+class="p-8
+
+grid
+
+grid-cols-2
+
+gap-6">
+
+<!-- Checkin -->
+
+<div>
+
+<label
+
+class="block
+
+text-sm
+
+font-medium
+
+mb-2">
+
+Check-in
+
+</label>
+
+<input
+
+type="date"
+
+name="checkin_date"
+
+value="<%= booking.checkin_date.toISOString().split('T')[0] %>"
+
+class="w-full
+
+rounded-xl
+
+border
+
+border-slate-300
+
+px-4
+
+py-3
+
+focus:ring-2
+
+focus:ring-amber-500
+
+outline-none">
+
+</div>
+
+<!-- Checkout -->
+
+<div>
+
+<label
+
+class="block
+
+text-sm
+
+font-medium
+
+mb-2">
+
+Check-out
+
+</label>
+
+<input
+
+type="date"
+
+name="checkout_date"
+
+value="<%= booking.checkout_date.toISOString().split('T')[0] %>"
+
+class="w-full
+
+rounded-xl
+
+border
+
+border-slate-300
+
+px-4
+
+py-3
+
+focus:ring-2
+
+focus:ring-amber-500
+
+outline-none">
+
+</div>
+
+<!-- Adults -->
+
+<div>
+
+<label
+
+class="block
+
+text-sm
+
+font-medium
+
+mb-2">
+
+Adults
+
+</label>
+
+<input
+
+type="number"
+
+min="1"
+
+name="adults"
+
+value="<%= booking.adults %>"
+
+class="w-full
+
+rounded-xl
+
+border
+
+border-slate-300
+
+px-4
+
+py-3">
+
+</div>
+
+<!-- Children -->
+
+<div>
+
+<label
+
+class="block
+
+text-sm
+
+font-medium
+
+mb-2">
+
+Children
+
+</label>
+
+<input
+
+type="number"
+
+min="0"
+
+name="children"
+
+value="<%= booking.children %>"
+
+class="w-full
+
+rounded-xl
+
+border
+
+border-slate-300
+
+px-4
+
+py-3">
+
+</div>
+                <!-- Room -->
+
+                <div class="col-span-2">
+
+                    <label
+                        class="block
+                        text-sm
+                        font-medium
+                        mb-2">
+
+                        Room
+
+                    </label>
+
+                    <select
+
+                        name="room_id"
+
+                        class="w-full
+                        rounded-xl
+                        border
+                        border-slate-300
+                        px-4
+                        py-3
+                        focus:ring-2
+                        focus:ring-amber-500
+                        outline-none">
+
+                        <% availableRooms.forEach(room=>{ %>
+
+                            <option
+
+                                value="<%= room.room_id %>"
+
+                                <%= room.room_id==booking.room_id ? "selected":"" %>>
+
+                                Room <%= room.room_number %>
+
+                                •
+
+                                <%= room.type_name %>
+
+                            </option>
+
+                        <% }) %>
+
+                    </select>
+
+                </div>
+
+                <!-- Special Requests -->
+
+                <div class="col-span-2">
+
+                    <label
+                        class="block
+                        text-sm
+                        font-medium
+                        mb-2">
+
+                        Special Requests
+
+                    </label>
+
+                    <textarea
+
+                        rows="5"
+
+                        name="special_requests"
+
+                        class="w-full
+                        rounded-xl
+                        border
+                        border-slate-300
+                        px-4
+                        py-3
+                        resize-none
+                        focus:ring-2
+                        focus:ring-amber-500
+                        outline-none"
+
+                        placeholder="Any requests for the hotel..."><%= booking.special_requests || "" %></textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ========================================= -->
+        <!-- POLICY -->
+        <!-- ========================================= -->
+
+        <div
+
+            class="bg-amber-50
+
+            border
+
+            border-amber-200
+
+            rounded-2xl
+
+            p-6">
+
+            <div class="flex gap-4">
+
+                <div
+
+                    class="text-3xl">
+
+                    ⚠️
+
+                </div>
+
+                <div>
+
+                    <h3
+
+                        class="font-semibold
+                        text-amber-900">
+
+                        Modification Policy
+
+                    </h3>
+
+                    <ul
+
+                        class="mt-3
+
+                        text-sm
+
+                        text-amber-800
+
+                        space-y-2">
+
+                        <li>
+
+                            • Bookings can only be modified before the
+                            cancellation deadline.
+
+                        </li>
+
+                        <li>
+
+                            • Selected room must be available.
+
+                        </li>
+
+                        <li>
+
+                            • Price may change depending upon room
+                            availability and updated stay duration.
+
+                        </li>
+
+                        <li>
+
+                            • All modifications are stored in booking
+                            history.
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- ========================================= -->
+<!-- RIGHT SIDEBAR -->
+<!-- ========================================= -->
+
+<div
+
+class="col-span-4
+
+space-y-6">
+
+<!-- Booking Summary -->
+
+<div
+
+class="bg-white
+
+rounded-2xl
+
+shadow-sm
+
+border">
+
+<div
+
+class="px-6
+
+py-5
+
+border-b">
+
+<h2
+
+class="text-lg
+
+font-semibold">
+
+Booking Summary
+
+</h2>
+
+</div>
+
+<div
+
+class="p-6
+
+space-y-5">
+
+<div>
+
+<p
+
+class="text-sm
+
+text-slate-500">
+
+Booking Reference
+
+</p>
+
+<p
+
+class="font-semibold">
+
+# <%= booking.booking_reference %>
+
+</p>
+
+</div>
+
+<div>
+
+<p
+
+class="text-sm
+
+text-slate-500">
+
+Current Room
+
+</p>
+
+<p
+
+class="font-semibold">
+
+Room
+
+<%= booking.room_number %>
+
+•
+
+<%= booking.type_name %>
+
+</p>
+
+</div>
+
+<div>
+
+<p
+
+class="text-sm
+
+text-slate-500">
+
+Guests
+
+</p>
+
+<p
+
+class="font-semibold">
+
+<span id="summaryAdults">
+
+<%= booking.adults %>
+
+</span>
+
+Adults
+
+•
+
+<span id="summaryChildren">
+
+<%= booking.children %>
+
+</span>
+
+Children
+
+</p>
+
+</div>
+
+<div>
+
+<p
+
+class="text-sm
+
+text-slate-500">
+
+Stay
+
+</p>
+
+<p
+
+id="summaryDates"
+
+class="font-semibold">
+
+<%= booking.checkin_date.toLocaleDateString("en-IN") %>
+
+—
+
+<%= booking.checkout_date.toLocaleDateString("en-IN") %>
+
+</p>
+
+</div>
+
+<hr>
+
+<div
+
+class="flex
+
+justify-between">
+
+<span
+
+class="text-slate-500">
+
+Current Total
+
+</span>
+
+<span
+
+class="text-2xl
+
+font-bold
+
+text-amber-700">
+
+₹<%= Number(booking.total_amount).toLocaleString("en-IN") %>
+
+</span>
+
+</div>
+
+<p
+
+class="text-xs
+
+text-slate-500">
+
+Final amount will be recalculated
+after availability verification.
+
+</p>
+
+</div>
+
+</div>
+
+<!-- Action Card -->
+
+<div
+
+class="bg-white
+
+rounded-2xl
+
+shadow-sm
+
+border
+
+p-6">
+
+<button
+
+type="submit"
+
+form="bookingEditForm"
+
+class="w-full
+
+bg-amber-600
+
+hover:bg-amber-700
+
+duration-200
+
+text-white
+
+font-semibold
+
+rounded-xl
+
+py-3">
+
+Save Changes
+
+</button>
+
+<a
+
+href="/bookings/<%= booking.booking_id %>"
+
+class="mt-4
+
+block
+
+text-center
+
+rounded-xl
+
+border
+
+border-slate-300
+
+hover:bg-slate-100
+
+py-3">
+
+Cancel
+
+</a>
+
+</div>
+
+<!-- Current Booking -->
+
+<div
+
+class="bg-slate-900
+
+text-white
+
+rounded-2xl
+
+p-6">
+
+<h3
+
+class="font-semibold
+
+text-lg">
+
+Current Booking
+
+</h3>
+
+<div
+
+class="mt-5
+
+space-y-4">
+
+<div>
+
+<p
+
+class="text-slate-400
+
+text-sm">
+
+Hotel
+
+</p>
+
+<p>
+
+<%= booking.hotel_name %>
+
+</p>
+
+</div>
+
+<div>
+
+<p
+
+class="text-slate-400
+
+text-sm">
+
+Status
+
+</p>
+
+<p
+
+class="text-green-400">
+
+Confirmed
+
+</p>
+
+</div>
+
+<div>
+
+<p
+
+class="text-slate-400
+
+text-sm">
+
+Booked On
+
+</p>
+
+<p>
+
+<%= booking.created_at.toLocaleDateString("en-IN") %>
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+<script>
+
+const form = document.getElementById("bookingEditForm");
+
+const adultsInput = form.querySelector('[name="adults"]');
+const childrenInput = form.querySelector('[name="children"]');
+
+const checkinInput = form.querySelector('[name="checkin_date"]');
+const checkoutInput = form.querySelector('[name="checkout_date"]');
+
+const saveButton = document.querySelector('button[type="submit"]');
+
+const summaryAdults = document.getElementById("summaryAdults");
+const summaryChildren = document.getElementById("summaryChildren");
+const summaryDates = document.getElementById("summaryDates");
+
+const bookingId = "<%= booking.booking_id %>";
+
+let formChanged = false;
+let isSubmitting = false;
+
+const originalData = new FormData(form);
+
+/* ============================================================
+    TOAST
+============================================================ */
+
+function showToast(message, type = "success") {
+
+    const toast = document.createElement("div");
+
+    toast.className =
+        `fixed top-6 right-6 px-6 py-4 rounded-xl shadow-xl text-white z-50 transition-all duration-300 ${
+            type === "success"
+                ? "bg-green-600"
+                : "bg-red-600"
+        }`;
+
+    toast.innerText = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.style.opacity = "0";
+
+        setTimeout(() => toast.remove(), 300);
+
+    }, 3000);
+
+}
+
+/* ============================================================
+    SUMMARY
+============================================================ */
+
+function updateGuestSummary() {
+
+    summaryAdults.textContent =
+        adultsInput.value || 1;
+
+    summaryChildren.textContent =
+        childrenInput.value || 0;
+
+}
+
+function updateDateSummary() {
+
+    const checkin =
+        new Date(checkinInput.value);
+
+    const checkout =
+        new Date(checkoutInput.value);
+
+    if (
+        isNaN(checkin) ||
+        isNaN(checkout)
+    ) return;
+
+    summaryDates.innerHTML =
+        `${checkin.toLocaleDateString("en-IN")}
+        <br>
+        ${checkout.toLocaleDateString("en-IN")}`;
+
+}
+
+updateGuestSummary();
+updateDateSummary();
+
+/* ============================================================
+    NIGHTS
+============================================================ */
+
+function calculateNights() {
+
+    const checkin =
+        new Date(checkinInput.value);
+
+    const checkout =
+        new Date(checkoutInput.value);
+
+    const diff =
+        checkout.getTime() -
+        checkin.getTime();
+
+    const nights =
+        Math.ceil(diff / 86400000);
+
+    return nights;
+
+}
+
+/* ============================================================
+    FORM CHANGED
+============================================================ */
+
+form.addEventListener("input", () => {
+
+    formChanged = true;
+
+    updateGuestSummary();
+
+    updateDateSummary();
+
+});
+
+/* ============================================================
+    DATE VALIDATION
+============================================================ */
+
+function validateDates() {
+
+    const checkin =
+        new Date(checkinInput.value);
+
+    const checkout =
+        new Date(checkoutInput.value);
+
+    if (checkout <= checkin) {
+
+        showToast(
+            "Checkout must be after Check-in",
+            "error"
+        );
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+/* ============================================================
+    GUEST VALIDATION
+============================================================ */
+
+function validateGuests() {
+
+    if (+adultsInput.value < 1) {
+
+        showToast(
+            "Minimum one adult required",
+            "error"
+        );
+
+        return false;
+
+    }
+
+    if (+childrenInput.value < 0) {
+
+        showToast(
+            "Invalid children count",
+            "error"
+        );
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+/* ============================================================
+    ROOM AVAILABILITY
+============================================================ */
+
+async function checkAvailability() {
+
+    try {
+
+        const roomId =
+            form.room_id.value;
+
+        const response =
+            await fetch(
+
+                `/mybookings/check-room?room_id=${roomId}&checkin_date=${checkinInput.value}&checkout_date=${checkoutInput.value}&booking_id=${bookingId}`
+
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.available) {
+
+            showToast(
+                "Selected room is no longer available.",
+                "error"
+            );
+
+        }
+
+    }
+
+    catch {
+
+        console.log(
+            "Availability check failed."
+        );
+
+    }
+
+}
+
+checkinInput.addEventListener(
+    "change",
+    checkAvailability
+);
+
+checkoutInput.addEventListener(
+    "change",
+    checkAvailability
+);
+
+/* ============================================================
+    SUBMIT
+============================================================ */
+
+form.addEventListener(
+    "submit",
+    async function(e){
+
+        e.preventDefault();
+
+        if(isSubmitting)
+            return;
+
+        if(!validateDates())
+            return;
+
+        if(!validateGuests())
+            return;
+
+        isSubmitting = true;
+
+        saveButton.disabled = true;
+
+        saveButton.innerHTML =
+            `
+            <svg class="animate-spin h-5 w-5 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24">
+
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"/>
+
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8"/>
+
+            </svg>
+            `;
+
+        try{
+
+            const payload = {
+
+                checkin_date:
+                    checkinInput.value,
+
+                checkout_date:
+                    checkoutInput.value,
+
+                adults:
+                    adultsInput.value,
+
+                children:
+                    childrenInput.value,
+
+                room_id:
+                    form.room_id.value,
+
+                special_requests:
+                    form.special_requests.value
+
+            };
+
+            const response =
+                await fetch(
+
+                    `/mybookings/${bookingId}`,
+
+                    {
+
+                        method:"PUT",
+
+                        headers:{
+                            "Content-Type":"application/json"
+                        },
+
+                        body:JSON.stringify(payload)
+
+                    }
+
+                );
+
+            const data =
+                await response.json();
+
+            if(!response.ok){
+
+                throw new Error(
+                    data.message
+                );
+
+            }
+
+            formChanged = false;
+
+            showToast(
+                data.message
+            );
+
+            setTimeout(()=>{
+
+                window.location.href =
+                    `/bookings/${bookingId}`;
+
+            },1200);
+
+        }
+
+        catch(err){
+
+            showToast(
+                err.message,
+                "error"
+            );
+
+        }
+
+        finally{
+
+            isSubmitting = false;
+
+            saveButton.disabled = false;
+
+            saveButton.innerHTML =
+                "Save Changes";
+
+        }
+
+    }
+
+);
+
+/* ============================================================
+    UNSAVED CHANGES
+============================================================ */
+
+window.addEventListener(
+    "beforeunload",
+    function(e){
+
+        if(!formChanged)
+            return;
+
+        e.preventDefault();
+
+        e.returnValue = "";
+
+    }
+
+);
+
+</script>

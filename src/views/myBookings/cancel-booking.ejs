@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancel Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100">
+
+<section class="relative h-72 overflow-hidden">
+    <% if (booking.hotel_cover) { %>
+        <img src="<%= booking.hotel_cover %>" class="absolute inset-0 h-full w-full object-cover">
+    <% } %>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/80"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto h-full px-8 py-8 flex flex-col justify-between">
+        <a href="/mybookings/<%= booking.booking_id %>" class="w-fit rounded-full bg-white/20 backdrop-blur px-5 py-2 text-white hover:bg-white/30">
+            ← Back to Booking
+        </a>
+        <div class="flex items-end justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-white">Cancel Reservation</h1>
+                <p class="mt-2 text-slate-200"><%= booking.hotel_name %></p>
+            </div>
+            <div>
+                <span class="rounded-full bg-red-500 px-5 py-2 text-white font-semibold">Cancellation</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="max-w-7xl mx-auto px-6 py-10">
+    <div class="grid grid-cols-12 gap-8">
+        
+        <!-- LEFT -->
+        <div class="col-span-8 space-y-6">
+            <div class="rounded-2xl bg-white shadow-sm border">
+                <div class="border-b px-8 py-5">
+                    <h2 class="text-xl font-semibold">Booking Information</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-8 p-8">
+                    <div>
+                        <p class="text-sm text-slate-500">Booking Reference</p>
+                        <p class="font-semibold">#<%= booking.booking_reference %></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Booking Status</p>
+                        <p class="font-semibold text-green-600"><%= booking.status_name %></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Check-in</p>
+                        <p class="font-semibold"><%= new Date(booking.checkin_date).toLocaleDateString("en-IN") %></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Check-out</p>
+                        <p class="font-semibold"><%= new Date(booking.checkout_date).toLocaleDateString("en-IN") %></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Guests</p>
+                        <p class="font-semibold">
+                            <%= booking.adults %> Adult(s)
+                            <% if(booking.children){ %> · <%= booking.children %> Child(ren) <% } %>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Room</p>
+                        <p class="font-semibold">Room <%= booking.room_number %> • <%= booking.type_name %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancellation Policy -->
+            <div class="rounded-2xl bg-white shadow-sm border">
+                <div class="border-b px-8 py-5">
+                    <h2 class="text-xl font-semibold">Cancellation Policy</h2>
+                </div>
+                <div class="p-8">
+                    <div class="rounded-xl bg-amber-50 border border-amber-200 p-6">
+                        <div class="flex gap-5">
+                            <div class="text-5xl">⚠️</div>
+                            <div>
+                                <h3 class="font-semibold text-amber-800">Policy Information</h3>
+                                <ul class="mt-4 space-y-3 text-sm text-amber-700">
+                                    <li>• Free cancellation available until <strong><%= policy.free_cancellation_hours %> hours</strong> before check-in.</li>
+                                    <li>• Refund percentage after deadline: <strong><%= policy.refund_percentage %>%</strong></li>
+                                    <li>• Cancellation is permanent and cannot be reversed.</li>
+                                    <li>• Refund will be processed to the original payment method.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancellation Form -->
+            <div class="rounded-2xl bg-white shadow-sm border">
+                <div class="border-b px-8 py-5">
+                    <h2 class="text-xl font-semibold">Cancellation Request</h2>
+                </div>
+                <form id="cancelBookingForm" class="p-8 space-y-6">
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Reason</label>
+                        <select name="reason" required class="w-full rounded-xl border border-slate-300 px-4 py-3">
+                            <option value="">Select Reason</option>
+                            <option value="Plans Changed">Plans Changed</option>
+                            <option value="Found Better Price">Found Better Price</option>
+                            <option value="Travel Cancelled">Travel Cancelled</option>
+                            <option value="Emergency">Emergency</option>
+                            <option value="Business Trip Cancelled">Business Trip Cancelled</option>
+                            <option value="Health Issues">Health Issues</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Remarks</label>
+                        <textarea name="remarks" rows="5" class="w-full rounded-xl border border-slate-300 px-4 py-3 resize-none" placeholder="Tell us more..."></textarea>
+                    </div>
+
+                    <div class="rounded-xl border border-red-200 bg-red-50 p-5">
+                        <label class="flex items-start gap-3">
+                            <input id="confirmCancel" type="checkbox" class="mt-1 h-5 w-5">
+                            <span class="text-sm text-red-700">
+                                I understand that cancelling this reservation is permanent. I have read the cancellation policy and agree to proceed.
+                            </span>
+                        </label>
+                    </div>
+
+                    <button id="cancelButton" type="submit" disabled class="w-full rounded-xl bg-red-600 py-4 text-white font-semibold transition hover:bg-red-700 disabled:bg-red-300 disabled:cursor-not-allowed">
+                        Cancel Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="col-span-4">
+            <div class="sticky top-8 rounded-2xl bg-white shadow-sm border">
+                <div class="border-b px-6 py-5">
+                    <h2 class="text-xl font-semibold">Refund Summary</h2>
+                </div>
+                <div class="space-y-5 p-6">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Amount Paid</span>
+                        <span class="font-semibold">₹<%= Number(booking.total_amount).toLocaleString("en-IN") %></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Refund Percentage</span>
+                        <span class="font-semibold"><%= refund.refundPercentage %>%</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Refund Amount</span>
+                        <span id="refundAmount" class="font-bold text-green-600">₹<%= Number(refund.refundAmount).toLocaleString("en-IN") %></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Cancellation Fee</span>
+                        <span id="cancelFee" class="font-bold text-red-600">₹<%= Number(refund.cancellationCharge).toLocaleString("en-IN") %></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    const checkbox = document.getElementById('confirmCancel');
+    const cancelBtn = document.getElementById('cancelButton');
+    const form = document.getElementById('cancelBookingForm');
+
+    checkbox.addEventListener('change', function() {
+        cancelBtn.disabled = !this.checked;
+    });
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if(!checkbox.checked) return;
+
+        const formData = new FormData(form);
+        const payload = {
+            reason: formData.get('reason'),
+            remarks: formData.get('remarks')
+        };
+
+        cancelBtn.disabled = true;
+        cancelBtn.innerText = "Processing Cancellation...";
+
+        try {
+            const response = await fetch('/mybookings/<%= booking.booking_id %>/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Your booking has been successfully cancelled.');
+                window.location.href = '/mybookings';
+            } else {
+                alert('Error: ' + result.message);
+                cancelBtn.disabled = false;
+                cancelBtn.innerText = "Cancel Booking";
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An unexpected technical error occurred.');
+            cancelBtn.disabled = false;
+            cancelBtn.innerText = "Cancel Booking";
+        }
+    });
+</script>
+</body>
+</html>

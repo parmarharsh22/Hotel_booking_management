@@ -7,9 +7,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/themes/metroui.css">
+
+<script src="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        [class*="noty_layout"] {
+    z-index: 99999 !important;
+}
     </style>
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.min.js"></script>
+
+
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
@@ -39,11 +58,11 @@
                     </a>
                     <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Analytics</span>
+                        <span>Check-ins</span>
                     </a>
                     <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Settings</span>
+                        <span>Check-Outs</span>
                     </a>
                 </nav>
             </div>
@@ -53,9 +72,32 @@
                     <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
                     <span>Help Center</span>
                 </a>
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                <a href="" onclick="handleLogout()" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
                     <span>Logout</span>
+
+<script>
+
+function handleLogout() {
+  
+    // Clear all cookies
+    document.cookie.split(";").forEach((cookie) => {
+        const cookieName = cookie.split("=")[0].trim();
+
+        document.cookie = `${token}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        // document.cookie = `${}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+    });
+
+    // Clear localStorage and sessionStorage if used
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirect to login page
+    window.location.href = "/login";
+}
+
+</script>
+
                 </a>
             </div>
         </aside>
@@ -72,15 +114,9 @@
                     </div>
                     
                     <div class="flex items-center gap-3 relative self-end lg:self-auto">
-                        <button onclick="toggleFilterDropdown()" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium px-4 py-2 rounded-md border border-slate-300 transition">
-                            <i class="fa-solid fa-sliders text-xs"></i>
-                            <span>Filter</span>
-                        </button>
+                       
                         <a href="/hoteladmin/rooms/new">
-                        <button class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-md shadow-sm transition">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            <span>Add Rooms</span>
-                        </button>
+                       
                         </a>
                         <div id="filterDropdown" class="hidden absolute right-0 top-12 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-50 transition-all duration-200">
                             <h4 class="text-sm font-bold text-slate-900 mb-3 border-b pb-2">Filter Rooms</h4>
@@ -382,7 +418,7 @@
                                 <div class="flex items-center text-xs text-slate-600">
                                     <i class="fa-solid fa-users w-4 text-slate-400 text-[11px]"></i>
                                     <span class="font-medium">Max Occupancy:</span>
-                                    <span class="ml-1 text-slate-900 font-semibold">${type.max_occupancy} ${type.max_occupancy > 1 ? 'Guests' : 'Guest'}</span>
+                                    <span class="ml-1 text-slate-900 font-semibold">${type.max_adults} adults  ${type.max_children } childrens</span>
                                 </div>
                                 ${type.description ? `
                                     <p class="text-[11px] text-slate-500 line-clamp-2 italic leading-relaxed mt-1" title="${type.description}">
@@ -441,15 +477,33 @@
     /**
      * Executes asynchronous pipeline deletion request loops targeting your REST routes
      */
+
+
+const showNotification = (message , type="success")=>{
+
+new Noty({
+    text:message,
+    type,
+    theme:'metroui',
+     layout: 'topRight',
+        timeout: 3000,
+        progressBar: true,
+        closeWith: ['click','button']
+    }).show();
+
+
+}
+
     async function triggerCategoryDeletion(roomTypeId, categoryName) {
         // Safety validation gate protecting data relationships
-        const confirmExecution = confirm(`Warning: Are you sure you want to permanently delete the "${categoryName}" category?\nThis will disconnect all structural mappings.`);
-        
-        if (!confirmExecution) return;
+        // const confirmExecution = confirm(`Warning: Are you sure you want to permanently delete the "${categoryName}" category?\nThis will disconnect all structural mappings.`);
+    //    showNotification("confirm","fail");   z
+
+        // if (!confirmExecution) return;
 
         try {
             // Adjust this routing endpoint string to map onto your chosen deletion controller configuration
-            const actionResponse = await fetch(`/room-types/${roomTypeId}`, {
+            const actionResponse = await fetch(`/hotelAdmin/room-types/${roomTypeId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -457,21 +511,26 @@
             });
 
             if (actionResponse.ok) {
-                alert('Room category profile purged from live architecture matrix.');
+                // alert('Room category profile purged from live architecture matrix.');
+                 showNotification('Room category profile purged from live architecture matrix.',"success");
                 window.location.reload(); // Synchronize view matrix
             } else {
                 const faultDetails = await actionResponse.json();
                 
                 // Triggers clean warning feedback if foreign constraints block execution
                 if (faultDetails.message && faultDetails.message.includes('foreign key')) {
-                    alert('Purge Request Terminated: Cannot remove this profile category while operational physical rooms still link to it.');
+                    // alert('Purge Request Terminated: Cannot remove this profile category while operational physical rooms still link to it.');
+                   showNotification(faultDetails.message,"error")
                 } else {
-                    alert(`Purge Request Exception: ${faultDetails.message || 'Validation anomaly occurred.'}`);
+                    // alert(`Purge Request Exception: ${faultDetails.message || 'Validation anomaly occurred.'}`);
+                    showNotification(`Purge Request Exception: ${faultDetails.message || 'Validation anomaly occurred.'}`   ,"error")
+
                 }
             }
         } catch (networkFault) {
             console.error('purging asset routine network drop context: ', networkFault);
-            alert('A network communication loss failure interrupted target deletion synchronization.');
+            // alert('A network communication loss failure interrupted target deletion synchronization.');
+            showNotification("A network communication loss failure interrupted target deletion synchronization." , "error")
         }
     }
 </script>
