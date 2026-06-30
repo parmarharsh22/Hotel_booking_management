@@ -34,6 +34,7 @@ export const searchHotels = async (params: searchHotelReqBody) => {
         city: row.city,
         state: row.state,
         country: row.country,
+        logo_url: row.logo_url,
 
         rooms: [],
       };
@@ -105,14 +106,16 @@ export const hotelDetails = async (hotelId: number, checkIn: string, checkOut: s
 
     room_type.push({
       room_type_id: element.room_type_id,
+      photo_url: element.photo_url,
       type: element.type_name,
       price: element.base_price,
       max_adults: element.max_adults,
       max_children: element.max_children,
       available_rooms: element.available_rooms,
       description: element.description,
-      amenities: element.amenities.split(',').map((item: string) => item.trim())
-    })
+amenities: element.amenities
+    ? element.amenities.split(',').map((item: string) => item.trim())
+    : []    })
   }
 
   return { hotel, room_type };
@@ -160,3 +163,7 @@ export const fetchFilterRoomTypes = async () => {
 export const fetchAmenities = async () => {
   return await roomModel.fetchAmenities();
 }
+
+export const getFeaturedHotels = async () => {
+    return await roomModel.getFeaturedHotels();
+};

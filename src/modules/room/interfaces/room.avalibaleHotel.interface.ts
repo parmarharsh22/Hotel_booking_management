@@ -15,6 +15,7 @@ interface Room{
     city:string,
     state:string,
     country:string,
+    logo_url:string
     rooms:Room[]
   }
 

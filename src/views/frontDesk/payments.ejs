@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment History</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+
+    <%- include("../partials/frontDesk/sidebar") %>
+
+        <main class="ml-[260px] min-h-screen bg-slate-100">
+
+            <%- include("../partials/frontDesk/header") %>
+
+                <!-- hero -->
+
+                <div class="px-8 py-6">
+
+                    <div class="bg-gradient-to-r from-[#031632] via-[#0c234d] to-[#1a2b48]
+                rounded-3xl shadow-xl p-8">
+
+                        <h1 class="text-4xl font-bold text-white">
+
+                            Payment History
+
+                        </h1>
+
+                        <p class="text-yellow-300 mt-3 text-lg">
+
+                            View all payments associated with this booking
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="p-8">
+
+                    <!-- booking information -->
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 mb-6">
+
+                        <div class="px-6 py-5 border-b">
+
+                            <h2 class="font-semibold text-lg">
+
+                                Booking Information
+
+                            </h2>
+
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
+
+                            <% payments.forEach(payment=> { %>
+
+                                <div>
+                                    <p class="text-sm text-slate-500">Booking Reference</p>
+                                    <p class="font-semibold">
+                                        <%= payment.booking_reference %>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm text-slate-500">Guest</p>
+                                    <p class="font-semibold">
+                                        <%= payment.guest_name %>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm text-slate-500">Room(s)</p>
+                                    <p class="font-semibold">
+                                        <%= payment.room_number %>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm text-slate-500">Booking Status</p>
+                                    <p class="font-semibold">
+                                        <%= payment.status_name %>
+                                    </p>
+                                </div>
+
+                                <% }) %>
+
+                        </div>
+
+                        <!-- payment history -->
+
+                        <div class="bg-white rounded-2xl shadow-lg border border-slate-200">
+
+                            <div class="px-6 py-5 border-b">
+
+                                <h2 class="font-semibold text-lg">
+
+                                    Payment History
+
+                                </h2>
+
+                            </div>
+
+                            <div class="overflow-x-auto">
+
+                                <table class="min-w-full">
+
+                                    <thead class="bg-slate-100">
+
+                                        <tr>
+
+                                            <th class="px-6 py-4 text-left">
+
+                                                Payment ID
+
+                                            </th>
+
+                                            <th class="px-6 py-4 text-left">
+
+                                                Amount
+
+                                            </th>
+
+                                            <th class="px-6 py-4 text-left">
+
+                                                Method
+
+                                            </th>
+
+                                            <th class="px-6 py-4 text-left">
+
+                                                Status
+
+                                            </th>
+
+                                            <th class="px-6 py-4 text-left">
+
+                                                Paid On
+
+                                            </th>
+
+                                            <th class="px-6 py-4 text-left">
+
+                                                Created On
+
+                                            </th>
+
+                                            <th class="px-6 py-4 text-center">
+
+                                                Bypassed
+
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        <% payments.forEach(payment=>{ %>
+
+                                            <tr class="border-t hover:bg-slate-50">
+
+                                                <td class="px-6 py-4">
+
+                                                    #<%= payment.payment_id %>
+
+                                                </td>
+
+                                                <td class="px-6 py-4">
+
+                                                    ₹ <%= payment.amount %>
+
+                                                </td>
+
+                                                <td class="px-6 py-4">
+
+                                                    <%= payment.method_name %>
+
+                                                </td>
+
+                                                <td class="px-6 py-4">
+
+                                                    <% if(payment.status_name === "SUCCESS" ){ %>
+
+                                                        <span
+                                                            class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+
+                                                            <%= payment.status_name %>
+
+                                                        </span>
+
+                                                        <% } else if(payment.status_name==="Pending" ){ %>
+
+                                                            <span
+                                                                class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+
+                                                                <%= payment.status_name %>
+
+                                                            </span>
+
+                                                            <% } else { %>
+
+                                                                <span
+                                                                    class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+
+                                                                    <%= payment.status_name %>
+
+                                                                </span>
+
+                                                                <% } %>
+
+                                                </td>
+
+                                                <td class="px-6 py-4">
+
+                                                    <%= new Date(payment.paid_at).toLocaleString() ?? "-" %>
+
+                                                </td>
+
+                                                <td class="px-6 py-4">
+
+                                                    <%= new Date(payment.created_at).toLocaleString() %>
+
+                                                </td>
+
+                                                <td class="px-6 py-4 text-center">
+
+                                                    <% if(payment.is_bypassed){ %>
+
+                                                        <span class="text-green-600 font-semibold">
+
+                                                            Yes
+
+                                                        </span>
+
+                                                        <% } else { %>
+
+                                                            <span class="text-red-600 font-semibold">
+
+                                                                No
+
+                                                            </span>
+
+                                                            <% } %>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <% }) %>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+        </main>
+
+</body>
+
+</html>

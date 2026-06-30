@@ -81,6 +81,11 @@ const rooms:any = [];
 
   }
 
+router.get(
+  "/notifications/data",
+  validToken,
+  allowRoles("GUEST"),
+  controller.getNotifications.bind(controller),
 )
 
 export default router;

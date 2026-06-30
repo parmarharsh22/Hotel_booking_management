@@ -1,412 +1,1425 @@
+```ejs <% pageTitle = "Hotels — HBMS"; activePage = "hotels"; %> <%-
+include('_layout_start') %>
 
-<%
- 
-  pageTitle  = "Hotels — HBMS";
- 
-  activePage = "hotels";
- 
-%>
-  <%- include('_layout_start') %>
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .row-enter {
+    animation: fadeIn 0.25s ease-out both;
+  }
+  .row-enter:nth-child(1) {
+    animation-delay: 0.02s;
+  }
+  .row-enter:nth-child(2) {
+    animation-delay: 0.04s;
+  }
+  .row-enter:nth-child(3) {
+    animation-delay: 0.06s;
+  }
+  .row-enter:nth-child(4) {
+    animation-delay: 0.08s;
+  }
+  .row-enter:nth-child(5) {
+    animation-delay: 0.1s;
+  }
+  .row-enter:nth-child(6) {
+    animation-delay: 0.12s;
+  }
+  .row-enter:nth-child(7) {
+    animation-delay: 0.14s;
+  }
+  .row-enter:nth-child(8) {
+    animation-delay: 0.16s;
+  }
+  .row-enter:nth-child(9) {
+    animation-delay: 0.18s;
+  }
+  .row-enter:nth-child(10) {
+    animation-delay: 0.2s;
+  }
 
- 
+  .logo-gradient-1 {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  }
+  .logo-gradient-2 {
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  }
+  .logo-gradient-3 {
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  }
+  .logo-gradient-4 {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  }
+  .logo-gradient-5 {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  }
+  .logo-gradient-6 {
+    background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+  tbody tr.selected {
+    background-color: rgba(99, 102, 241, 0.08);
+  }
+
+  .checkbox-custom {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #475569;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .checkbox-custom:hover {
+    border-color: #6366f1;
+  }
+  .checkbox-custom:checked {
+    background: #6366f1;
+    border-color: #6366f1;
+  }
+  .checkbox-custom:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checkbox-custom:indeterminate {
+    background: #6366f1;
+    border-color: #6366f1;
+  }
+  .checkbox-custom:indeterminate::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    width: 8px;
+    height: 2px;
+    background: white;
+  }
+
+  .sort-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sort-btn:hover {
+    color: #e2e8f0;
+  }
+  .sort-icon {
+    opacity: 0.3;
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+  }
+  .sort-btn.active .sort-icon {
+    opacity: 1;
+    color: #818cf8;
+  }
+
+  .action-btn {
+    opacity: 0;
+    transition:
+      opacity 0.15s,
+      background-color 0.15s,
+      color 0.15s;
+  }
+  tbody tr:hover .action-btn {
+    opacity: 1;
+  }
+  tbody tr:focus-within .action-btn {
+    opacity: 1;
+  }
+
+  .stat-card {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.15s ease;
+  }
+  .stat-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  /* Status badge dropdown */
+  .status-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: ui-monospace, monospace;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+  }
+  .status-badge:hover {
+    filter: brightness(1.2);
+  }
+  .status-badge .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-badge .chevron {
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .status-badge:hover .chevron {
+    opacity: 1;
+  }
+
+  .status-active {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+  }
+  .status-active .status-dot {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  }
+  .status-suspended {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+  .status-suspended .status-dot {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  }
+  .status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #fcd34d;
+  }
+  .status-pending .status-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  }
+
+  .status-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 160px;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 30;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.15s ease;
+  }
+  .status-dropdown.open .status-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .status-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    border: none;
+    background: transparent;
+    text-align: left;
+  }
+  .status-menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .status-menu-item.active {
+    color: #fff;
+  }
+  .status-menu-item .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .spinner {
+    animation: spin 0.8s linear infinite;
+  }
+
+  .pulse-dot {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+</style>
+
 <!-- Top bar -->
- 
-<div class="px-8 py-5 border-b border-surface-border flex items-center justify-between">
- 
+<div
+  class="px-8 py-5 border-b border-surface-border flex items-center justify-between"
+>
   <div>
- 
-    <h1 class="text-lg font-semibold ">Hotels</h1>
- 
+    <h1 class="text-lg font-semibold">Hotels</h1>
     <p class="text-xs text-muted mt-0.5">Manage all tenant hotels</p>
- 
   </div>
- 
-  <a href="/superadmin/hotels/new" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
- 
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
- 
-    Add Hotel
- 
-  </a>
- 
+  <div class="flex items-center gap-2">
+    <button
+      id="export-btn"
+      class="btn-secondary text-xs flex items-center gap-1.5"
+    >
+      <svg
+        class="w-3.5 h-3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      Export
+    </button>
+    <a
+      href="/superadmin/hotels/new"
+      class="btn-primary text-xs p-3 flex items-center gap-1.5"
+    >
+      <svg
+        class="w-3.5 h-3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Add Hotel
+    </a>
+  </div>
 </div>
- 
- 
+
 <div class="px-8 py-6 space-y-4">
- 
- 
+  <!-- Stats cards -->
+  <div class="grid grid-cols-4 gap-3">
+    <div class="stat-card rounded-lg px-4 py-3 flex items-center gap-3">
+      <div
+        class="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-indigo-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Total Hotels
+        </div>
+        <div id="stat-total" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+    <div class="stat-card rounded-lg px-4 py-3 flex items-center gap-3">
+      <div
+        class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-emerald-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Active
+        </div>
+        <div id="stat-active" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+    <div class="stat-card rounded-lg px-4 py-3 flex items-center gap-3">
+      <div
+        class="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-red-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Suspended
+        </div>
+        <div id="stat-suspended" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+    <div class="stat-card rounded-lg px-4 py-3 flex items-center gap-3">
+      <div
+        class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-amber-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Pending
+        </div>
+        <div id="stat-pending" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Search & filter bar -->
- 
   <div class="flex items-center gap-3">
+    <div class="relative flex-1 min-w-[450px]">
  
-    <div class="relative flex-1 max-w-xs">
- 
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
- 
-      <input id="search-input" type="text" placeholder="Search hotels..." class="input-field pl-9 text-sm" />
- 
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search hotels, slugs, cities..."
+        class="input-field w-full pl-9 pr-8 text-sm"
+      />
+      <button
+        id="clear-search"
+        class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full hover:bg-white/10 text-muted hover:text-black items-center justify-center transition-colors hidden"
+      >
+        <svg
+          class="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          viewBox="0 0 24 24"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
     </div>
- 
     <select id="status-filter" class="input-field text-sm w-40">
- 
       <option value="">All Statuses</option>
- 
       <option value="1">Active</option>
- 
       <option value="2">Suspended</option>
- 
       <option value="3">Pending</option>
- 
     </select>
- 
+
+    <!-- Bulk actions -->
+    <div
+      id="bulk-actions"
+      class="hidden items-center gap-2 ml-2 pl-3 border-l border-surface-border"
+    >
+      <span class="text-xs text-indigo-300 font-mono"
+        ><span id="selected-count">0</span> selected</span
+      >
+      <button
+        id="bulk-delete"
+        class="text-xs px-2.5 py-1.5 rounded-md bg-red-500/10 border border-red-500/30 text-red-300 hover:bg-red-500/20 transition-colors flex items-center gap-1"
+      >
+        <svg
+          class="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path
+            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+          />
+        </svg>
+        Delete
+      </button>
+    </div>
+
     <span id="hotel-count" class="text-xs text-muted font-mono ml-auto"></span>
- 
   </div>
- 
- 
+
   <!-- Table -->
- 
   <div class="card overflow-hidden">
- 
-    <table class="w-full text-sm" id="hotels-table">
- 
-      <thead>
- 
-        <tr class="border-b border-surface-border text-left bg-surface-2">
-          
-           <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Logo</th>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm" id="hotels-table">
+        <thead>
+          <tr class="border-b border-surface-border text-left bg-surface-2">
+            <th class="px-4 py-3 w-10">
+              <input type="checkbox" id="select-all" class="checkbox-custom" />
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="name">
+                Hotel
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              Contact
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="location">
+                Location
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="status">
+                Status
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="created">
+                Created
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider text-right w-32"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="hotels-tbody">
+          <tr>
+            <td colspan="7" class="px-6 py-16 text-center">
+              <div class="flex flex-col items-center gap-3">
+                <svg
+                  class="w-10 h-10 text-muted spinner"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M21 12a9 9 0 1 1-6.219-8.56"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <span class="text-muted text-xs font-mono"
+                  >Loading hotels...</span
+                >
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Hotel</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Contact</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Location</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Status</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Created</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider w-32">Actions</th>
- 
-        </tr>
- 
-      </thead>
- 
-      <tbody id="hotels-tbody">
- 
-        <tr><td colspan="6" class="px-6 py-10 text-center text-muted">Loading...</td></tr>
- 
-      </tbody>
- 
-    </table>
- 
+    <!-- Pagination -->
+    <div
+      id="pagination"
+      class="hidden border-t border-surface-border px-4 py-3 flex items-center justify-between bg-surface-2/50"
+    >
+      <div class="text-xs text-muted font-mono">
+        Showing <span id="page-start">1</span>–<span id="page-end">10</span> of
+        <span id="page-total">0</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button
+          id="prev-page"
+          class="btn-secondary text-xs px-2.5 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <div id="page-numbers" class="flex items-center gap-1"></div>
+        <button
+          id="next-page"
+          class="btn-secondary text-xs px-2.5 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
- 
- 
 </div>
- 
- 
+
+<!-- Hotel detail drawer -->
+<div id="hotel-drawer" class="fixed inset-0 z-50 hidden">
+  <div
+    class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+    id="drawer-backdrop"
+  ></div>
+  <div
+    class="absolute right-0 top-0 h-full w-full max-w-md bg-surface border-l border-surface-border shadow-2xl transform transition-transform duration-300 translate-x-full"
+    id="drawer-panel"
+  >
+    <div class="h-full flex flex-col">
+      <div
+        class="px-6 py-4 border-b border-surface-border flex items-center justify-between"
+      >
+        <h3 class="font-semibold text-sm">Hotel Details</h3>
+        <button
+          id="close-drawer"
+          class="w-7 h-7 rounded-md hover:bg-white/5 flex items-center justify-center text-muted hover:text-black transition-colors"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div
+        id="drawer-content"
+        class="flex-1 overflow-y-auto p-6 space-y-5"
+      ></div>
+    </div>
+  </div>
+</div>
+
 <!-- Delete confirm modal -->
- 
-<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
- 
-  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
- 
-  <div class="card relative z-10 p-6 w-full max-w-sm mx-4">
- 
-    <h3 class="text-base font-semibold  mb-1">Delete Hotel</h3>
- 
-    <p class="text-sm text-muted mb-5">This action cannot be undone. The hotel and its data will be soft-deleted.</p>
- 
+<div
+  id="delete-modal"
+  class="hidden fixed inset-0 z-[60] flex items-center justify-center"
+>
+  <div
+    class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+    onclick="closeDeleteModal()"
+  ></div>
+  <div class="card relative z-10 p-6 w-full max-w-sm mx-4 shadow-2xl">
+    <div class="flex items-start gap-3 mb-4">
+      <div
+        class="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center flex-shrink-0"
+      >
+        <svg
+          class="w-5 h-5 text-red-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-semibold text-black">Delete Hotel</h3>
+        <p class="text-sm text-muted mt-1">
+          This action cannot be undone. The hotel and its data will be
+          soft-deleted.
+        </p>
+      </div>
+    </div>
     <div class="flex gap-3">
- 
-      <button onclick="closeDeleteModal()" class="btn-ghost flex-1 py-2 rounded-lg text-sm font-medium">Cancel</button>
- 
-      <button id="confirm-delete-btn" class="btn-danger flex-1 py-2 rounded-lg text-sm font-medium">Delete</button>
- 
+      <button
+        onclick="closeDeleteModal()"
+        class="btn-ghost flex-1 py-2 rounded-lg text-sm font-medium"
+      >
+        Cancel
+      </button>
+      <button
+        id="confirm-delete-btn"
+        class="bg-red-500 hover:bg-red-600 text-white flex-1 py-2 rounded-lg text-sm font-medium transition-colors"
+      >
+        Delete
+      </button>
     </div>
- 
   </div>
- 
 </div>
- 
- 
-<script>
- 
-  let allHotels = [];
- 
-  let deleteTargetId = null;
- 
- 
-  async function loadHotels() {
- 
-    try {
- 
-      const res = await fetch('/superadmin/hotels', {
-        credentials: "include",
-        headers:{'Accept':'application/json'}
-      });
- 
-      allHotels  = await res.json();
-      console.log(allHotels);
-      
- 
-      renderTable(allHotels);
- 
-    } catch (err) {
- 
-      document.getElementById('hotels-tbody').innerHTML =
- 
-        `<tr><td colspan="6" class="px-6 py-10 text-center text-danger">Failed to load hotels</td></tr>`;
- 
-    }
- 
-  }
- 
- 
-  function renderTable(hotels) {
- 
-    document.getElementById('hotel-count').textContent = `${hotels.length} hotel${hotels.length !== 1 ? 's' : ''}`;
- 
-    if (hotels.length === 0) {
- 
-      document.getElementById('hotels-tbody').innerHTML =
- 
-        `<tr><td colspan="6" class="px-6 py-10 text-center text-muted">No hotels found</td></tr>`;
- 
-      return;
- 
-    }
- 
- 
-    document.getElementById('hotels-tbody').innerHTML = hotels.map(h => `
- 
-      <tr class="table-row border-b border-surface-border last:border-0">
-        <td class="px-6 py-3.5">
-  <div class="flex items-center gap-3">
-    ${h.logo_url 
-      ? `<img src="${h.logo_url}" class="w-8 h-8 rounded-lg object-cover flex-shrink-0" />`
-      : `<div class="w-8 h-8 rounded-lg bg-accent-muted text-accent text-xs font-bold flex items-center justify-center flex-shrink-0">${h.name[0].toUpperCase()}</div>`
-    }
-    <div>
-      <div class="font-medium ">${h.name}</div>
-      <div class="text-xs text-muted font-mono mt-0.5">${h.slug}</div>
-    </div>
-  </div>
-</td>
 
- 
-        <td class="px-6 py-3.5">
- 
-          <div class="font-medium ">${h.name}</div>
- 
-          <div class="text-xs text-muted font-mono mt-0.5">${h.slug}</div>
- 
-        </td>
- 
-        <td class="px-6 py-3.5">
- 
-          <div class="text-slate-300 text-xs">${h.email || '—'}</div>
- 
-          <div class="text-muted text-xs">${h.phone || ''}</div>
- 
-        </td>
- 
-        <td class="px-6 py-3.5 text-slate-400 text-xs">${[h.city, h.state, h.country].filter(Boolean).join(', ') || '—'}</td>
- 
-        <td class="px-6 py-3.5">
- 
-          <select onchange="updateStatus(${h.hotel_id}, this.value)" class="input-field text-xs py-1 w-32">
- 
-            <option value="1" ${h.tenant_status_id == 1 ? 'selected' : ''}>Active</option>
- 
-            <option value="2" ${h.tenant_status_id == 2 ? 'selected' : ''}>Suspended</option>
- 
-            <option value="3" ${h.tenant_status_id == 3 ? 'selected' : ''}>Pending</option>
- 
-          </select>
- 
-        </td>
- 
-        <td class="px-6 py-3.5 text-slate-400 font-mono text-xs">${formatDate(h.created_at)}</td>
- 
-        <td class="px-6 py-3.5">
- 
-          <div class="flex items-center gap-2">
- 
-            <a href="/superadmin/hotels/${h.hotel_id}" title="View" class="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-muted transition-colors">
- 
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
- 
-            </a>
- 
-            <a href="/superadmin/hotels/${h.hotel_id}/edit" title="Edit" class="p-1.5 rounded-md text-muted hover:text-accent hover:bg-accent-muted transition-colors">
- 
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
- 
-            </a>
- 
-            <button onclick="openDeleteModal(${h.hotel_id})" title="Delete" class="p-1.5 rounded-md text-muted hover:text-danger hover:bg-red-950 transition-colors">
- 
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
- 
-            </button>
- 
-          </div>
- 
-        </td>
- 
-      </tr>
- 
-    `).join('');
- 
+<script>
+  let allHotels = [];
+  let filteredHotels = [];
+  let deleteTargetId = null;
+  let currentPage = 1;
+  const pageSize = 10;
+  let selectedIds = new Set();
+  let sortState = { key: null, dir: "asc" };
+  let openDropdownId = null;
+
+  const logoGradients = [
+    "logo-gradient-1",
+    "logo-gradient-2",
+    "logo-gradient-3",
+    "logo-gradient-4",
+    "logo-gradient-5",
+    "logo-gradient-6",
+  ];
+  function getLogoClass(id) {
+    return logoGradients[(id || 0) % logoGradients.length];
   }
- 
- 
-  async function updateStatus(hotelId, statusId) {
- 
+
+  const statusMap = {
+    1: { label: "Active", cls: "status-active", color: "#10b981" },
+    2: { label: "Suspended", cls: "status-suspended", color: "#ef4444" },
+    3: { label: "Pending", cls: "status-pending", color: "#f59e0b" },
+  };
+
+  async function loadHotels() {
     try {
- 
-      const res = await fetch(`/superadmin/hotels/${hotelId}/status`, {
- 
-        method: 'PUT',
- 
-        headers: { 'Content-Type': 'application/json' },
- 
-        body: JSON.stringify({ tenant_status_id: statusId })
- 
+      const res = await fetch("/superadmin/hotels", {
+        credentials: "include",
+        headers: { Accept: "application/json" },
       });
- 
-      const data = await res.json();
- 
-      if (data.success) showToast('Status updated', 'success');
- 
-      else showToast('Failed to update status', 'error');
- 
-    } catch {
- 
-      showToast('Network error', 'error');
- 
+      allHotels = await res.json();
+      updateStats();
+      applyFilters();
+    } catch (err) {
+      document.getElementById("hotels-tbody").innerHTML =
+        `<tr><td colspan="7" class="px-6 py-16 text-center">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="text-black text-sm font-medium">Failed to load hotels</div>
+              <div class="text-muted text-xs mt-1">Please check your connection and try again</div>
+            </div>
+            <button onclick="loadHotels()" class="btn-secondary text-xs mt-2">Retry</button>
+          </div>
+        </td></tr>`;
     }
- 
   }
- 
- 
-  function openDeleteModal(id) {
- 
-    deleteTargetId = id;
- 
-    document.getElementById('delete-modal').classList.remove('hidden');
- 
+
+  function updateStats() {
+    document.getElementById("stat-total").textContent = allHotels.length;
+    document.getElementById("stat-active").textContent = allHotels.filter(
+      (h) => String(h.tenant_status_id) === "1",
+    ).length;
+    document.getElementById("stat-suspended").textContent = allHotels.filter(
+      (h) => String(h.tenant_status_id) === "2",
+    ).length;
+    document.getElementById("stat-pending").textContent = allHotels.filter(
+      (h) => String(h.tenant_status_id) === "3",
+    ).length;
   }
- 
- 
-  function closeDeleteModal() {
- 
-    deleteTargetId = null;
- 
-    document.getElementById('delete-modal').classList.add('hidden');
- 
-  }
- 
- 
-  document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
- 
-    if (!deleteTargetId) return;
- 
-    try {
- 
-      const res  = await fetch(`/superadmin/hotels/${deleteTargetId}`, { method: 'DELETE' });
- 
-      const data = await res.json();
- 
-      if (data.success) {
- 
-        closeDeleteModal();
- 
-        showToast('Hotel deleted', 'success');
- 
-        loadHotels();
- 
-      } else {
- 
-        showToast('Delete failed', 'error');
- 
-      }
- 
-    } catch {
- 
-      showToast('Network error', 'error');
- 
-    }
- 
-  });
- 
- 
-  // Search & filter
- 
+
   function applyFilters() {
- 
-    const q      = document.getElementById('search-input').value.toLowerCase();
- 
-    const status = document.getElementById('status-filter').value;
- 
-    const filtered = allHotels.filter(h => {
- 
-      const matchQ = !q || h.name.toLowerCase().includes(q) || h.slug.includes(q) || (h.city || '').toLowerCase().includes(q);
- 
+    const q = document.getElementById("search-input").value.toLowerCase();
+    const status = document.getElementById("status-filter").value;
+
+    filteredHotels = allHotels.filter((h) => {
+      const matchQ =
+        !q ||
+        h.name.toLowerCase().includes(q) ||
+        (h.slug || "").toLowerCase().includes(q) ||
+        (h.city || "").toLowerCase().includes(q) ||
+        (h.email || "").toLowerCase().includes(q);
       const matchS = !status || String(h.tenant_status_id) === status;
- 
       return matchQ && matchS;
- 
     });
- 
-    renderTable(filtered);
- 
+
+    if (sortState.key) {
+      filteredHotels.sort((a, b) => {
+        let va, vb;
+        if (sortState.key === "name") {
+          va = (a.name || "").toLowerCase();
+          vb = (b.name || "").toLowerCase();
+        } else if (sortState.key === "location") {
+          va = [a.city, a.state, a.country]
+            .filter(Boolean)
+            .join(",")
+            .toLowerCase();
+          vb = [b.city, b.state, b.country]
+            .filter(Boolean)
+            .join(",")
+            .toLowerCase();
+        } else if (sortState.key === "status") {
+          va = a.tenant_status_id;
+          vb = b.tenant_status_id;
+        } else if (sortState.key === "created") {
+          va = new Date(a.created_at || 0).getTime();
+          vb = new Date(b.created_at || 0).getTime();
+        }
+        if (va < vb) return sortState.dir === "asc" ? -1 : 1;
+        if (va > vb) return sortState.dir === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    currentPage = 1;
+    renderPage();
   }
- 
- 
-  document.getElementById('search-input').addEventListener('input', applyFilters);
- 
-  document.getElementById('status-filter').addEventListener('change', applyFilters);
- 
- 
+
+  function renderPage() {
+    const total = filteredHotels.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * pageSize;
+    const pageHotels = filteredHotels.slice(start, start + pageSize);
+
+    document.getElementById("hotel-count").textContent =
+      `${total} hotel${total !== 1 ? "s" : ""}`;
+    document.getElementById("clear-search").style.display =
+      document.getElementById("search-input").value ? "flex" : "none";
+
+    if (total === 0) {
+      document.getElementById("hotels-tbody").innerHTML =
+        `<tr><td colspan="7" class="px-6 py-16 text-center">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-surface-2 border border-surface-border flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div>
+              <div class="text-black text-sm font-medium">No hotels found</div>
+              <div class="text-muted text-xs mt-1">Try adjusting your filters</div>
+            </div>
+          </div>
+        </td></tr>`;
+      document.getElementById("pagination").classList.add("hidden");
+      return;
+    }
+
+    document.getElementById("hotels-tbody").innerHTML = pageHotels
+      .map((h) => {
+        const logoCls = getLogoClass(h.hotel_id);
+        const initial = (h.name || "?")[0].toUpperCase();
+        const status = statusMap[String(h.tenant_status_id)] || statusMap["3"];
+        const location = [h.city, h.state, h.country]
+          .filter(Boolean)
+          .join(", ");
+        const isSelected = selectedIds.has(h.hotel_id);
+
+        return `
+        <tr class="table-row border-b border-surface-border/50 last:border-0 row-enter ${isSelected ? "selected" : ""}" data-id="${h.hotel_id}">
+          <td class="px-4 py-3">
+            <input type="checkbox" class="checkbox-custom row-check" data-id="${h.hotel_id}" ${isSelected ? "checked" : ""} />
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              ${
+                h.logo_url
+                  ? `<img src="${h.logo_url}" class="w-9 h-9 rounded-lg object-cover flex-shrink-0 shadow-lg shadow-black/20 border border-surface-border" onerror="this.outerHTML='<div class=\\'w-9 h-9 rounded-lg ${logoCls} text-white text-xs font-bold flex items-center justify-center flex-shrink-0 shadow-lg shadow-black/20\\'>${initial}</div>'" />`
+                  : `<div class="w-9 h-9 rounded-lg ${logoCls} text-white text-xs font-bold flex items-center justify-center flex-shrink-0 shadow-lg shadow-black/20">${initial}</div>`
+              }
+              <div class="min-w-0">
+                <div class="font-medium text-black text-sm truncate">${h.name}</div>
+                <div class="text-[11px] text-muted font-mono truncate">${h.slug || "—"}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-1.5 text-xs text-black">
+                <svg class="w-3 h-3 text-muted flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span class="truncate">${h.email || "—"}</span>
+              </div>
+              ${
+                h.phone
+                  ? `<div class="flex items-center gap-1.5 text-xs text-muted">
+                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>${h.phone}</span>
+              </div>`
+                  : ""
+              }
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            ${
+              location
+                ? `<div class="flex items-start gap-2">
+                   <svg class="w-3.5 h-3.5 text-muted flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                   <span class="text-xs text-black">${location}</span>
+                 </div>`
+                : '<span class="text-muted text-xs">—</span>'
+            }
+          </td>
+          <td class="px-4 py-3">
+            <div class="status-dropdown" data-hotel-id="${h.hotel_id}">
+              <button class="status-badge ${status.cls}" onclick="toggleStatusMenu(${h.hotel_id}, event)">
+                <span class="status-dot"></span>
+                <span>${status.label}</span>
+                <svg class="chevron w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="status-menu">
+                ${Object.entries(statusMap)
+                  .map(
+                    ([id, s]) => `
+                  <button class="status-menu-item ${String(h.tenant_status_id) === id ? "active" : ""}" onclick="updateStatus(${h.hotel_id}, ${id}, event)">
+                    <span class="status-dot" style="background:${s.color}; box-shadow: 0 0 6px ${s.color}"></span>
+                    <span>${s.label}</span>
+                    ${String(h.tenant_status_id) === id ? '<svg class="w-3.5 h-3 ml-auto text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' : ""}
+                  </button>
+                `,
+                  )
+                  .join("")}
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="text-slate-400 font-mono text-xs">${formatDate(h.created_at)}</div>
+            <div class="text-muted text-[10px] mt-0.5">${timeAgo(h.created_at)}</div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center justify-end gap-1">
+              <a href="/superadmin/hotels/${h.hotel_id}" title="View" class="action-btn w-7 h-7 rounded-md hover:bg-indigo-500/10 text-muted hover:text-indigo-300 flex items-center justify-center transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </a>
+              <a href="/superadmin/hotels/${h.hotel_id}/edit" title="Edit" class="action-btn w-7 h-7 rounded-md hover:bg-blue-500/10 text-muted hover:text-blue-300 flex items-center justify-center transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </a>
+             
+            </div>
+          </td>
+        </tr>
+      `;
+      })
+      .join("");
+
+    renderPagination(total, totalPages);
+    bindRowEvents();
+  }
+
+  function renderPagination(total, totalPages) {
+    const pag = document.getElementById("pagination");
+    if (total <= pageSize) {
+      pag.classList.add("hidden");
+      return;
+    }
+    pag.classList.remove("hidden");
+
+    const start = (currentPage - 1) * pageSize + 1;
+    const end = Math.min(currentPage * pageSize, total);
+    document.getElementById("page-start").textContent = start;
+    document.getElementById("page-end").textContent = end;
+    document.getElementById("page-total").textContent = total;
+
+    document.getElementById("prev-page").disabled = currentPage === 1;
+    document.getElementById("next-page").disabled = currentPage === totalPages;
+
+    const nums = document.getElementById("page-numbers");
+    let pages = [];
+    if (totalPages <= 5) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      if (currentPage <= 3) pages = [1, 2, 3, 4, "...", totalPages];
+      else if (currentPage >= totalPages - 2)
+        pages = [
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
+      else
+        pages = [
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages,
+        ];
+    }
+    nums.innerHTML = pages
+      .map((p) => {
+        if (p === "...")
+          return `<span class="text-xs text-muted px-1">…</span>`;
+        return `<button class="page-num w-7 h-7 rounded text-xs font-mono transition-colors ${p === currentPage ? "bg-indigo-500 text-white" : "text-muted hover:bg-white/5 hover:text-black"}" data-page="${p}">${p}</button>`;
+      })
+      .join("");
+
+    nums.querySelectorAll(".page-num").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentPage = parseInt(btn.dataset.page);
+        renderPage();
+      });
+    });
+  }
+
+  function bindRowEvents() {
+    document.querySelectorAll(".row-check").forEach((cb) => {
+      cb.addEventListener("change", (e) => {
+        const id = parseInt(e.target.dataset.id);
+        if (e.target.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+        e.target.closest("tr").classList.toggle("selected", e.target.checked);
+        updateBulkUI();
+      });
+    });
+  }
+
+  function updateBulkUI() {
+    const bulk = document.getElementById("bulk-actions");
+    if (selectedIds.size > 0) {
+      bulk.classList.remove("hidden");
+      bulk.classList.add("flex");
+      document.getElementById("selected-count").textContent = selectedIds.size;
+    } else {
+      bulk.classList.add("hidden");
+      bulk.classList.remove("flex");
+    }
+    const allChecks = document.querySelectorAll(".row-check");
+    const selectAll = document.getElementById("select-all");
+    if (allChecks.length === 0) {
+      selectAll.checked = false;
+      selectAll.indeterminate = false;
+      return;
+    }
+    const checkedCount = [...allChecks].filter((c) => c.checked).length;
+    selectAll.checked = checkedCount === allChecks.length;
+    selectAll.indeterminate =
+      checkedCount > 0 && checkedCount < allChecks.length;
+  }
+
+  // Status dropdown
+  window.toggleStatusMenu = (hotelId, event) => {
+    event.stopPropagation();
+    const dropdown = document.querySelector(
+      `.status-dropdown[data-hotel-id="${hotelId}"]`,
+    );
+    const wasOpen = dropdown.classList.contains("open");
+    document
+      .querySelectorAll(".status-dropdown.open")
+      .forEach((d) => d.classList.remove("open"));
+    if (!wasOpen) dropdown.classList.add("open");
+    openDropdownId = wasOpen ? null : hotelId;
+  };
+
+  document.addEventListener("click", () => {
+    document
+      .querySelectorAll(".status-dropdown.open")
+      .forEach((d) => d.classList.remove("open"));
+    openDropdownId = null;
+  });
+
+  window.updateStatus = async (hotelId, statusId, event) => {
+    event.stopPropagation();
+    document
+      .querySelectorAll(".status-dropdown.open")
+      .forEach((d) => d.classList.remove("open"));
+    try {
+      const res = await fetch(`/superadmin/hotels/${hotelId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tenant_status_id: statusId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        const hotel = allHotels.find((h) => h.hotel_id === hotelId);
+        if (hotel) hotel.tenant_status_id = statusId;
+        updateStats();
+        applyFilters();
+        showToast("Status updated", "success");
+      } else {
+        showToast("Failed to update status", "error");
+      }
+    } catch {
+      showToast("Network error", "error");
+    }
+  };
+
+  // Sorting
+  document.querySelectorAll(".sort-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.sort;
+      if (sortState.key === key) {
+        sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
+      } else {
+        sortState.key = key;
+        sortState.dir = "asc";
+      }
+      document.querySelectorAll(".sort-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.sort === sortState.key);
+        const icon = b.querySelector(".sort-icon");
+        if (b.dataset.sort === sortState.key) {
+          icon.style.transform =
+            sortState.dir === "asc" ? "" : "rotate(180deg)";
+        } else {
+          icon.style.transform = "";
+        }
+      });
+      applyFilters();
+    });
+  });
+
+  // Select all
+  document.getElementById("select-all").addEventListener("change", (e) => {
+    const checked = e.target.checked;
+    document.querySelectorAll(".row-check").forEach((cb) => {
+      cb.checked = checked;
+      const id = parseInt(cb.dataset.id);
+      if (checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+      cb.closest("tr").classList.toggle("selected", checked);
+    });
+    updateBulkUI();
+  });
+
+  // Pagination buttons
+  document.getElementById("prev-page").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderPage();
+    }
+  });
+  document.getElementById("next-page").addEventListener("click", () => {
+    const totalPages = Math.ceil(filteredHotels.length / pageSize);
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderPage();
+    }
+  });
+
+  // Search & filter
+  document
+    .getElementById("search-input")
+    .addEventListener("input", applyFilters);
+  document
+    .getElementById("status-filter")
+    .addEventListener("change", applyFilters);
+  document.getElementById("clear-search").addEventListener("click", () => {
+    document.getElementById("search-input").value = "";
+    applyFilters();
+  });
+
+  // Export
+  document.getElementById("export-btn").addEventListener("click", () => {
+    const headers = [
+      "ID",
+      "Name",
+      "Slug",
+      "Email",
+      "Phone",
+      "City",
+      "State",
+      "Country",
+      "Status",
+      "Created",
+    ];
+    const rows = filteredHotels.map((h) => [
+      h.hotel_id,
+      h.name,
+      h.slug || "",
+      h.email || "",
+      h.phone || "",
+      h.city || "",
+      h.state || "",
+      h.country || "",
+      (statusMap[String(h.tenant_status_id)] || {}).label || "",
+      h.created_at || "",
+    ]);
+    const csv = [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `hotels-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Bulk delete
+  document.getElementById("bulk-delete").addEventListener("click", () => {
+    if (confirm(`Delete ${selectedIds.size} selected hotel(s)?`)) {
+      console.log("Bulk delete", [...selectedIds]);
+    }
+  });
+
+  // Delete modal
+  function openDeleteModal(id) {
+    deleteTargetId = id;
+    document.getElementById("delete-modal").classList.remove("hidden");
+  }
+  function closeDeleteModal() {
+    deleteTargetId = null;
+    document.getElementById("delete-modal").classList.add("hidden");
+  }
+  window.openDeleteModal = openDeleteModal;
+  window.closeDeleteModal = closeDeleteModal;
+
+  document
+    .getElementById("confirm-delete-btn")
+    .addEventListener("click", async () => {
+      if (!deleteTargetId) return;
+      try {
+        const res = await fetch(`/superadmin/hotels/${deleteTargetId}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeDeleteModal();
+          showToast("Hotel deleted", "success");
+          loadHotels();
+        } else {
+          showToast("Delete failed", "error");
+        }
+      } catch {
+        showToast("Network error", "error");
+      }
+    });
+
+  // Drawer
+  function openDrawer(hotel) {
+    const drawer = document.getElementById("hotel-drawer");
+    const panel = document.getElementById("drawer-panel");
+    const content = document.getElementById("drawer-content");
+    const logoCls = getLogoClass(hotel.hotel_id);
+    const initial = (hotel.name || "?")[0].toUpperCase();
+    const status = statusMap[String(hotel.tenant_status_id)] || statusMap["3"];
+    const location = [hotel.city, hotel.state, hotel.country]
+      .filter(Boolean)
+      .join(", ");
+
+    content.innerHTML = `
+      <div class="flex flex-col items-center text-center pb-5 border-b border-surface-border">
+        ${
+          hotel.logo_url
+            ? `<img src="${hotel.logo_url}" class="w-20 h-20 rounded-2xl object-cover shadow-xl shadow-black/30 mb-3 border border-surface-border" />`
+            : `<div class="w-20 h-20 rounded-2xl ${logoCls} text-white text-2xl font-bold flex items-center justify-center shadow-xl shadow-black/30 mb-3">${initial}</div>`
+        }
+        <h2 class="text-lg font-semibold text-black">${hotel.name}</h2>
+        <p class="text-xs text-muted font-mono mt-0.5">${hotel.slug || ""}</p>
+        <span class="inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-md mt-3 ${status.cls}">
+          <span class="status-dot"></span>${status.label}
+        </span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="text-[10px] text-muted font-mono uppercase tracking-wider mb-2">Contact Information</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <svg class="w-4 h-4 text-muted flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span class="text-xs text-black font-mono truncate">${hotel.email || "—"}</span>
+            </div>
+            ${
+              hotel.phone
+                ? `<div class="flex items-center gap-3 p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <svg class="w-4 h-4 text-muted flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span class="text-xs text-black font-mono">${hotel.phone}</span>
+            </div>`
+                : ""
+            }
+          </div>
+        </div>
+
+        ${
+          location
+            ? `<div>
+          <div class="text-[10px] text-muted font-mono uppercase tracking-wider mb-2">Location</div>
+          <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-2/50 border border-surface-border/50">
+            <div class="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="text-sm text-black">${location}</div>
+          </div>
+        </div>`
+            : ""
+        }
+
+        <div>
+          <div class="text-[10px] text-muted font-mono uppercase tracking-wider mb-2">Details</div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <div class="text-[10px] text-muted font-mono">Hotel ID</div>
+              <div class="text-xs text-black font-mono mt-0.5">#${hotel.hotel_id}</div>
+            </div>
+            <div class="p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <div class="text-[10px] text-muted font-mono">Created</div>
+              <div class="text-xs text-black font-mono mt-0.5">${formatDate(hotel.created_at)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-surface-border flex gap-2">
+        <a href="/superadmin/hotels/${hotel.hotel_id}/edit" class="btn-secondary text-xs flex-1 flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Hotel
+        </a>
+        <button onclick="openDeleteModal(${hotel.hotel_id}); closeDrawer();" class="text-xs px-3 py-1.5 rounded-md bg-red-500/10 border border-red-500/30 text-red-300 hover:bg-red-500/20 transition-colors flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Delete
+        </button>
+      </div>
+    `;
+
+    drawer.classList.remove("hidden");
+    requestAnimationFrame(() => panel.classList.remove("translate-x-full"));
+  }
+
+  function closeDrawer() {
+    const panel = document.getElementById("drawer-panel");
+    panel.classList.add("translate-x-full");
+    setTimeout(
+      () => document.getElementById("hotel-drawer").classList.add("hidden"),
+      300,
+    );
+  }
+  window.closeDrawer = closeDrawer;
+
+  document
+    .getElementById("close-drawer")
+    .addEventListener("click", closeDrawer);
+  document
+    .getElementById("drawer-backdrop")
+    .addEventListener("click", closeDrawer);
+
+  // Helpers
   function formatDate(ts) {
- 
-    if (!ts) return '—';
- 
-    return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
- 
+    if (!ts) return "—";
+    return new Date(ts).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   }
- 
- 
+
+  function timeAgo(ts) {
+    if (!ts) return "";
+    const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+    if (diff < 60) return "just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+    if (diff < 31536000) return `${Math.floor(diff / 2592000)}mo ago`;
+    return `${Math.floor(diff / 31536000)}y ago`;
+  }
+
   function showToast(msg, type) {
- 
-    const toast = document.getElementById('toast');
- 
-    const inner = document.getElementById('toast-inner');
- 
+    const toast = document.getElementById("toast");
+    const inner = document.getElementById("toast-inner");
+    if (!toast || !inner) return;
     const styles = {
- 
-      success: 'bg-green-950 border border-green-800 text-green-300',
- 
-      error:   'bg-red-950 border border-red-800 text-red-300',
- 
+      success: "bg-green-950 border border-green-800 text-green-300",
+      error: "bg-red-950 border border-red-800 text-red-300",
     };
- 
     inner.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl text-sm font-medium ${styles[type] || styles.success}`;
- 
     inner.textContent = msg;
- 
-    toast.classList.remove('hidden');
- 
-    setTimeout(() => toast.classList.add('hidden'), 3000);
- 
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 3000);
   }
- 
- 
+
   loadHotels();
- 
 </script>
 
- <%- include('_layout_end') %>
+<%- include('_layout_end') %> ```
