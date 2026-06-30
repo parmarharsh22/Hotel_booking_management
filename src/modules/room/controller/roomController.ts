@@ -38,7 +38,6 @@ export const searchHotels = async (req: Request, res: Response) => {
             roomTypesFilter:data.roomTypesFilter,
             amenitiesFilter:data.amenitiesFilter
         };
-       console.log(hotels);
        
         return res.render("roomsFrontend/searchresults", {
             hotels: hotels || [],
