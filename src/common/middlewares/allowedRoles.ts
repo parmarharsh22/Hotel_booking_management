@@ -16,6 +16,8 @@ export const allowRoles = (...allowedRoles: string[]) => {
         // check if user has required role
         if (!allowedRoles.includes(user.roleId)){
             res.clearCookie("token");
+            console.log("called Update");
+            
             (req.session as any).failureMessage ="You are not authorized to access this page";
             return res.redirect("/login");
         }

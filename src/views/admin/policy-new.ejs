@@ -111,7 +111,7 @@ function handleLogout() {
                 </div>
             </header> -->
         <%- include('../partials/header') %>
-            <div class="p-6 md:p-8 space-y-6 max-w-full w-full mx-auto">
+            <div class="p-6 md:p-8 space-y-6 max-w-full w-full mx-auto ">
                 
              
 
@@ -122,7 +122,7 @@ function handleLogout() {
 
         
                 <!-- Inventory Data Sheet -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col ">
                     <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                         <div class="flex items-baseline space-x-3">
                             <h3 class="font-bold text-slate-900">Current Room Inventory</h3>
@@ -135,10 +135,10 @@ function handleLogout() {
 
                     <div class="overflow-x-auto flex ">
    
-<div class="space-y-6">
-
+<div class="space-y-6 flex  p-10 w-full gap-2 ">
+<div class="w-full">
     <!-- Header -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-5">
         <div>
             <h2 class="text-lg font-bold text-slate-900">Cancellation Policies Overview</h2>
             <p class="text-sm text-slate-500">Manage flexible cancellation windows and refund percentages per room category.</p>
@@ -155,7 +155,7 @@ function handleLogout() {
     </div>
 
     <!-- Policies Grid -->
-    <div id="policiesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div id="policiesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-5 py-2">
         <div class="col-span-full flex items-center justify-center py-12 text-slate-400">
             <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>
             <span class="text-sm">Loading policies...</span>
@@ -163,8 +163,8 @@ function handleLogout() {
     </div>
 
     <!-- Form Panel -->
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden ">
+        <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ">
             <div>
                 <h3 id="formTitle" class="font-bold text-slate-900">Establish Cancellation Policy</h3>
                 <p class="text-xs text-slate-500">Define flexible cancellation windows and refund percentages per room category.</p>
@@ -174,11 +174,11 @@ function handleLogout() {
             </span>
         </div>
 
-        <form id="createCancellationPolicyForm" class="p-6 md:p-8 space-y-6" novalidate>
+        <form id="createCancellationPolicyForm" class="p-6 md:p-8 space-y-6 " novalidate >
             <input type="hidden" name="hotel_id" value="<%= hotel_id || '' %>">
             <input type="hidden" name="policy_id" id="policyIdField" value="">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 ">
 
                 <div class="space-y-4">
 
@@ -321,8 +321,12 @@ function handleLogout() {
                 </button>
             </div>
         </form>
+
+
     </div>
 
+    </div>
+<!-- <div class="w-full h-[900px] border rounded "></div> -->
 </div>
 
 <script>
@@ -501,44 +505,71 @@ function handleLogout() {
     }
 
     function launchEditPolicyView(policyId, roomTypeId, hours, percent) {
-        currentEditId = policyId;
-        policyIdField.value = policyId;
+    console.log('Launching edit for:', policyId, roomTypeId, hours, percent);
+    
+    currentEditId = policyId;
+    
+    // 1. Safely update hidden ID field (Prevents crash if element is missing)
+    if (policyIdField) policyIdField.value = policyId;
 
-        formTitle.textContent = 'Modify Cancellation Policy';
+    // 2. Update form title and badge
+    if (formTitle) formTitle.innerText = 'Modify Cancellation Policy';
+    if (formBadge) {
         formBadge.textContent = 'Edit Mode';
-        formBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-700 font-semibold border border-amber-200 uppercase tracking-wider';
-        policySubmitText.textContent = 'Update Policy';
-        policySubmitBtn.querySelector('i').className = 'fa-regular fa-floppy-disk text-[11px]';
-
-        const roomSelect = document.getElementById('policyRoomTypeDropdown');
-        if (roomSelect) {
-            roomSelect.value = roomTypeId;
-        }
-        policyForm.querySelector('input[name="free_cancellation_hours"]').value = hours;
-        policyForm.querySelector('input[name="refund_percentage"]').value = percent;
-
-        updatePolicySummary();
-        showFeedback(`Editing policy #${policyId}. Make changes and click Update.`, 'info');
-        scrollToPolicyForm();
+        formBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-amber-500 text-amber-700 font-semibold border border-amber-200 uppercase tracking-wider';
     }
+    
+    // 3. Update submit button text and icon
+    if (policySubmitText) policySubmitText.textContent = 'Update Policy';
+    const submitIcon = policySubmitBtn?.querySelector('i');
+    if (submitIcon) submitIcon.className = 'fa-regular fa-floppy-disk text-[11px]';
+
+    // 4. Update Room Type Dropdown
+    const roomSelect = document.getElementById('policyRoomTypeDropdown');
+    if (roomSelect) {
+        roomSelect.value = roomTypeId;
+        // Trigger change event to force custom dropdown UI to update
+        roomSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    // 5. Update Hours and Percentage inputs
+    const hoursInput = policyForm.querySelector('input[name="free_cancellation_hours"]');
+    const percentInput = policyForm.querySelector('input[name="refund_percentage"]');
+    
+    if (hoursInput) hoursInput.value = hours;
+    if (percentInput) percentInput.value = percent;
+
+    // 6. Update summary and show feedback
+    updatePolicySummary();
+    showFeedback(`Editing policy #${policyId}. Make changes and click Update.`, 'info');
+    scrollToPolicyForm();
+}
 
     function clearPolicyForm() {
-        currentEditId = null;
-        policyIdField.value = '';
+    currentEditId = null;
+    if (policyIdField) policyIdField.value = '';
 
-        formTitle.textContent = 'Establish Cancellation Policy';
+    if (formTitle) formTitle.textContent = 'Establish Cancellation Policy';
+    if (formBadge) {
         formBadge.textContent = 'Configuration Panel';
         formBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-semibold border border-purple-200 uppercase tracking-wider';
-        policySubmitText.textContent = 'Register Policy';
-        policySubmitBtn.querySelector('i').className = 'fa-regular fa-square-plus text-[11px]';
-
-        policyForm.reset();
-        const roomSelect = document.getElementById('policyRoomTypeDropdown');
-        if (roomSelect) roomSelect.value = '';
-
-        policySummary.innerHTML = '<span class="text-slate-400 italic">Fill the fields to preview the policy summary...</span>';
-        policyFeedback.classList.add('hidden');
     }
+    
+    if (policySubmitText) policySubmitText.textContent = 'Register Policy';
+    const submitIcon = policySubmitBtn?.querySelector('i');
+    if (submitIcon) submitIcon.className = 'fa-regular fa-square-plus text-[11px]';
+
+    policyForm.reset();
+    const roomSelect = document.getElementById('policyRoomTypeDropdown');
+    if (roomSelect) {
+        roomSelect.value = '';
+        // Trigger change event to reset custom dropdown UI
+        roomSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    policySummary.innerHTML = '<span class="text-slate-400 italic">Fill the fields to preview the policy summary...</span>';
+    if (policyFeedback) policyFeedback.classList.add('hidden');
+}
 
     function showFeedback(message, type = 'success') {
         policyFeedback.textContent = message;

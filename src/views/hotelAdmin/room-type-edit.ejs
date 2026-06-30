@@ -117,27 +117,12 @@
                     <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
                     <span>Help Center</span>
                 </a>
-                 <a href="" onclick="handleLogout()" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
-                    <span>Logout</span>
+                
 <script>
 
-function handleLogout() {
-    // Clear all cookies
-    document.cookie.split(";").forEach((cookie) => {
-        const cookieName = cookie.split("=")[0].trim();
 
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-    });
 
-    // Clear localStorage and sessionStorage if used
-    localStorage.clear();
-    sessionStorage.clear();
 
-    // Redirect to login page
-    window.location.href = "/login";
-}
 
 </script>
             </div>
@@ -304,9 +289,8 @@ function handleLogout() {
                     <div class="border border-slate-300 rounded-lg p-4">
 
                         <div class="grid grid-cols-2 gap-3">
-
                             <% amenities.forEach(amenity => { %>
-
+                                
                                 <label class="flex items-center gap-3 cursor-pointer">
 
                                     <input
@@ -347,10 +331,9 @@ function handleLogout() {
 
                             <!-- Preview -->
                             <div>
-                                <img
-                                    id="imagePreview"
-                                    src="<%= roomType.image_url || '/images/no-image.png' %>"
-                                    class="h-28 w-28 rounded-lg border object-cover">
+                                 <input type="hidden" name="existing_photo" value="<%= roomType.photo_url || '' %>">
+                                <img id="imagePreview" src="<%= roomType.photo_url ||
+                                 '/images/no-image.png' %>" class="h-28 w-28 rounded-lg border object-cover">
                             </div>
 
                             <!-- Upload -->
@@ -360,7 +343,7 @@ function handleLogout() {
                                     type="file"
                                     
                                     id="roomImage"
-                                    name="image"
+                                    name="  "
                                     accept="image/*"
                                     class="block w-full text-sm">
 
@@ -593,22 +576,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 "description",
                 description.value.trim()
             );
-
+    formData.append("type_photo", document.querySelector('input[name="existing_photo"]').value);
             /*
             |--------------------------------------------------------------------------
             | Amenities
             |--------------------------------------------------------------------------
             */
-            document
-                .querySelectorAll(
-                    'input[name="amenities"]:checked'
-                )
-                .forEach(input => {
-                    formData.append(
-                        "amenities[]",
-                        input.value
-                    );
-                });
+            document.querySelectorAll('input[name="amenities"]:checked').forEach(input => {
+    formData.append("amenities", input.value); // Changed from "amenities[]"
+});
 
             /*
             |--------------------------------------------------------------------------
