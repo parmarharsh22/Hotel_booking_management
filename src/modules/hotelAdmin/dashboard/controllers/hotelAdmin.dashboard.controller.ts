@@ -23,8 +23,8 @@ async renderDashboard(
 
     try {
 
-      // const hotelId = (req as any).hotelId as number;
-const hotelId = 1;
+      const hotelId = (req as any).hotelId as number;
+// const hotelId = 1;
       const period =
         (req.query.period as RevenuePeriod) || "daily";
 
@@ -54,7 +54,7 @@ async getBookingStatusDistribution(
   try {
 
     // const hotelId =  
-const hotelId = 1;
+const hotelId = (req as any).hotelId as number;
     const result =
       await dashboardService
         .getBookingStatusDistribution(
