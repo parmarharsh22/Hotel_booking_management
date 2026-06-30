@@ -42,12 +42,9 @@
                     </a>
                     <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Cancellattion Policies</span>
+                        <span>Cancellattion Policy</span>
                     </a>
-                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+               
                 </nav>
             </div>
 
@@ -59,28 +56,6 @@
                <a href="" onclick="handleLogout()" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
                     <span>Logout</span>
-
-<script>
-
-function handleLogout() {
-  
-    // Clear all cookies
-    document.cookie.split(";").forEach((cookie) => {
-        const cookieName = cookie.split("=")[0].trim();
-
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-    });
-
-    // Clear localStorage and sessionStorage if used
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Redirect to login page
-    window.location.href = "/login";
-}
-
-</script>
 
                 </a>
             </div>
@@ -128,8 +103,8 @@ function handleLogout() {
                             <h3 class="font-bold text-slate-900">Current Room Inventory</h3>
                         </div>
                         <div class="relative w-full sm:w-64">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                            <input type="text" id="tableSearch" oninput="searchTable()" placeholder="Search categories..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-slate-400 transition">
+                              <!-- <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i> -->
+                            <!-- <input type="text" id="tableSearch" oninput="searchTable()" placeholder="Search categories..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-slate-400 transition"> -->
                         </div>
                     </div>
 
@@ -645,7 +620,7 @@ function renderRevenueChart(data) {
 
 </script>
 
-// for Donut
+
 
 <script>
 
@@ -873,6 +848,28 @@ function renderBookingStatusLegend(data) {
 }
 
 
+
+</script>
+
+<script>
+
+function handleLogout() {
+  
+    // Clear all cookies
+    document.cookie.split(";").forEach((cookie) => {
+        const cookieName = cookie.split("=")[0].trim();
+
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+    });
+
+    // Clear localStorage and sessionStorage if used
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirect to login page
+    window.location.href = "/login";
+}
 
 </script>
 

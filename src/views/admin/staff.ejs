@@ -40,12 +40,9 @@
                     </a>
                     <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Check-ins</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+                    
                 </nav>
             </div>
 
@@ -253,10 +250,7 @@ function handleLogout() {
         <span id="showingIndicator">
             Showing 1-<%= (typeof staff !== 'undefined') ? staff.length : 0 %> of <%= (typeof staff !== 'undefined') ? staff.length : 0 %> records
         </span>
-        <div class="flex items-center space-x-1">
-            <button class="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-400 cursor-not-allowed text-[11px]" disabled>Prev</button>
-            <button class="px-2.5 py-1 bg-white border border-slate-200 rounded text-slate-400 cursor-not-allowed text-[11px]" disabled>Next</button>
-        </div>
+        
     </div>
 </div>
 

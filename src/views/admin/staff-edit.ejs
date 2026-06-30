@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -423,66 +425,73 @@ function handleLogout() {
 
     </div>
 
-</form>
-<script>
+</form><script>
+// Image Preview Logic (Unchanged)
 document
     .getElementById("staffPhotoInput")
     .addEventListener("change", function (e) {
-
         const file = e.target.files[0];
-
         if (!file) return;
 
         const reader = new FileReader();
-
         reader.onload = function(event) {
-            document.getElementById("avatarPreview").src =
-                event.target.result;
+            document.getElementById("avatarPreview").src = event.target.result;
         };
-
         reader.readAsDataURL(file);
     });
-async function submitStaffUpdate(event, userId) {
 
+// Form Submission Logic
+async function submitStaffUpdate(event, userId) {
     event.preventDefault();
 
     const form = document.getElementById("editStaffForm");
-
     const formData = new FormData(form);
 
-    try {
+    // ✅ NEW: Show a loading alert while the request is processing
+    Swal.fire({
+        title: "Updating...",
+        text: "Please wait while we update the staff details.",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
-        const response = await fetch(
-            `/hotelAdmin/staff/${userId}`,
-            {
-                method: "PUT",
-                body: formData
-            }
-        );
+    try {
+        const response = await fetch(`/hotelAdmin/staff/${userId}`, {
+            method: "PUT",
+            body: formData
+        });
 
         const result = await response.json();
 
+        // Check if the server returned an error status (400, 500, etc.)
         if (!response.ok) {
-            throw new Error(result.message);
+            throw new Error(result.message || "Failed to update staff");
         }
 
-        Swal.fire({
+        // ✅ NEW: Show success alert
+        await Swal.fire({
             icon: "success",
-            title: "Success",
-            text: result.message
+            title: "Success!",
+            text: result.message || "Staff updated successfully.",
+            confirmButtonText: "OK"
         });
 
-    } catch (err) {
+        // ✅ OPTIONAL: Redirect or reload the page after the user clicks "OK"
+        // window.location.href = "/admin/staff"; 
+        // window.location.reload();
 
+    } catch (err) {
+        // ✅ IMPROVED: Show error alert with the specific error message
         Swal.fire({
             icon: "error",
             title: "Update Failed",
-            text: err.message
+            text: err.message || "An unexpected error occurred."
         });
-
     }
 }
-
+</script>
 
 
 

@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -24,7 +24,7 @@
                 </div>
                 
                 <nav class="mt-4 space-y-1">
-                    <a href="/hotelAdmin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white  transition">
+                    <a href="/hotelAdmin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm   transition">
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
@@ -40,14 +40,11 @@
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
                         <span>Staff</span>
                     </a>
-                    <a href="/hotelAdmin/Analytics" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-[#1e293b] text-white transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Check-ins</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+                    
                 </nav>
             </div>
 
@@ -128,8 +125,8 @@ function handleLogout() {
                             <h3 class="font-bold text-slate-900">Current Room Inventory</h3>
                         </div>
                         <div class="relative w-full sm:w-64">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                            <input type="text" id="tableSearch" oninput="searchTable()" placeholder="Search categories..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-slate-400 transition">
+                            <!-- <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="tableSearch" oninput="searchTable()" placeholder="Search categories..." class="w-full text-xs bg-slate-50 border border-slate-200 rounded-md pl-9 pr-3 py-2 outline-none focus:bg-white focus:border-slate-400 transition"> -->
                         </div>
                     </div>
 
@@ -422,7 +419,7 @@ function handleLogout() {
                                 ${getRoomTypeName(p.room_type_id)}
                             </p>
                             <span class="text-[10px] px-1.5 py-0.5 font-bold bg-slate-100 text-slate-600 rounded border border-slate-200 whitespace-nowrap">
-                                ID: ${p.policy_id}
+                                ID: ${p.policy_id} ${p.type_name}
                             </span>
                         </div>
 
@@ -450,10 +447,7 @@ function handleLogout() {
                         <button onclick="triggerPolicyDeletion('${p.policy_id}', '${getRoomTypeName(p.room_type_id).replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 rounded-lg transition" title="Delete Policy">
                             <i class="fa-regular fa-trash-can text-sm"></i>
                         </button>
-                        <button onclick="launchEditPolicyView('${p.policy_id}', '${p.room_type_id}', '${p.free_cancellation_hours}', '${p.refund_percentage}')" class="flex items-center space-x-1.5 bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-semibold px-3 py-2 rounded-lg shadow-sm transition">
-                            <i class="fa-regular fa-pen-to-square text-[11px]"></i>
-                            <span>Modify</span>
-                        </button>
+                       
                     </div>
                 </div>
             `).join('');
@@ -504,24 +498,31 @@ function handleLogout() {
         document.getElementById('createCancellationPolicyForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function launchEditPolicyView(policyId, roomTypeId, hours, percent) {
+  function launchEditPolicyView(policyId, roomTypeId, hours, percent) {
     console.log('Launching edit for:', policyId, roomTypeId, hours, percent);
     
     currentEditId = policyId;
     
-    // 1. Safely update hidden ID field (Prevents crash if element is missing)
-    if (policyIdField) policyIdField.value = policyId;
+    // 1. Safely update hidden ID field
+    const idField = document.getElementById('policyIdField');
+    if (idField) idField.value = policyId;
 
-    // 2. Update form title and badge
-    if (formTitle) formTitle.innerText = 'Modify Cancellation Policy';
-    if (formBadge) {
-        formBadge.textContent = 'Edit Mode';
-        formBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-amber-500 text-amber-700 font-semibold border border-amber-200 uppercase tracking-wider';
+    // 2. Update form title and badge (using direct document selection to be safe)
+    const formTitleEl = document.getElementById('formTitle');
+    if (formTitleEl) formTitleEl.innerText = 'Modify Cancellation Policy';
+    
+    const formBadgeEl = document.getElementById('formBadge');
+    if (formBadgeEl) {
+        formBadgeEl.textContent = 'Edit Mode';
+        formBadgeEl.className = 'text-[10px] px-2 py-0.5 rounded bg-amber-500 text-amber-700 font-semibold border border-amber-200 uppercase tracking-wider';
     }
     
     // 3. Update submit button text and icon
-    if (policySubmitText) policySubmitText.textContent = 'Update Policy';
-    const submitIcon = policySubmitBtn?.querySelector('i');
+    const submitTextEl = document.getElementById('policySubmitText');
+    if (submitTextEl) submitTextEl.textContent = 'Update Policy';
+    
+    const submitBtnEl = document.getElementById('policySubmitBtn');
+    const submitIcon = submitBtnEl?.querySelector('i');
     if (submitIcon) submitIcon.className = 'fa-regular fa-floppy-disk text-[11px]';
 
     // 4. Update Room Type Dropdown
@@ -532,17 +533,17 @@ function handleLogout() {
         roomSelect.dispatchEvent(new Event('change', { bubbles: true }));
     }
     
-    // 5. Update Hours and Percentage inputs
-    const hoursInput = policyForm.querySelector('input[name="free_cancellation_hours"]');
-    const percentInput = policyForm.querySelector('input[name="refund_percentage"]');
+    // 5. FIXED: Grab inputs directly via document instead of the potentially null policyForm variable
+    const hoursInput = document.querySelector('input[name="free_cancellation_hours"]');
+    const percentInput = document.querySelector('input[name="refund_percentage"]');
     
     if (hoursInput) hoursInput.value = hours;
     if (percentInput) percentInput.value = percent;
 
     // 6. Update summary and show feedback
     updatePolicySummary();
-    showFeedback(`Editing policy #${policyId}. Make changes and click Update.`, 'info');
     scrollToPolicyForm();
+    showFeedback(`Editing policy #${policyId} . Make changes and click Update.`, 'info');
 }
 
     function clearPolicyForm() {
@@ -584,10 +585,24 @@ function handleLogout() {
     }
 
     function triggerPolicyDeletion(policyId, roomTypeName) {
-        if (!confirm(`Are you sure you want to delete the cancellation policy for "${roomTypeName}" (ID: ${policyId})? This action cannot be undone.`)) {
-            return;
-        }
-
+        // if (!confirm(`Are you sure you want to delete the cancellation policy for "${roomTypeName}" (ID: ${policyId})? This action cannot be undone.`)) {
+        //     return;
+        // }
+Swal.fire({
+  title: "Are you sure?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, delete it!"
+}).then((result) => {
+  if (result.isConfirmed) Swal.fire({
+    title: "Deleted!",
+    text: "Your file has been deleted.",
+    icon: "success"
+  });
+});
         const btn = event.currentTarget;
         const originalHtml = btn.innerHTML;
         btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-sm"></i>';
@@ -689,11 +704,7 @@ function handleLogout() {
                     <div class="p-4 border-t border-slate-200 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-500">
                         
                         <div class="flex items-center space-x-1">
-                            <button class="px-2.5 py-1.5 rounded border border-slate-200 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
-                            <button class="px-3 py-1.5 rounded bg-[#0f172a] text-white font-medium">1</button>
-                            <button class="px-3 py-1.5 rounded border border-slate-200 hover:bg-slate-50 transition">2</button>
-                            <button class="px-3 py-1.5 rounded border border-slate-200 hover:bg-slate-50 transition">3</button>
-                            <button class="px-2.5 py-1.5 rounded border border-slate-200 hover:bg-slate-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+                           
                         </div>
                     </div>
                 </div>

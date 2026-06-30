@@ -40,12 +40,9 @@
                     </a>
                     <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Check-ins</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+                    
                 </nav>
             </div>
 
@@ -172,12 +169,12 @@ function handleLogout() {
                         <option value="3">DIRTY (3)</option>
                         <option value="4">MAINTENANCE (4)</option>
                     </select> -->
-                     <%- include('../partials/components/RoomStatusDropDown', {
+                   <%- include('../partials/components/RoomStatusDropDown', {
     id: 'roomStatusDropdown',
     name: 'room_status_id',
     label: 'Room Status',
     required: true,
-    selectedValue: "null"
+    
 }) %>
 <script>
 
@@ -187,8 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elementId: 'roomStatusDropdown',
         endpoint: '/hotelAdmin/room-statuses',
         valueKey: 'room_status_id',
-        selectedValue: room.room_status_id,
-
 
         labelBuilder: (status) =>
             status.status_name
