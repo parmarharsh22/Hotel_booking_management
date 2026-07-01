@@ -122,17 +122,29 @@ export class RoomModel {
   }
 
   // DELETE /admin/rooms/:roomId  →  deleteRoom
+    // DELETE /admin/rooms/:roomId  →  deleteRoom
   static async deleteRoom(roomId: number, hotelId: number): Promise<boolean> {
     try {
       const [result]: any = await db.query(
         `DELETE FROM rooms WHERE room_id = ? AND hotel_id = ?`,
         [roomId, hotelId]
       );
-      return result.affectedRows > 0;
+
+      if (result.affectedRows === 0) {
+        throw new Error("Room not found or already deleted.");
+      }
+      
+      return true;
     } catch (err: any) {
+      // ✅ FIX: Catch MySQL Foreign Key Constraint Error (Error Code 1451)
+      if (err.errno === 1451) {
+        throw new Error("Cannot delete this room because it has existing booking history. Please change its status to 'Maintenance' or 'Out of Order' instead.");
+      }
+      
+      // Throw any other unexpected errors
       throw err;
     }
-  }
+  } 
 
    // PUT /admin/rooms/:roomId/status  →  updateRoomStatus
    static async updateRoomStatus(roomId: number, hotelId: number, roomStatusId: number): Promise<boolean> {

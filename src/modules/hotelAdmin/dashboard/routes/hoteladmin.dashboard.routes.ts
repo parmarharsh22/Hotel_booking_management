@@ -15,7 +15,7 @@ router.get("/revenue-trend",hoteladmindashboardController.getRevenueTrend.bind(h
 
 router.get(
   "/booking-status-distribution",
-  
+  validToken,allowRoles("ADMIN"),
   hoteladmindashboardController
     .getBookingStatusDistribution
     .bind(DashboardController)

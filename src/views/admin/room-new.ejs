@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <!-- SweetAlert2 for beautiful alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -40,21 +42,15 @@
                     </a>
                     <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Check-ins</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="/hotelAdmin/settings" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+                    
                 </nav>
             </div>
 
             <div class="mt-8 pt-4 border-t border-slate-100 space-y-1">
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                    <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
-                    <span>Help Center</span>
-                </a>
-                <a href="" onclick="handleLogout()" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                
+                <a href="/frontDesk/logout"  class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
                     <span>Logout</span>
 
@@ -172,12 +168,12 @@ function handleLogout() {
                         <option value="3">DIRTY (3)</option>
                         <option value="4">MAINTENANCE (4)</option>
                     </select> -->
-                     <%- include('../partials/components/RoomStatusDropDown', {
+                   <%- include('../partials/components/RoomStatusDropDown', {
     id: 'roomStatusDropdown',
     name: 'room_status_id',
     label: 'Room Status',
     required: true,
-    selectedValue: "null"
+    
 }) %>
 <script>
 
@@ -187,8 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
         elementId: 'roomStatusDropdown',
         endpoint: '/hotelAdmin/room-statuses',
         valueKey: 'room_status_id',
-        selectedValue: room.room_status_id,
-
 
         labelBuilder: (status) =>
             status.status_name
@@ -431,37 +425,76 @@ document.addEventListener('DOMContentLoaded', () => {
      * Form pipeline package delivery interception route mapping
      */
     async function handleCreationSubmission(event) {
-        event.preventDefault();
-        
-        // Final sanity verification check
-        if (!isRoomNumberValid) {
-            alert("Rectify duplicate unit identification parameters before execution.");
-            return;
-        }
+    event.preventDefault();
+    
+    if (!isRoomNumberValid) {
+        alert("Rectify duplicate unit identification parameters before execution.");
+        return;
+    }
 
-        const activeForm = event.target;
-        const packedPayload = new FormData(activeForm);
+    const activeForm = event.target;
+    const packedPayload = new FormData(activeForm);
 
-        try {
-            // Adjust endpoint string mapping configuration contextual parameters to match your generic POST route setups
-            const actionResponse = await fetch('/hotelAdmin/rooms', {
-                method: 'POST',
-                body: packedPayload
+    try {
+        const actionResponse = await fetch('/hotelAdmin/rooms', {
+            method: 'POST',
+            body: packedPayload
+        });
+
+        if (actionResponse.ok) {
+            // 1. Show Success Alert
+            await Swal.fire({
+                icon: 'success',
+                title: 'Account Provisioned!',
+                text: 'Room Created Successfully',
+                confirmButtonColor: '#0f172a',
+                timer: 2000,
+                timerProgressBar: true
             });
 
-            if (actionResponse.ok) {
-                alert('Property units structural configuration asset appended.');
-                resetCreationForm();
-                window.location.reload(); 
-            } else {
-                const failureDetails = await actionResponse.json();
-                alert(`Asset Provision Exception: ${failureDetails.message || 'Validation layer anomaly.'}`);
+            // 2. Safely handle post-success actions
+            try {
+                resetCreationForm(); // If this fails, it won't break the whole flow
+            } catch (resetError) {
+                console.warn("Form reset failed, but room was created:", resetError);
             }
-        } catch (networkAnomaly) {
-            console.error('Asset creation endpoint failure context: ', networkAnomaly);
-            alert('A data serialization connection pipeline termination fault was caught.');
+
+            // 3. Reload page
+            window.location.reload(); 
+            
+        } else {
+            // Handle Backend Errors (400, 500, etc.)
+            let errorMessage = "Provision Failed";
+            try {
+                const failureDetails = await actionResponse.json();
+                errorMessage = failureDetails.message || errorMessage;
+            } catch (e) {
+                // If the response isn't valid JSON, use the status text
+                errorMessage = actionResponse.statusText || errorMessage;
+            }
+
+            await Swal.fire({
+                icon: 'error',
+                title: 'Error Occured',
+                text: `Provision Failed: ${errorMessage}`,
+                confirmButtonColor: '#0f172a',
+                timer: 2000,
+                timerProgressBar: true
+            });
         }
+    } catch (networkAnomaly) {
+        // Handle actual network failures (e.g., server is down, no internet)
+        console.error('Asset creation endpoint failure context: ', networkAnomaly);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Network Error Occured',
+            text: `Provision Failed: Network Fault Error`,
+            confirmButtonColor: '#0f172a',
+            timer: 2000,
+            timerProgressBar: true
+        });
     }
+}
 </script>
 
 

@@ -12,7 +12,8 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/themes/metroui.css">
 
-<script src="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.min.js"></script>
+<!-- SweetAlert2 for beautiful alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         [class*="noty_layout"] {
@@ -56,47 +57,19 @@
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
                         <span>Staff</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Check-ins</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+                    
                 </nav>
             </div>
 
             <div class="mt-8 pt-4 border-t border-slate-100 space-y-1">
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                    <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
-                    <span>Help Center</span>
-                </a>
-                <a href="" onclick="handleLogout()" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                
+                <a href="/frontdesk/logout" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
                     <span>Logout</span>
-
-<script>
-
-function handleLogout() {
-  
-    // Clear all cookies
-    document.cookie.split(";").forEach((cookie) => {
-        const cookieName = cookie.split("=")[0].trim();
-
-        document.cookie = `${token}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        // document.cookie = `${}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-    });
-
-    // Clear localStorage and sessionStorage if used
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Redirect to login page
-    window.location.href = "/login";
-}
-
-</script>
 
                 </a>
             </div>
@@ -183,7 +156,7 @@ function handleLogout() {
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Base Rate Price (Per Night)</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">$</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">₹</span>
                             <input type="number" name="base_price" step="0.01" placeholder="0.00" required
                                 class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 pl-7 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                         </div>
@@ -361,16 +334,35 @@ function handleLogout() {
             });
 
             if (destinationResponse.ok) {
-                alert('New room type profile and matching feature records logged successfully.');
+                await Swal.fire({
+                        icon: 'success',
+                        title: 'Provision Sucessfull',
+                        text: 'Room Type Created Successfully',
+                        confirmButtonColor: '#0f172a',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                 clearCategoryForm();
                 window.location.reload();
             } else {
                 const errorReport = await destinationResponse.json();
-                alert(`Operational Category Failure: ${errorReport.message || 'Data rejection detected.'}`);
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'Provisioning Failed',
+                    text: error.message || 'An unexpected network error occurred. Please try again.',
+                    confirmButtonColor: '#0f172a'
+                });
+             
             }
         } catch (networkFault) {
             console.error('API execution interface tracking breakdown context: ', networkFault);
-            alert('A systemic transaction processing anomaly prevented configuration delivery.');
+             Swal.fire({
+                    icon: 'error',
+                    title: 'Provisioning Failed',
+                    text: error.message || 'A systemic transaction processing anomaly prevented configuration delivery..',
+                    confirmButtonColor: '#0f172a'
+                });
+            
         }
     }
 </script>
@@ -410,7 +402,7 @@ function handleLogout() {
                             </div>
 
                             <div class="flex items-baseline space-x-1 mt-2">
-                                <span class="text-2xl font-bold text-slate-900">$${Number(type.base_price).toFixed(2)}</span>
+                                <span class="text-2xl font-bold text-slate-900">₹${Number(type.base_price).toFixed(2)}</span>
                                 <span class="text-[11px] text-slate-400 font-medium">/ night</span>
                             </div>
 

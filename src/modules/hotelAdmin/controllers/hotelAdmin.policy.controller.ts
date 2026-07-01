@@ -52,7 +52,7 @@ async listPolicies(req: Request, res: Response) {
       };
 
       await policyService.createPolicy(policy);
-      return res.redirect("/admin/policies");
+     return res.status(200).json({message:'creation success'})
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -87,7 +87,7 @@ async listPolicies(req: Request, res: Response) {
       };
 
       await policyService.updatePolicy(policyId, hotelId, data);
-      return res.redirect("/admin/policies");
+      return res.status(200).json({message:'Edit success'})
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -100,7 +100,7 @@ async listPolicies(req: Request, res: Response) {
       const policyId = parseInt(req.params.policyId as any);
 
       await policyService.deletePolicy(policyId, hotelId);
-      return res.redirect("/admin/policies");
+      return res.status(200).json({message:'deletion  success'})
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

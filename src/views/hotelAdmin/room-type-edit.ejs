@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -101,21 +102,19 @@
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
                         <span>Staff</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Check-ins</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Check-Outs</span>
-                    </a>
+                    
                 </nav>
             </div>
 
             <div class="mt-8 pt-4 border-t border-slate-100 space-y-1">
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                
+                 <a href="/frontdesk/logout" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
-                    <span>Help Center</span>
+                    <span>Logout</span>
                 </a>
                 
 <script>
@@ -621,20 +620,26 @@ document.addEventListener("DOMContentLoaded", () => {
                     result.message || "Update failed."
                 );
             }
-
-            alert("Room type updated successfully.");
+await Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: result.message || "Staff updated successfully.",
+            confirmButtonText: "OK"
+        });
+            
 
             window.location.href =
-                "/hotelAdmin/room-types";
+                "/hotelAdmin/room-types/new";
 
         } catch (error) {
 
-            console.error(error);
+            console.error(error);   
 
-            alert(
-                error.message ||
-                "Something went wrong."
-            );
+            Swal.fire({
+            icon: "error",
+            title: "Update Failed",
+            text: err.message || "An unexpected error occurred."
+        });
 
         } finally {
 

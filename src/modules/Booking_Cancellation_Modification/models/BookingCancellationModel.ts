@@ -66,8 +66,8 @@ class BookingCancellationModel {
                 refund_percentage
             FROM cancellation_policies
             WHERE
-                hotel_id = 1
-                AND room_type_id = 1
+                hotel_id = ?
+                AND room_type_id = ?
             LIMIT 1
         `, [hotelId, roomTypeId]);
 
