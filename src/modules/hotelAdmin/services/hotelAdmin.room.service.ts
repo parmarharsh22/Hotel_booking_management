@@ -29,7 +29,7 @@ export class RoomService {
   }
 
   // createRoom — validate required fields before hitting DB
-  async createRoom(room: RoomInterface): Promise<RoomInterface> {
+  async   createRoom(room: RoomInterface): Promise<RoomInterface> {
     try {
       if (!room.hotel_id)       throw new Error("Hotel ID is required.");
       if (!room.room_type_id)   throw new Error("Room type is required.");

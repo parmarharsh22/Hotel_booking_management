@@ -58,7 +58,7 @@ export class AdminRoomController {
       await roomService.createRoom(room);
       // After create, redirect back to the rooms list
       
-      return res.status(200).redirect("/hotelAdmin/rooms");
+      return res.status(200).json({ success: true, message: "Room creation success" });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -104,8 +104,9 @@ export class AdminRoomController {
       // console.log(data);
       
       await roomService.updateRoom(roomId, hotelId, data);
-      return res.status(200).json({roomId , hotelId  ,data})
-       res.status(303).location("/hotelAdmin/rooms").end();
+
+      res.status(200).json("room edited successfully")
+
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -119,7 +120,7 @@ export class AdminRoomController {
       const roomId  = parseInt(req.params.roomId as any);
 
       await roomService.deleteRoom(roomId, hotelId);
-      return res.redirect("/admin/rooms");
+      res.status(200).json({message:'Room Deleted Succesfully'})
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

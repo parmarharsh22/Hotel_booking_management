@@ -24,7 +24,7 @@ class BookingCancellationService {
         if (!policy) {
             throw new Error("Cancellation policy not found for this property.");
         }
-
+        
         const refund = this.calculateRefund(
             booking.total_amount,
             booking.checkin_date,

@@ -12,4 +12,4 @@ router.put("/:bookingId", validToken,allowRoles("GUEST"),BookingController.updat
 //     "/check-room",
 //     BookingController.
 // );
-export default router;
+export default router;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
