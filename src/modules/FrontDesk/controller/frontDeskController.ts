@@ -435,7 +435,7 @@ export const getInvoices = async (req: Request, res: Response): Promise<void> =>
 // logout
 export const logout = async (req: Request, res: Response): Promise<void> => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token");   
         delete (req.session as any).hotel_id;
         delete (req.session as any).user_id;
         res.redirect("/login");

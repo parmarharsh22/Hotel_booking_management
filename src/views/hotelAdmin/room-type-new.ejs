@@ -12,7 +12,8 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/themes/metroui.css">
 
-<script src="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.min.js"></script>
+<!-- SweetAlert2 for beautiful alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         [class*="noty_layout"] {
@@ -65,35 +66,10 @@
             </div>
 
             <div class="mt-8 pt-4 border-t border-slate-100 space-y-1">
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                    <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
-                    <span>Help Center</span>
-                </a>
-                <a href="" onclick="handleLogout()" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                
+                <a href="/frontdesk/logout" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
                     <span>Logout</span>
-
-<script>
-
-function handleLogout() {
-  
-    // Clear all cookies
-    document.cookie.split(";").forEach((cookie) => {
-        const cookieName = cookie.split("=")[0].trim();
-
-        document.cookie = `${token}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        // document.cookie = `${}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-    });
-
-    // Clear localStorage and sessionStorage if used
-    localStorage.clear();
-    sessionStorage.clear();
-
-    // Redirect to login page
-    window.location.href = "/login";
-}
-
-</script>
 
                 </a>
             </div>
@@ -358,16 +334,35 @@ function handleLogout() {
             });
 
             if (destinationResponse.ok) {
-                alert('New room type profile and matching feature records logged successfully.');
+                await Swal.fire({
+                        icon: 'success',
+                        title: 'Provision Sucessfull',
+                        text: 'Room Type Created Successfully',
+                        confirmButtonColor: '#0f172a',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                 clearCategoryForm();
                 window.location.reload();
             } else {
                 const errorReport = await destinationResponse.json();
-                alert(`Operational Category Failure: ${errorReport.message || 'Data rejection detected.'}`);
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'Provisioning Failed',
+                    text: error.message || 'An unexpected network error occurred. Please try again.',
+                    confirmButtonColor: '#0f172a'
+                });
+             
             }
         } catch (networkFault) {
             console.error('API execution interface tracking breakdown context: ', networkFault);
-            alert('A systemic transaction processing anomaly prevented configuration delivery.');
+             Swal.fire({
+                    icon: 'error',
+                    title: 'Provisioning Failed',
+                    text: error.message || 'A systemic transaction processing anomaly prevented configuration delivery..',
+                    confirmButtonColor: '#0f172a'
+                });
+            
         }
     }
 </script>

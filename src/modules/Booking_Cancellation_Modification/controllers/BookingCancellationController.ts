@@ -18,6 +18,7 @@ class BookingCancellationController {
                 refund: preview.refund
             });
         } catch (error: any) {
+            res.json
             console.error("Error showing cancellation page: ", error);
             return res.status(400).send(`<h3>Error packing cancellation view: ${error.message}</h3>`);
         }

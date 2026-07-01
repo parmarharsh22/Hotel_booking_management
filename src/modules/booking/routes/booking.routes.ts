@@ -80,7 +80,7 @@ const rooms:any = [];
     res.render("myBookings/edit",{booking,rooms})
 
   }
-
+)
 router.get(
   "/notifications/data",
   validToken,
