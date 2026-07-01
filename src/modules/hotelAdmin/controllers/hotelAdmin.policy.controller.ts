@@ -51,6 +51,30 @@ async listPolicies(req: Request, res: Response) {
         refund_percentage:       parseFloat(req.body.refund_percentage),
       };
 
+      // Hours
+if (
+    !Number.isInteger(policy.free_cancellation_hours) ||
+    policy.free_cancellation_hours < 0 ||
+    policy.free_cancellation_hours > 72
+) {
+    throw new Error("Free cancellation hours must be an integer between 0 and 72.");
+}
+
+// Refund Percentage
+if (
+    isNaN(policy.refund_percentage) ||
+    policy.refund_percentage < 0 ||
+    policy.refund_percentage > 100
+) {
+    throw new Error("Refund percentage must be between 0 and 100.");
+}
+if (
+    isNaN(policy.refund_percentage) ||
+    policy.refund_percentage < 0 ||
+    policy.refund_percentage > 100
+) {
+    throw new Error("Refund percentage must be between 0 and 100.");
+}
       await policyService.createPolicy(policy);
      return res.status(200).json({message:'creation success'})
     } catch (err: any) {

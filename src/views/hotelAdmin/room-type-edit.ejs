@@ -137,36 +137,7 @@
              
 
                 <!-- KPI Metric Row -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Categories</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-slate-900">12</span>
-                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">+1 New</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Avg. Base Price</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-slate-900">$420</span>
-                            <span class="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Peak Season</span>
-                        </div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Inventory</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-slate-900">184</span>
-                            <span class="text-xs text-slate-500">Rooms Total</span>
-                        </div>
-                    </div>
-                    <div class="bg-[#0f172a] p-5 rounded-xl border border-slate-800 shadow-sm text-white">
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">RevPAR Forecast</p>
-                        <div class="flex items-baseline space-x-2 mt-2">
-                            <span class="text-2xl font-bold text-white">$312.45</span>
-                            <span class="text-xs text-slate-400"><i class="fa-solid fa-chart-line"></i></span>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <!-- Inventory Data Sheet -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -222,6 +193,12 @@
                         </label>
 
                         <input
+                             min="0"
+                             max="72"
+                             
+                            inputmode="numeric"
+                            autocomplete="off"
+                            onkeydown="return allowIntegerOnly(event)"
                             type="number"
                             step="0.01"
                             id="base_price"
@@ -437,7 +414,35 @@
         </main>
     </div>
 <script>
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
+
+
+// Prevent e, +, -, etc.
+function allowIntegerOnly(event) {
+    const invalidKeys = ['e', 'E', '+', '-', '.'];
+
+    if (invalidKeys.includes(event.key)) {
+        event.preventDefault();
+    }
+
+    return true;
+}
+
+function allowDecimalOnly(event) {
+    const invalidKeys = ['e', 'E', '+', '-'];
+
+    if (invalidKeys.includes(event.key)) {
+        event.preventDefault();
+    }
+
+    return true;
+}
+
+
 
     const form = document.getElementById("editRoomTypeForm");
     const imageInput = document.getElementById("roomImage");
@@ -649,6 +654,9 @@ await Swal.fire({
     }
 
 });
+
+
+
 </script>
 </body>
 </html>

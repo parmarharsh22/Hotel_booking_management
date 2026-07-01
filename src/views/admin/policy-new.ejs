@@ -130,12 +130,18 @@
                                                         <div class="relative">
                                                             <input
                                                                 type="number"
-                                                                id="create_free_cancellation_hours"
-                                                                name="free_cancellation_hours"
-                                                                min="0"
-                                                                step="1"
-                                                                placeholder="e.g. 24"
-                                                                required
+            id="create_free_cancellation_hours"
+            name="free_cancellation_hours"
+            placeholder="e.g. 24"
+            required
+            min="0"
+            max="72"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
+            onkeydown="return allowIntegerOnly(event)"
+            oninput="validateHours(this)"
                                                                 class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
                                                             >
                                                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium pointer-events-none">hrs</span>
@@ -149,13 +155,18 @@
                                                         <div class="relative">
                                                             <input
                                                                 type="number"
-                                                                id="create_refund_percentage"
-                                                                name="refund_percentage"
-                                                                min="0"
-                                                                max="100"
-                                                                step="0.01"
-                                                                placeholder="e.g. 100"
-                                                                required
+            id="create_refund_percentage"
+            name="refund_percentage"
+            placeholder="e.g. 100"
+            required
+            min="0"
+            max="100"
+            step="0.01"
+            inputmode="decimal"
+            autocomplete="off"
+            class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
+            onkeydown="return allowDecimalOnly(event)"
+            oninput="validatePercentage(this)"
                                                                 class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
                                                             >
                                                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium pointer-events-none">%</span>
@@ -307,14 +318,48 @@
                     <div>
                         <label for="edit_free_cancellation_hours" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Free Cancellation Hours</label>
                         <div class="relative">
-                            <input type="number" id="edit_free_cancellation_hours" min="0" step="1" placeholder="e.g. 24" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 pr-10 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
+                            <input type="number"
+                            type="number"
+            
+            name="free_cancellation_hours"
+            placeholder="e.g. 24"
+            required
+            min="0"
+            max="72"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
+            onkeydown="return allowIntegerOnly(event)"
+            oninput="validateHours(this)"
+                            
+                            
+                            
+                            
+                            id="edit_free_cancellation_hours" min="0" step="1" placeholder="e.g. 24" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 pr-10 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium pointer-events-none">hrs</span>
                         </div>
                     </div>
                     <div>
                         <label for="edit_refund_percentage" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Refund Percentage</label>
                         <div class="relative">
-                            <input type="number" id="edit_refund_percentage" min="0" max="100" step="0.01" placeholder="e.g. 100" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 pr-10 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
+                            <input type="number"
+                            
+                            type="number"
+            
+            name="refund_percentage"
+            placeholder="e.g. 100"
+            required
+            min="0"
+            max="100"
+            step="0.01"
+            inputmode="decimal"
+            autocomplete="off"
+            class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition"
+            onkeydown="return allowDecimalOnly(event)"
+            oninput="validatePercentage(this)"
+                            
+                            id="edit_refund_percentage" min="0" max="100" step="0.01" placeholder="e.g. 100" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 pr-10 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium pointer-events-none">%</span>
                         </div>
                     </div>
@@ -336,17 +381,71 @@
     </div>
 
     <script>
-        function handleLogout() {
-            document.cookie.split(";").forEach((cookie) => {
-                const cookieName = cookie.split("=")[0].trim();
-                document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-            });
-            localStorage.clear();
-            sessionStorage.clear();
-            window.location.href = "/login";
-        }
+      // Prevent e, +, -, etc.
+function allowIntegerOnly(event) {
+    const invalidKeys = ['e', 'E', '+', '-', '.'];
 
+    if (invalidKeys.includes(event.key)) {
+        event.preventDefault();
+    }
+
+    return true;
+}
+
+function allowDecimalOnly(event) {
+    const invalidKeys = ['e', 'E', '+', '-'];
+
+    if (invalidKeys.includes(event.key)) {
+        event.preventDefault();
+    }
+
+    return true;
+}
+function validateHours(input) {
+
+    let value = input.value.replace(/\D/g, '');
+
+    if (value === '') {
+        input.value = '';
+        return;
+    }
+
+    value = parseInt(value, 10);
+
+    if (value > 72) {
+        value = 72;
+    }
+
+    input.value = value;
+}
+
+function validatePercentage(input) {
+
+    let value = input.value;
+
+    // Remove everything except digits and one decimal point
+    value = value.replace(/[^0-9.]/g, '');
+
+    // Allow only one decimal point
+    const parts = value.split('.');
+
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Restrict to two decimal places
+    if (value.includes('.')) {
+        const [whole, decimal] = value.split('.');
+        value = `${whole}.${decimal.slice(0, 2)}`;
+    }
+
+    // Restrict maximum value to 100
+    if (parseFloat(value) > 100) {
+        value = '100';
+    }
+
+    input.value = value;
+}
         const policyForm = document.getElementById('createCancellationPolicyForm');
         const policySummary = document.getElementById('policySummary');
         const policyFeedback = document.getElementById('policyFeedback');
