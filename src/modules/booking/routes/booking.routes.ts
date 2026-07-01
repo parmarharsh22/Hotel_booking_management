@@ -21,26 +21,29 @@ router.post(
   validToken,
   allowRoles("GUEST"),
   bookingController.holdBooking,
-); // needs login
+);
+
 router.get(
   "/hold/:hold_id",
   validToken,
   allowRoles("GUEST"),
   bookingController.getHold,
 );
+
 router.post(
   "/confirm",
   validToken,
   allowRoles("GUEST"),
   bookingController.confirmBooking,
 );
+
 router.post(
   "/payment-success",
-  
   validToken,
   allowRoles("GUEST"),
   bookingController.paymentSuccess,
 );
+
 router.post(
   "/payment-failed",
   validToken,
@@ -64,28 +67,30 @@ router.get(
   controller.getBookingDetail.bind(controller),
 );
 
-
-
-
+// Edit booking page
 router.get(
   "/:bookingId/edit",
-  // validToken,
-  // allowRoles("Guest"),
-  (req,res)=>{
-const booking = {
-  checkin_date: new Date(),
-  checkout_date:new Date()
-}
-const rooms:any = [];
-    res.render("myBookings/edit",{booking,rooms})
+  (req, res) => {
+    const booking = {
+      checkin_date: new Date(),
+      checkout_date: new Date(),
+    };
 
+    const rooms: any[] = [];
+
+    res.render("myBookings/edit", {
+      booking,
+      rooms,
+    });
   }
-)
+);
+
+// Notifications
 router.get(
   "/notifications/data",
   validToken,
   allowRoles("GUEST"),
   controller.getNotifications.bind(controller),
-)
+);
 
 export default router;
