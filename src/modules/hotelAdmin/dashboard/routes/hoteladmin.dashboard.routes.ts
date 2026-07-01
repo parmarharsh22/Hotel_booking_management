@@ -1,14 +1,17 @@
 
 import { Router } from "express";
 import { DashboardController } from "../controllers/hotelAdmin.dashboard.controller";
-import { allowRoles } from "../../../../common/middlewares/allowedRoles";
 import { validToken } from "../../../../common/middlewares/verifyJWTToken";
+import { allowRoles } from "../../../../common/middlewares/allowedRoles";
 
 const hoteladmindashboardController = new DashboardController()
 const router  = Router();
 
-router.get('/dashboard',validToken,allowRoles("ADMIN"),hoteladmindashboardController.renderDashboard);
-router.get("/revenue-trend", validToken,allowRoles("ADMIN"), hoteladmindashboardController.getRevenueTrend.bind(hoteladmindashboardController))
+
+router.use(validToken);
+router.use(allowRoles("ADMIN"));
+router.get('/dashboard',hoteladmindashboardController.renderDashboard);
+router.get("/revenue-trend",hoteladmindashboardController.getRevenueTrend.bind(hoteladmindashboardController))
 
 router.get(
   "/booking-status-distribution",
