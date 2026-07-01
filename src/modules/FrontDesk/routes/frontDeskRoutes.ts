@@ -38,6 +38,21 @@ frontDeskRouter.post("/cleanRoom",validToken,frontDeskContext,allowRoles("FRONT_
 
 frontDeskRouter.get("/incidentals",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showIncidentals);
 
+//manageIncidentals
+frontDeskRouter.get("/showIncidental/:bookingId",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.manageIncidentals);
+
+//addIncidential
+frontDeskRouter.post("/incidentals/add",validToken,allowRoles("FRONT_DESK"),frontDeskController.addIncidental);
+
+//removeIncidental
+frontDeskRouter.post("/incidentals/delete/:incidentalid",validToken,allowRoles("FRONT_DESK"),frontDeskController.removeIncidental);
+
+//Payements
+frontDeskRouter.get("/payments",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getPayments);
+
+//invoices
+frontDeskRouter.get("/invoices",validToken,allowRoles("FRONT_DESK"),frontDeskContext,frontDeskController.getInvoices);
+
 // logout
 frontDeskRouter.get("/logout",validToken,frontDeskController.logout);
 

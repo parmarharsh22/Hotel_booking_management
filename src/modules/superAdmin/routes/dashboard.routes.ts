@@ -5,8 +5,8 @@ import { allowRoles } from "../../../common/middlewares/allowedRoles";
 
 const router = Router();
 
-// router.use(validToken);
-// router.use(allowRoles("SUPER_ADMIN"));
+router.use(validToken);
+router.use(allowRoles("SUPER_ADMIN"));
 router.get("/",      dashboardController.dashboardPage);
 router.get("/stats", dashboardController.getDashboardStats);
 

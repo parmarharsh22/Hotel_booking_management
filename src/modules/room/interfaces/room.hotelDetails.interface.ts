@@ -12,6 +12,7 @@ export interface RoomType{
     room_type_id: Number,
     type: string,
     price: Number,
+    photo_url: string,
     max_adults: Number,
     max_children: Number,
     available_rooms: Number,

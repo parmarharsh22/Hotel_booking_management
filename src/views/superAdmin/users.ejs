@@ -1,273 +1,1154 @@
- 
-<%
- 
-  pageTitle  = "Users — HBMS";
- 
-  activePage = "users";
- 
-%>
-   <%- include('_layout_start') %>
+```ejs <% pageTitle = "Users — HBMS"; activePage = "users"; %> <%-
+include('_layout_start') %>
 
- 
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .row-enter {
+    animation: fadeIn 0.25s ease-out both;
+  }
+  .row-enter:nth-child(1) {
+    animation-delay: 0.02s;
+  }
+  .row-enter:nth-child(2) {
+    animation-delay: 0.04s;
+  }
+  .row-enter:nth-child(3) {
+    animation-delay: 0.06s;
+  }
+  .row-enter:nth-child(4) {
+    animation-delay: 0.08s;
+  }
+  .row-enter:nth-child(5) {
+    animation-delay: 0.1s;
+  }
+  .row-enter:nth-child(6) {
+    animation-delay: 0.12s;
+  }
+  .row-enter:nth-child(7) {
+    animation-delay: 0.14s;
+  }
+  .row-enter:nth-child(8) {
+    animation-delay: 0.16s;
+  }
+  .row-enter:nth-child(9) {
+    animation-delay: 0.18s;
+  }
+  .row-enter:nth-child(10) {
+    animation-delay: 0.2s;
+  }
+
+  .avatar-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  }
+  .avatar-gradient-2 {
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  }
+  .avatar-gradient-3 {
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+  }
+  .avatar-gradient-4 {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  }
+  .avatar-gradient-5 {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+  tbody tr.selected {
+    background-color: rgba(99, 102, 241, 0.08);
+  }
+
+  .checkbox-custom {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #475569;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .checkbox-custom:hover {
+    border-color: #6366f1;
+  }
+  .checkbox-custom:checked {
+    background: #6366f1;
+    border-color: #6366f1;
+  }
+  .checkbox-custom:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checkbox-custom:indeterminate {
+    background: #6366f1;
+    border-color: #6366f1;
+  }
+  .checkbox-custom:indeterminate::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    width: 8px;
+    height: 2px;
+    background: white;
+  }
+
+  .sort-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sort-btn:hover {
+    color: #e2e8f0;
+  }
+  .sort-icon {
+    opacity: 0.3;
+    transition: opacity 0.15s;
+  }
+  .sort-btn.active .sort-icon {
+    opacity: 1;
+    color: #818cf8;
+  }
+
+  .action-btn {
+    opacity: 0;
+    transition:
+      opacity 0.15s,
+      background-color 0.15s,
+      color 0.15s;
+  }
+  tbody tr:hover .action-btn {
+    opacity: 1;
+  }
+  tbody tr:focus-within .action-btn {
+    opacity: 1;
+  }
+
+  .stat-card {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .stat-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  .pulse-dot {
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: all 0.15s ease;
+  }
+  .dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+</style>
+
 <!-- Top bar -->
- 
-<div class="px-8 py-5 border-b border-surface-border flex items-center justify-between">
- 
+<div
+  class="px-8 py-5 border-b border-surface-border flex items-center justify-between"
+>
   <div>
- 
-    <h1 class="text-lg font-semibold ">Users</h1>
- 
+    <h1 class="text-lg font-semibold">Users</h1>
     <p class="text-xs text-muted mt-0.5">All platform users across tenants</p>
- 
   </div>
- 
+  <div class="flex items-center gap-2">
+    <button
+      id="export-btn"
+      class="btn-secondary text-xs flex items-center gap-1.5"
+    >
+      <svg
+        class="w-3.5 h-3.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      Export
+    </button>
+  </div>
 </div>
- 
- 
+
 <div class="px-8 py-6 space-y-4">
- 
- 
-  <!-- Search & filter -->
- 
-  <div class="flex items-center gap-3">
- 
-    <div class="relative flex-1 max-w-xs">
- 
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
- 
-      <input id="user-search" type="text" placeholder="Search by name or email..." class="input-field pl-9 text-sm" />
- 
+  <!-- Stats cards -->
+  <div id="stats-row" class="grid grid-cols-4 gap-3">
+    <div
+      class="stat-card rounded-lg px-4 py-3 flex items-center gap-3 transition-colors"
+    >
+      <div
+        class="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-indigo-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Total
+        </div>
+        <div id="stat-total" class="text-lg font-semibold font-mono">—</div>
+      </div>
     </div>
- 
+    <div
+      class="stat-card rounded-lg px-4 py-3 flex items-center gap-3 transition-colors"
+    >
+      <div
+        class="w-9 h-9 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-purple-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 15l-2 5l9-11h-5l2-5l-9 11z" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Super Admins
+        </div>
+        <div id="stat-admins" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+    <div
+      class="stat-card rounded-lg px-4 py-3 flex items-center gap-3 transition-colors"
+    >
+      <div
+        class="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-blue-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Hotels
+        </div>
+        <div id="stat-hotels" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+    <div
+      class="stat-card rounded-lg px-4 py-3 flex items-center gap-3 transition-colors"
+    >
+      <div
+        class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-4 h-4 text-emerald-400"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="8.5" cy="7" r="4" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-[10px] text-muted font-mono uppercase tracking-wider">
+          Guests
+        </div>
+        <div id="stat-guests" class="text-lg font-semibold font-mono">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & filter -->
+  <div class="flex items-center gap-3">
+    <div class="relative flex-1 min-w-[450px]">
+      <input
+        id="user-search"
+        type="text"
+        placeholder="Search by name or email..."
+        class="input-field w-full pl-9 pr-8 text-sm"
+      />
+      <button
+        id="clear-search"
+        class="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full hover:bg-white/10 text-muted hover: items-center justify-center transition-colors hidden"
+      >
+        <svg
+          class="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          viewBox="0 0 24 24"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
     <select id="role-filter" class="input-field text-sm w-44">
- 
       <option value="">All Roles</option>
- 
       <option value="SUPER_ADMIN">Super Admin</option>
- 
       <option value="HOTEL_ADMIN">Hotel Admin</option>
- 
       <option value="FRONT_DESK">Front Desk</option>
- 
       <option value="GUEST">Guest</option>
- 
     </select>
- 
+    <select id="hotel-filter" class="input-field text-sm w-44">
+      <option value="">All Hotels</option>
+    </select>
 
- 
+    <!-- Bulk actions -->
+    <div
+      id="bulk-actions"
+      class="hidden items-center gap-2 ml-2 pl-3 border-l border-surface-border"
+    >
+      <span class="text-xs text-indigo-300 font-mono"
+        ><span id="selected-count">0</span> selected</span
+      >
+      <button
+        id="bulk-delete"
+        class="text-xs px-2.5 py-1.5 rounded-md bg-red-500/10 border border-red-500/30 text-red-300 hover:bg-red-500/20 transition-colors flex items-center gap-1"
+      >
+        <svg
+          class="w-3 h-3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path
+            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+          />
+        </svg>
+        Delete
+      </button>
+    </div>
+
     <span id="user-count" class="text-xs text-muted font-mono ml-auto"></span>
- 
   </div>
- 
- 
+
   <!-- Table -->
- 
   <div class="card overflow-hidden">
- 
-    <table class="w-full text-sm">
- 
-      <thead>
- 
-        <tr class="border-b border-surface-border bg-surface-2 text-left">
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">User</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Role</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Hotel</th>
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Contact</th>
- 
-
- 
-          <th class="px-6 py-3 text-xs font-mono text-muted uppercase tracking-wider">Joined</th>
- 
-        </tr>
- 
-      </thead>
- 
-      <tbody id="users-tbody">
- 
-        <tr><td colspan="5" class="px-6 py-10 text-center text-muted">Loading...</td></tr>
- 
-      </tbody>
- 
-    </table>
- 
-  </div>
- 
- 
-</div>
- 
- 
-<script>
- 
-  let allUsers = [];
- 
- 
-  const roleStyles = {
- 
-    SUPER_ADMIN: 'bg-purple-950 border border-purple-800 text-purple-300',
- 
-    HOTEL_ADMIN: 'bg-blue-950 border border-blue-800 text-blue-300',
- 
-    FRONT_DESK:  'bg-cyan-950 border border-cyan-800 text-cyan-300',
- 
-    GUEST:       'bg-slate-800 border border-slate-700 text-slate-400',
- 
-  };
- 
- 
-  async function loadUsers() {
- 
-    try {
- 
-      const res = await fetch('/superadmin/auth/getAllUser', {
-        headers:{'Accept':'application/json'}
-      });
- 
-      allUsers  = await res.json();
- 
-      renderUsers(allUsers);
- 
-    } catch {
- 
-      document.getElementById('users-tbody').innerHTML =
- 
-        `<tr><td colspan="5" class="px-6 py-10 text-center text-danger">Failed to load users</td></tr>`;
- 
-    }
- 
-  }
- 
- 
-  function renderUsers(users) {
- 
-    document.getElementById('user-count').textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
- 
- 
-    if (users.length === 0) {
- 
-      document.getElementById('users-tbody').innerHTML =
- 
-        `<tr><td colspan="5" class="px-6 py-10 text-center text-muted">No users found</td></tr>`;
- 
-      return;
- 
-    }
- 
- 
-    document.getElementById('users-tbody').innerHTML = users.map(u => {
- 
-      const initials = `${(u.first_name || '')[0] || ''}${(u.last_name || '')[0] || ''}`.toUpperCase() || '?';
- 
-      const roleCls  = roleStyles[u.role_name] || roleStyles.GUEST;
- 
-      const roleName = u.role_name || `Role #${u.user_role_id}`;
- 
- 
-      return `
- 
-        <tr class="table-row border-b border-surface-border last:border-0">
- 
-          <td class="px-6 py-3.5">
- 
-            <div class="flex items-center gap-3">
- 
-              <div class="w-8 h-8 rounded-full bg-accent-muted text-accent font-mono text-xs font-bold flex items-center justify-center flex-shrink-0">${initials}</div>
- 
-              <div>
- 
-                <div class="font-medium  text-sm">${u.first_name} ${u.last_name}</div>
- 
-                <div class="text-xs text-muted font-mono">#${u.user_id}</div>
- 
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-surface-border bg-surface-2 text-left">
+            <th class="px-4 py-3 w-10">
+              <input type="checkbox" id="select-all" class="checkbox-custom" />
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="name">
+                User
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="role">
+                Role
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="hotel">
+                Hotel
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              Contact
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider"
+            >
+              <button class="sort-btn" data-sort="joined">
+                Joined
+                <svg
+                  class="sort-icon w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7 10l5-5 5 5M7 14l5 5 5-5" />
+                </svg>
+              </button>
+            </th>
+            <th
+              class="px-4 py-3 text-xs font-mono text-muted uppercase tracking-wider text-right"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr>
+            <td colspan="7" class="px-6 py-16 text-center">
+              <div class="flex flex-col items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-full border-2 border-surface-border border-t-indigo-500 animate-spin"
+                ></div>
+                <span class="text-muted text-xs font-mono"
+                  >Loading users...</span
+                >
               </div>
- 
-            </div>
- 
-          </td>
- 
-          <td class="px-6 py-3.5">
- 
-            <span class="text-xs font-mono px-2 py-0.5 rounded-md ${roleCls}">${roleName}</span>
- 
-          </td>
- 
-          <td class="px-6 py-3.5 text-slate-400 text-xs">
- 
-            ${u.hotel_name ? `<div class="text-slate-300">${u.hotel_name}</div>` : '<span class="text-muted">—</span>'}
- 
-            ${u.hotel_id ? `<div class="text-muted font-mono">#${u.hotel_id}</div>` : ''}
- 
-          </td>
- 
-          <td class="px-6 py-3.5">
- 
-            <div class="text-xs text-slate-300">${u.email}</div>
- 
-            <div class="text-xs text-muted">${u.phone || ''}</div>
- 
-          </td>
- 
- 
- 
-          <td class="px-6 py-3.5 text-slate-400 font-mono text-xs">${formatDate(u.created_at)}</td>
- 
-        </tr>
- 
-      `;
- 
-    }).join('');
- 
-  }
- 
- 
-  function applyFilters() {
- 
-    const q      = document.getElementById('user-search').value.toLowerCase();
- 
-    const role   = document.getElementById('role-filter').value;
- 
- 
- 
-    const filtered = allUsers.filter(u => {
- 
-      const fullName = `${u.first_name} ${u.last_name}`.toLowerCase();
- 
-      const matchQ = !q || fullName.includes(q) || u.email.toLowerCase().includes(q);
- 
-      const matchR = !role   || u.role_name === role;
- 
- 
-      return matchQ && matchR;
- 
-    });
- 
- 
-    renderUsers(filtered);
- 
-  }
- 
- 
-  document.getElementById('user-search').addEventListener('input', applyFilters);
- 
-  document.getElementById('role-filter').addEventListener('change', applyFilters);
- 
- 
- 
-  function formatDate(ts) {
- 
-    if (!ts) return '—';
- 
-    return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
- 
-  }
- 
- 
-  loadUsers();
- 
-</script>
- 
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-   <%- include('_layout_end') %>
+    <!-- Pagination -->
+    <div
+      id="pagination"
+      class="hidden border-t border-surface-border px-4 py-3 flex items-center justify-between bg-surface-2/50"
+    >
+      <div class="text-xs text-muted font-mono">
+        Showing <span id="page-start">1</span>–<span id="page-end">10</span> of
+        <span id="page-total">0</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <button
+          id="prev-page"
+          class="btn-secondary text-xs px-2.5 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+          disabled
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <div id="page-numbers" class="flex items-center gap-1"></div>
+        <button
+          id="next-page"
+          class="btn-secondary text-xs px-2.5 py-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <svg
+            class="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User detail drawer -->
+<div id="user-drawer" class="fixed inset-0 z-50 hidden">
+  <div
+    class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+    id="drawer-backdrop"
+  ></div>
+  <div
+    class="absolute right-0 top-0 h-full w-full max-w-md bg-surface border-l border-surface-border shadow-2xl transform transition-transform duration-300 translate-x-full"
+    id="drawer-panel"
+  >
+    <div class="h-full flex flex-col">
+      <div
+        class="px-6 py-4 border-b border-surface-border flex items-center justify-between"
+      >
+        <h3 class="font-semibold text-sm">User Details</h3>
+        <button
+          id="close-drawer"
+          class="w-7 h-7 rounded-md hover:bg-white/5 flex items-center justify-center text-muted hover:text-black transition-colors"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div
+        id="drawer-content"
+        class="flex-1 overflow-y-auto p-6 space-y-5"
+      ></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let allUsers = [];
+  let filteredUsers = [];
+  let currentPage = 1;
+  const pageSize = 10;
+  let selectedIds = new Set();
+  let sortState = { key: null, dir: "asc" };
+
+  const roleStyles = {
+    SUPER_ADMIN: "bg-purple-500/10 border border-purple-500/30 text-purple-300",
+    HOTEL_ADMIN: "bg-blue-500/10 border border-blue-500/30 text-blue-300",
+    FRONT_DESK: "bg-cyan-500/10 border border-cyan-500/30 text-cyan-300",
+    GUEST: "bg-slate-500/10 border border-slate-500/30 ",
+  };
+  const roleIcons = {
+    SUPER_ADMIN:
+      '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>',
+    HOTEL_ADMIN:
+      '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    FRONT_DESK:
+      '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+    GUEST:
+      '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  };
+
+  const avatarGradients = [
+    "avatar-gradient",
+    "avatar-gradient-2",
+    "avatar-gradient-3",
+    "avatar-gradient-4",
+    "avatar-gradient-5",
+  ];
+  function getAvatarClass(id) {
+    return avatarGradients[(id || 0) % avatarGradients.length];
+  }
+
+  async function loadUsers() {
+    try {
+      const res = await fetch("/superadmin/auth/getAllUser", {
+        headers: { Accept: "application/json" },
+      });
+      allUsers = await res.json();
+      populateHotelFilter();
+      updateStats();
+      applyFilters();
+    } catch {
+      document.getElementById("users-tbody").innerHTML =
+        `<tr><td colspan="7" class="px-6 py-16 text-center">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="text-black text-sm font-medium">Failed to load users</div>
+              <div class="text-muted text-xs mt-1">Please check your connection and try again</div>
+            </div>
+            <button onclick="loadUsers()" class="btn-secondary text-xs mt-2">Retry</button>
+          </div>
+        </td></tr>`;
+    }
+  }
+
+  function populateHotelFilter() {
+    const hotels = [
+      ...new Map(
+        allUsers
+          .filter((u) => u.hotel_id && u.hotel_name)
+          .map((u) => [u.hotel_id, u]),
+      ).values(),
+    ].sort((a, b) => a.hotel_name.localeCompare(b.hotel_name));
+    const sel = document.getElementById("hotel-filter");
+    hotels.forEach((h) => {
+      const opt = document.createElement("option");
+      opt.value = h.hotel_id;
+      opt.textContent = h.hotel_name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function updateStats() {
+    document.getElementById("stat-total").textContent = allUsers.length;
+    document.getElementById("stat-admins").textContent = allUsers.filter(
+      (u) => u.role_name === "SUPER_ADMIN",
+    ).length;
+    document.getElementById("stat-hotels").textContent = new Set(
+      allUsers.map((u) => u.hotel_id).filter(Boolean),
+    ).size;
+    document.getElementById("stat-guests").textContent = allUsers.filter(
+      (u) => u.role_name === "GUEST",
+    ).length;
+  }
+
+  function applyFilters() {
+    const q = document.getElementById("user-search").value.toLowerCase();
+    const role = document.getElementById("role-filter").value;
+    const hotel = document.getElementById("hotel-filter").value;
+
+    filteredUsers = allUsers.filter((u) => {
+      const fullName = `${u.first_name} ${u.last_name}`.toLowerCase();
+      const matchQ =
+        !q || fullName.includes(q) || u.email.toLowerCase().includes(q);
+      const matchR = !role || u.role_name === role;
+      const matchH = !hotel || String(u.hotel_id) === String(hotel);
+      return matchQ && matchR && matchH;
+    });
+
+    if (sortState.key) {
+      filteredUsers.sort((a, b) => {
+        let va, vb;
+        if (sortState.key === "name") {
+          va = `${a.first_name} ${a.last_name}`.toLowerCase();
+          vb = `${b.first_name} ${b.last_name}`.toLowerCase();
+        } else if (sortState.key === "role") {
+          va = a.role_name || "";
+          vb = b.role_name || "";
+        } else if (sortState.key === "hotel") {
+          va = a.hotel_name || "";
+          vb = b.hotel_name || "";
+        } else if (sortState.key === "joined") {
+          va = new Date(a.created_at || 0).getTime();
+          vb = new Date(b.created_at || 0).getTime();
+        }
+        if (va < vb) return sortState.dir === "asc" ? -1 : 1;
+        if (va > vb) return sortState.dir === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    currentPage = 1;
+    renderPage();
+  }
+
+  function renderPage() {
+    const total = filteredUsers.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * pageSize;
+    const pageUsers = filteredUsers.slice(start, start + pageSize);
+
+    document.getElementById("user-count").textContent =
+      `${total} user${total !== 1 ? "s" : ""}`;
+    document.getElementById("clear-search").style.display =
+      document.getElementById("user-search").value ? "flex" : "none";
+
+    if (total === 0) {
+      document.getElementById("users-tbody").innerHTML =
+        `<tr><td colspan="7" class="px-6 py-16 text-center">
+          <div class="flex flex-col items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-surface-2 border border-surface-border flex items-center justify-center">
+              <svg class="w-5 h-5 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <div>
+              <div class="text-black text-sm font-medium">No users found</div>
+              <div class="text-muted text-xs mt-1">Try adjusting your filters</div>
+            </div>
+          </div>
+        </td></tr>`;
+      document.getElementById("pagination").classList.add("hidden");
+      return;
+    }
+
+    document.getElementById("users-tbody").innerHTML = pageUsers
+      .map((u) => {
+        const initials =
+          `${(u.first_name || "")[0] || ""}${(u.last_name || "")[0] || ""}`.toUpperCase() ||
+          "?";
+        const roleCls = roleStyles[u.role_name] || roleStyles.GUEST;
+        const roleName = (u.role_name || "GUEST").replace(/_/g, " ");
+        const roleIcon = roleIcons[u.role_name] || roleIcons.GUEST;
+        const avatarCls = getAvatarClass(u.user_id);
+        const isSelected = selectedIds.has(u.user_id);
+
+        return `
+        <tr class="table-row border-b border-surface-border/50 last:border-0 row-enter ${isSelected ? "selected" : ""}" data-id="${u.user_id}">
+          <td class="px-4 py-3">
+            <input type="checkbox" class="checkbox-custom row-check" data-id="${u.user_id}" ${isSelected ? "checked" : ""} />
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <div class="w-9 h-9 rounded-full ${avatarCls}  font-mono text-xs font-bold flex items-center justify-center flex-shrink-0 shadow-lg shadow-black/20">${initials}</div>
+                <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-surface pulse-dot" title="Active"></div>
+              </div>
+              <div class="min-w-0">
+                <div class="font-medium  text-sm truncate">${u.first_name} ${u.last_name}</div>
+                <div class="text-[11px] text-muted font-mono">#${u.user_id}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-1 rounded-md ${roleCls}">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${roleIcon}</svg>
+              ${roleName}
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            ${
+              u.hotel_name
+                ? `<div class="flex items-center gap-2">
+                   <div class="w-6 h-6 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                     <svg class="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                   </div>
+                   <div class="min-w-0">
+                     <div class=" text-xs truncate">${u.hotel_name}</div>
+                     <div class="text-muted font-mono text-[10px]">#${u.hotel_id}</div>
+                   </div>
+                 </div>`
+                : '<span class="text-muted text-xs">—</span>'
+            }
+          </td>
+          <td class="px-4 py-3">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-1.5 text-xs ">
+                <svg class="w-3 h-3 text-muted flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <span class="truncate">${u.email}</span>
+              </div>
+              ${
+                u.phone
+                  ? `<div class="flex items-center gap-1.5 text-xs text-muted">
+                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>${u.phone}</span>
+              </div>`
+                  : ""
+              }
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="text-black font-mono text-xs">${formatDate(u.created_at)}</div>
+            <div class="text-muted text-[10px] mt-0.5">${timeAgo(u.created_at)}</div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center justify-end gap-1">
+              <button class="action-btn w-7 h-7 rounded-md hover:bg-indigo-500/10 text-muted hover:text-indigo-300 flex items-center justify-center transition-colors" onclick="viewUser(${u.user_id})" title="View">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            
+            
+            </div>
+          </td>
+        </tr>
+      `;
+      })
+      .join("");
+
+    renderPagination(total, totalPages);
+    bindRowEvents();
+  }
+
+  function renderPagination(total, totalPages) {
+    const pag = document.getElementById("pagination");
+    if (total <= pageSize) {
+      pag.classList.add("hidden");
+      return;
+    }
+    pag.classList.remove("hidden");
+
+    const start = (currentPage - 1) * pageSize + 1;
+    const end = Math.min(currentPage * pageSize, total);
+    document.getElementById("page-start").textContent = start;
+    document.getElementById("page-end").textContent = end;
+    document.getElementById("page-total").textContent = total;
+
+    document.getElementById("prev-page").disabled = currentPage === 1;
+    document.getElementById("next-page").disabled = currentPage === totalPages;
+
+    const nums = document.getElementById("page-numbers");
+    let pages = [];
+    if (totalPages <= 5) {
+      pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    } else {
+      if (currentPage <= 3) pages = [1, 2, 3, 4, "...", totalPages];
+      else if (currentPage >= totalPages - 2)
+        pages = [
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        ];
+      else
+        pages = [
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages,
+        ];
+    }
+    nums.innerHTML = pages
+      .map((p) => {
+        if (p === "...")
+          return `<span class="text-xs text-muted px-1">…</span>`;
+        return `<button class="page-num w-7 h-7 rounded text-xs font-mono transition-colors ${p === currentPage ? "bg-indigo-500 " : "text-muted hover:bg-white/5 hover:text-black"}" data-page="${p}">${p}</button>`;
+      })
+      .join("");
+
+    nums.querySelectorAll(".page-num").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentPage = parseInt(btn.dataset.page);
+        renderPage();
+      });
+    });
+  }
+
+  function bindRowEvents() {
+    document.querySelectorAll(".row-check").forEach((cb) => {
+      cb.addEventListener("change", (e) => {
+        const id = parseInt(e.target.dataset.id);
+        if (e.target.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+        e.target.closest("tr").classList.toggle("selected", e.target.checked);
+        updateBulkUI();
+      });
+    });
+  }
+
+  function updateBulkUI() {
+    const bulk = document.getElementById("bulk-actions");
+    if (selectedIds.size > 0) {
+      bulk.classList.remove("hidden");
+      bulk.classList.add("flex");
+      document.getElementById("selected-count").textContent = selectedIds.size;
+    } else {
+      bulk.classList.add("hidden");
+      bulk.classList.remove("flex");
+    }
+    const allChecks = document.querySelectorAll(".row-check");
+    const selectAll = document.getElementById("select-all");
+    if (allChecks.length === 0) {
+      selectAll.checked = false;
+      selectAll.indeterminate = false;
+      return;
+    }
+    const checkedCount = [...allChecks].filter((c) => c.checked).length;
+    selectAll.checked = checkedCount === allChecks.length;
+    selectAll.indeterminate =
+      checkedCount > 0 && checkedCount < allChecks.length;
+  }
+
+  // Sorting
+  document.querySelectorAll(".sort-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.sort;
+      if (sortState.key === key) {
+        sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
+      } else {
+        sortState.key = key;
+        sortState.dir = "asc";
+      }
+      document.querySelectorAll(".sort-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.sort === sortState.key);
+        const icon = b.querySelector(".sort-icon");
+        if (b.dataset.sort === sortState.key) {
+          icon.style.transform =
+            sortState.dir === "asc" ? "" : "rotate(180deg)";
+        } else {
+          icon.style.transform = "";
+        }
+      });
+      applyFilters();
+    });
+  });
+
+  // Select all
+  document.getElementById("select-all").addEventListener("change", (e) => {
+    const checked = e.target.checked;
+    document.querySelectorAll(".row-check").forEach((cb) => {
+      cb.checked = checked;
+      const id = parseInt(cb.dataset.id);
+      if (checked) selectedIds.add(id);
+      else selectedIds.delete(id);
+      cb.closest("tr").classList.toggle("selected", checked);
+    });
+    updateBulkUI();
+  });
+
+  // Pagination buttons
+  document.getElementById("prev-page").addEventListener("click", () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderPage();
+    }
+  });
+  document.getElementById("next-page").addEventListener("click", () => {
+    currentPage++;
+    renderPage();
+  });
+
+  // Search & filters
+  document
+    .getElementById("user-search")
+    .addEventListener("input", applyFilters);
+  document
+    .getElementById("role-filter")
+    .addEventListener("change", applyFilters);
+  document
+    .getElementById("hotel-filter")
+    .addEventListener("change", applyFilters);
+  document.getElementById("clear-search").addEventListener("click", () => {
+    document.getElementById("user-search").value = "";
+    applyFilters();
+  });
+
+  // Drawer
+  function openDrawer(user) {
+    const drawer = document.getElementById("user-drawer");
+    const panel = document.getElementById("drawer-panel");
+    const content = document.getElementById("drawer-content");
+    const initials =
+      `${(user.first_name || "")[0] || ""}${(user.last_name || "")[0] || ""}`.toUpperCase() ||
+      "?";
+    const avatarCls = getAvatarClass(user.user_id);
+    const roleCls = roleStyles[user.role_name] || roleStyles.GUEST;
+    const roleName = (user.role_name || "GUEST").replace(/_/g, " ");
+
+    content.innerHTML = `
+      <div class="flex flex-col items-center text-center pb-5 border-b border-surface-border">
+        <div class="w-20 h-20 rounded-full ${avatarCls}  font-mono text-2xl font-bold flex items-center justify-center shadow-xl shadow-black/30 mb-3">${initials}</div>
+        <h2 class="text-lg font-semibold ">${user.first_name} ${user.last_name}</h2>
+        <p class="text-xs text-muted font-mono mt-0.5">#${user.user_id}</p>
+        <span class="inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-md mt-3 ${roleCls}">${roleName}</span>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="text-[10px] text-muted font-mono uppercase tracking-wider mb-2">Contact Information</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span class="text-xs  font-mono">${user.email}</span>
+            </div>
+            ${
+              user.phone
+                ? `<div class="flex items-center gap-3 p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span class="text-xs  font-mono">${user.phone}</span>
+            </div>`
+                : ""
+            }
+          </div>
+        </div>
+
+        ${
+          user.hotel_name
+            ? `<div>
+          <div class="text-[10px] text-muted font-mono uppercase tracking-wider mb-2">Hotel</div>
+          <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-2/50 border border-surface-border/50">
+            <div class="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div>
+              <div class="text-sm text-black">${user.hotel_name}</div>
+              <div class="text-[10px] text-muted font-mono">#${user.hotel_id}</div>
+            </div>
+          </div>
+        </div>`
+            : ""
+        }
+
+        <div>
+          <div class="text-[10px] text-muted font-mono uppercase tracking-wider mb-2">Account</div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <div class="text-[10px] text-muted font-mono">Role ID</div>
+              <div class="text-xs text-black font-mono mt-0.5">#${user.user_role_id || "—"}</div>
+            </div>
+            <div class="p-2.5 rounded-lg bg-surface-2/50 border border-surface-border/50">
+              <div class="text-[10px] text-muted font-mono">Joined</div>
+              <div class="text-xs text-black font-mono mt-0.5">${formatDate(user.created_at)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    `;
+
+    drawer.classList.remove("hidden");
+    requestAnimationFrame(() => panel.classList.remove("translate-x-full"));
+  }
+
+  function closeDrawer() {
+    const panel = document.getElementById("drawer-panel");
+    panel.classList.add("translate-x-full");
+    setTimeout(
+      () => document.getElementById("user-drawer").classList.add("hidden"),
+      300,
+    );
+  }
+
+  document
+    .getElementById("close-drawer")
+    .addEventListener("click", closeDrawer);
+  document
+    .getElementById("drawer-backdrop")
+    .addEventListener("click", closeDrawer);
+
+  window.viewUser = (id) => {
+    const u = allUsers.find((x) => x.user_id === id);
+    if (u) openDrawer(u);
+  };
+  window.editUser = (id) => {
+    console.log("Edit user", id);
+    // TODO: open edit modal
+  };
+  window.deleteUser = (id) => {
+    if (confirm("Are you sure you want to delete this user?")) {
+      console.log("Delete user", id);
+      // TODO: call delete API
+    }
+  };
+
+  // Export
+  document.getElementById("export-btn").addEventListener("click", () => {
+    const headers = [
+      "ID",
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone",
+      "Role",
+      "Hotel",
+      "Joined",
+    ];
+    const rows = filteredUsers.map((u) => [
+      u.user_id,
+      u.first_name,
+      u.last_name,
+      u.email,
+      u.phone || "",
+      u.role_name || "",
+      u.hotel_name || "",
+      u.created_at || "",
+    ]);
+    const csv = [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `users-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Bulk delete
+  document.getElementById("bulk-delete").addEventListener("click", () => {
+    if (confirm(`Delete ${selectedIds.size} selected user(s)?`)) {
+      console.log("Bulk delete", [...selectedIds]);
+      // TODO: call bulk delete API
+    }
+  });
+
+  function formatDate(ts) {
+    if (!ts) return "—";
+    return new Date(ts).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
+  function timeAgo(ts) {
+    if (!ts) return "";
+    const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+    if (diff < 60) return "just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 2592000) return `${Math.floor(diff / 86400)}d ago`;
+    if (diff < 31536000) return `${Math.floor(diff / 2592000)}mo ago`;
+    return `${Math.floor(diff / 31536000)}y ago`;
+  }
+
+  loadUsers();
+</script>
+
+<%- include('_layout_end') %> ```

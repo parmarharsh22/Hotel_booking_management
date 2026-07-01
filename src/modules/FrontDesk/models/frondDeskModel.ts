@@ -1,7 +1,7 @@
 import { db } from "../../../config/db";
-import type { FrontDeskUserRow, ArrivalRow,BookingDetailRow,VerificationPageRow,VerificationStatus,getAllCheckInGuest,CheckedOutRoom,} from "../types/frontDesk.types";
+import type { FrontDeskUserRow, ArrivalRow, BookingDetailRow, VerificationPageRow, VerificationStatus, getAllCheckInGuest, CheckedOutRoom, renderIncidentals, } from "../types/frontDesk.types";
 import type { RoomInventoryRow } from "../types/frontDesk.types";
-import type { DashboardCounts,FloorOccupancyRow,RoomTypeUtilizationRow,ArrivalForecastRow,} from "../types/frontDesk.types";
+import type { DashboardCounts, FloorOccupancyRow, RoomTypeUtilizationRow, ArrivalForecastRow, Incidental, PaymentList,InvoiceList } from "../types/frontDesk.types";
 import { PoolConnection } from "mysql2/promise";
 
 // get front desk user and hotel data
@@ -132,7 +132,7 @@ export const getUpcomingArrivals = async (
 export const getBookingDetails = async (
     bookingRef: string
 ): Promise<BookingDetailRow | null> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<BookingDetailRow[]>(
         `
         SELECT
           b.booking_id, b.booking_reference,
@@ -164,7 +164,7 @@ export const getBookingDetails = async (
 export const getVerificationPageData = async (
     bookingReference: string
 ): Promise<VerificationPageRow | null> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<VerificationPageRow[]>(
         `
         SELECT
           b.booking_id, b.booking_reference,
@@ -231,7 +231,7 @@ export const updateRoomState = async (
 export const getRoomStatuses = async (
     hotelId: number
 ): Promise<RoomInventoryRow[]> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<RoomInventoryRow[]>(
         `
         SELECT
             r.room_number,
@@ -259,34 +259,33 @@ export const getRoomStatuses = async (
             ON rs.room_status_id = r.room_status_id
 
         LEFT JOIN (
-            SELECT
-                x.room_id,
-                x.booking_id,
-                x.booking_reference,
-                x.checkout_date,
-                x.guest_name
-            FROM (
-                SELECT
-                    br.room_id,
-                    b.booking_id,
-                    b.booking_reference,
-                    b.checkout_date,
-                    CONCAT(u.first_name,' ',u.last_name) AS guest_name,
+    SELECT
+        x.room_id,
+        x.booking_id,
+        x.booking_reference,
+        x.checkout_date,
+        x.guest_name
+    FROM (
+        SELECT
+            br.room_id,
+            b.booking_id,
+            b.booking_reference,
+            b.checkout_date,
+            CONCAT(u.first_name,' ',u.last_name) AS guest_name,
 
-                    ROW_NUMBER() OVER (
-                        PARTITION BY br.room_id
-                        ORDER BY b.checkout_date DESC, b.booking_id DESC
-                    ) AS rn
+            ROW_NUMBER() OVER (
+                PARTITION BY br.room_id
+                ORDER BY b.checkout_date DESC, b.booking_id DESC
+            ) AS rn
 
-                FROM booking_rooms br
-                JOIN bookings b ON b.booking_id = br.booking_id
-                JOIN users u    ON u.user_id    = b.user_id
+            FROM booking_rooms br
+            JOIN bookings b ON b.booking_id = br.booking_id
+            JOIN users u    ON u.user_id    = b.user_id
 
-                WHERE CURDATE() >= b.checkin_date
-                  AND CURDATE() < b.checkout_date
-                  AND b.booking_status_id = 3
+                WHERE b.booking_status_id = 3   -- ← only status drives occupancy, not dates
             ) x
             WHERE x.rn = 1
+
         ) ab ON ab.room_id = r.room_id
 
         WHERE r.hotel_id = ?
@@ -303,7 +302,7 @@ export const getRoomStatuses = async (
 export const getAllCounts = async (
     hotelId: number
 ): Promise<DashboardCounts> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<DashboardCounts[]>(
         `
         SELECT
             SUM(
@@ -354,7 +353,7 @@ export const getAllCounts = async (
 export const getFloorOccupancy = async (
     hotelId: number
 ): Promise<FloorOccupancyRow[]> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<FloorOccupancyRow[]>(
         `
         SELECT
             r.floor,
@@ -383,7 +382,7 @@ export const getFloorOccupancy = async (
 export const getRoomTypeUtilization = async (
     hotelId: number
 ): Promise<RoomTypeUtilizationRow[]> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<RoomTypeUtilizationRow[]>(
         `
         SELECT
             rt.type_name,
@@ -413,7 +412,7 @@ export const getRoomTypeUtilization = async (
 export const getArrivalForecast = async (
     hotelId: number
 ): Promise<ArrivalForecastRow[]> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<ArrivalForecastRow[]>(
         `
         SELECT
             DATE(checkin_date) AS arrival_date,
@@ -467,7 +466,7 @@ export const fetchBookingsCount = async (sql: string, params: any[]) => {
 export const getAllCheckInGuests = async (
     hotelId: number
 ): Promise<getAllCheckInGuest[]> => {
-    const [rows] = await db.query<any[]>(
+    const [rows] = await db.query<getAllCheckInGuest[]>(
         `
         SELECT
             b.booking_id,
@@ -524,7 +523,7 @@ export const getBookingRooms = async (
     bookingReference: string,
     hotelId: number
 ): Promise<CheckedOutRoom[]> => {
-    const [rows] = await conn.query<any[]>(
+    const [rows] = await conn.query<CheckedOutRoom[]>(
         `
         SELECT
             r.room_id,
@@ -609,4 +608,236 @@ export const markRoomsOccupied = async (bookingId: string): Promise<void> => {
         `,
         [bookingId]
     );
-}; 
+};
+
+//render the incidentails added with anyPerson
+export const renderIncidential = async (hotelId: number): Promise<renderIncidentals[]> => {
+    const [rows] = await db.query<renderIncidentals[]>(
+        `SELECT
+            b.booking_id,
+            b.booking_reference,
+            b.checkin_date,
+            b.checkout_date,
+
+            u.first_name,
+            u.last_name,
+
+            bs.status_name,
+
+            COUNT(br.room_id) AS total_rooms
+
+
+        FROM bookings b
+
+        INNER JOIN users u
+            ON u.user_id = b.user_id
+
+        INNER JOIN booking_statuses bs
+            ON bs.booking_status_id = b.booking_status_id
+
+        LEFT JOIN booking_rooms br
+            ON br.booking_id = b.booking_id
+
+        WHERE
+            b.hotel_id = ?
+            AND bs.status_name IN ('CONFIRMED','CHECKED_IN')
+
+        GROUP BY
+            b.booking_id
+
+        ORDER BY
+            b.created_at DESC;
+        `, [hotelId]);
+
+    return rows
+};
+
+//get all the incidentails to manage upon
+export const getBookingIncidentals = async (
+    hotelId: number,
+    bookingId: number
+): Promise<Incidental[]> => {
+
+    const [rows] = await db.query<Incidental[]>(`
+        SELECT
+            i.incidental_id,
+            i.booking_id,
+            i.description,
+            i.amount,
+            i.added_at,
+
+            CONCAT(
+                u.first_name,
+                ' ',
+                u.last_name
+            ) AS added_by_name
+
+        FROM incidental_charges i
+
+        INNER JOIN users u
+            ON u.user_id = i.added_by
+
+        WHERE
+            i.booking_id = ?
+            AND i.hotel_id = ?
+
+        ORDER BY
+            i.added_at DESC,
+            i.incidental_id DESC
+    `, [bookingId, hotelId]);
+
+    return rows;
+};
+
+//get the booking details of the user demanded a extra service
+export const getBookingDetailsForIncidental = async (
+    hotelId: number,
+    bookingId: number
+) => {
+
+    const [rows] = await db.query<any[]>(`
+        SELECT
+            b.booking_id,
+            b.booking_reference,
+            b.checkin_date,
+            b.checkout_date,
+
+            bs.status_name,
+
+            u.first_name,
+            u.last_name,
+
+            GROUP_CONCAT(
+                r.room_number
+                ORDER BY r.room_number
+                SEPARATOR ', '
+            ) AS room_numbers
+
+        FROM bookings b
+
+        INNER JOIN users u
+            ON u.user_id = b.user_id
+
+        INNER JOIN booking_statuses bs
+            ON bs.booking_status_id = b.booking_status_id
+
+        LEFT JOIN booking_rooms br
+            ON br.booking_id = b.booking_id
+
+        LEFT JOIN rooms r
+            ON r.room_id = br.room_id
+
+        WHERE
+            b.booking_id = ?
+            AND b.hotel_id = ?
+
+        GROUP BY
+            b.booking_id
+    `, [bookingId, hotelId]);
+
+    return rows.length > 0 ? rows[0] : null;
+}
+
+//add a extra service
+export const addIncidental = async (hotelId: number, bookingId: number, addedBy: number, description: string, amount: number) => {
+    await db.query(`INSERT INTO incidental_charges(hotel_id,booking_id,added_by,description,amount) VALUES (?,?,?,?,?)`, [
+        hotelId,
+        bookingId,
+        addedBy,
+        description,
+        amount
+    ]);
+}
+
+//delete any incidentalService
+export const deleteIncidental = async (hotelId: number, incidentalId: number) => {
+    await db.query(`DELETE FROM incidental_charges WHERE incidental_id = ? AND hotel_id = ?`, [incidentalId, hotelId]);
+}
+
+//get all the payement from the db
+export const getPayments = async (
+    hotelId: number
+): Promise<PaymentList[]> => {
+
+    const [rows] = await db.query<PaymentList[]>(`
+    SELECT
+        p.payment_id,
+        p.booking_id,
+        b.booking_reference,
+        CONCAT(u.first_name, ' ', u.last_name) AS guest_name,
+        r.room_number,
+        p.amount,
+        pm.method_name,
+        ps.status_name,
+        p.is_bypassed,
+        p.paid_at,
+        p.created_at
+            FROM payments p
+            INNER JOIN bookings b ON p.booking_id = b.booking_id
+            INNER JOIN users u ON b.user_id = u.user_id
+            INNER JOIN booking_rooms br ON b.booking_id = br.booking_id
+            INNER JOIN rooms r ON br.room_id = r.room_id
+            INNER JOIN payment_methods pm ON p.payment_method_id = pm.payment_method_id
+            INNER JOIN payment_statuses ps ON p.payment_status_id = ps.payment_status_id
+            WHERE p.hotel_id = ?
+            ORDER BY p.created_at DESC;
+    `, [hotelId]);
+
+    return rows;
+
+};
+
+// get all the invoices from the db
+export const getInvoices = async (
+    hotelId: number
+): Promise<InvoiceList[]> => {
+
+    const [rows] = await db.query<InvoiceList[]>(`
+
+        SELECT
+
+            i.invoice_id,
+            i.booking_id,
+            b.booking_reference,
+
+            CONCAT(
+                u.first_name,
+                ' ',
+                u.last_name
+            ) AS guest_name,
+
+            r.room_number,
+
+            i.room_charges,
+            i.incidentals,
+            i.tax_amount,
+            i.total_amount,
+            i.generated_at
+
+        FROM invoices i
+
+        INNER JOIN bookings b
+            ON i.booking_id = b.booking_id
+
+        INNER JOIN users u
+            ON b.user_id = u.user_id
+
+        INNER JOIN booking_rooms br
+            ON b.booking_id = br.booking_id
+
+        INNER JOIN rooms r
+            ON br.room_id = r.room_id
+
+        WHERE
+
+            i.hotel_id = ?
+
+        ORDER BY
+
+            i.generated_at DESC;
+
+    `, [hotelId]);
+
+    return rows;
+
+};
