@@ -13,6 +13,8 @@ export const validToken = async(
     res : Response,
     next : NextFunction ) =>{
     try{
+         
+         
         const currentToken = req.cookies.token;
         const valid = verifyToken(currentToken) as UserTokenPayload;
         if(!valid){

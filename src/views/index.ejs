@@ -153,9 +153,25 @@
 
                     <div class="flex items-center gap-2 lg:gap-4">
 
-                        <a href="/notifications" class="material-symbols-outlined text-primary cursor-pointer">
-                            notifications
-                        </a>
+                        <div class="relative" id="notif-wrap">
+                            <button onclick="toggleNotifications()"
+                                class="material-symbols-outlined text-primary cursor-pointer relative">
+                                notifications
+                            </button>
+
+                            <!-- dropdown -->
+                            <div id="notif-dropdown"
+                                class="hidden absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl border border-outline-variant overflow-hidden z-[100]">
+                                <div
+                                    class="px-4 py-3 border-b border-outline-variant flex items-center justify-between">
+                                    <span class="font-title-sm text-primary text-sm">Your Bookings</span>
+                                    <a href="/bookings/all" class="text-xs text-secondary hover:underline">View all</a>
+                                </div>
+                                <div id="notif-list" class="max-h-96 overflow-y-auto">
+                                    <div class="px-4 py-8 text-center text-on-surface-variant text-sm">Loading…</div>
+                                </div>
+                            </div>
+                        </div>
 
                         <a onclick="openProfileModal()" class="material-symbols-outlined text-primary cursor-pointer">
                             account_circle
@@ -186,11 +202,11 @@
                             </a>
                             <% } %>
 
-                            <button class="md:hidden flex items-center">
-                                <a href="#" class="material-symbols-outlined text-primary">
-                                    menu
-                                </a>
-                            </button>
+                                <button class="md:hidden flex items-center">
+                                    <a href="#" class="material-symbols-outlined text-primary">
+                                        menu
+                                    </a>
+                                </button>
 
                                 <button class="md:hidden flex items-center">
                                     <a href="#" class="material-symbols-outlined text-primary">
@@ -356,103 +372,67 @@
                 </a>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div
-                    class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
-                    <div class="relative h-64 overflow-hidden">
-                        <img alt="The Royal Azure"
-                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            data-alt="An ultra-modern luxury resort situated on a cliffside overlooking a crystal-clear turquoise ocean."
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8_iGx8kfBkRmy1hS-jWG5NurahVXexrXLVlBgMPbst6lhb6YHgaZFo2K44AC2bZcBG9Q-iOd8rKhShdWuH-T4cSS8sgxsQbpWPqvhVqegEgMDPU2VpGkLOzVwOryKUsCCZowi34P8UQkfuUqKlDnPHwSch_CeNaF4Z_CwKDkba2GmDb2TgGCpFWuGLKOZs7k_641h4J5AuNrWAF61eOEgpVixZAT99fIbAQIZt6VhoNrdM8BYhsI9F1VyECIs_yq07z4xKxl3hu0T" />
+                <% if (featuredHotels && featuredHotels.length> 0) { %>
+                    <% featuredHotels.forEach(function(hotel) { const hasCover=hotel.cover_url &&
+                        hotel.cover_url.startsWith("http"); %>
                         <div
-                            class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
-                            <span class="material-symbols-outlined text-secondary text-sm" data-icon="star"
-                                style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="font-label-caps text-primary">4.9</span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <span class="font-label-caps text-secondary mb-2 block">SANTORINI, GREECE</span>
-                        <h3 class="font-headline-md text-primary mb-2">The Royal Azure Resort</h3>
-                        <p class="text-on-surface-variant font-body-sm mb-6">Experience breathtaking sunsets and
-                            world-class culinary excellence in our signature cliffside suites.</p>
-                        <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
-                            <div>
-                                <span class="text-on-surface-variant text-xs block">Starting at</span>
-                                <span class="font-title-sm text-primary text-xl">$850<span class="text-xs font-normal">
-                                        /night</span></span>
+                            class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
+                            <div class="relative h-64 overflow-hidden bg-primary-container">
+                                <% if (hasCover) { %>
+                                    <img alt="<%= hotel.name %>"
+                                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        src="<%= hotel.cover_url %>"
+                                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                                    <div
+                                        class="w-full h-full hidden items-center justify-center bg-gradient-to-br from-primary to-primary-container">
+                                        <span class="material-symbols-outlined text-white/40 text-6xl">apartment</span>
+                                    </div>
+                                    <% } else { %>
+                                        <div
+                                            class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-primary-container">
+                                            <span
+                                                class="material-symbols-outlined text-white/40 text-6xl">apartment</span>
+                                        </div>
+                                        <% } %>
+                                            <div
+                                                class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-secondary text-sm"
+                                                    data-icon="star"
+                                                    style="font-variation-settings: 'FILL' 1;">star</span>
+                                                <span class="font-label-caps text-primary">4.8</span>
+                                            </div>
                             </div>
-                            <a href="#"
-                                class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps inline-block text-center">
-                                Book Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Card 2 -->
-                <div
-                    class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
-                    <div class="relative h-64 overflow-hidden">
-                        <img alt="Empire Grand Central"
-                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            data-alt="The exterior of a classic grand hotel in a bustling metropolitan city."
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuA743enRbvE3q2Baw0fARPOvbz7QOyk6O3U0JL2alj-SjQHhmJX-09GNxM4uMIzvOh6QuJpCg8qzUOaJc6xzVep5L4Wr0BDpHz-Wh37bJt9E9AXIaq9ZZMGXRfyzfYjSFx2YqzXdFyDqXOYLP2pVZkEm27iEmeKJmGIjH5cf9kPZVY5XroSyMIsvqswKQd-ucoQ5SpUsx6AAK-Mg7kd1QvBwuF817riGpF8f0tEgf3UbwBLFUa-iB10u7gu93maBcywp6y-bE9fs0u3" />
-                        <div
-                            class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
-                            <span class="material-symbols-outlined text-secondary text-sm" data-icon="star"
-                                style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="font-label-caps text-primary">4.8</span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <span class="font-label-caps text-secondary mb-2 block">NEW YORK, USA</span>
-                        <h3 class="font-headline-md text-primary mb-2">Empire Grand Central</h3>
-                        <p class="text-on-surface-variant font-body-sm mb-6">Unmatched elegance in the heart of
-                            Manhattan. A sanctuary of peace amidst the city's vibrant energy.</p>
-                        <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
-                            <div>
-                                <span class="text-on-surface-variant text-xs block">Starting at</span>
-                                <span class="font-title-sm text-primary text-xl">$1,200<span
-                                        class="text-xs font-normal"> /night</span></span>
+                            <div class="p-6">
+                                <span class="font-label-caps text-secondary mb-2 block uppercase">
+                                    <%= hotel.city %>
+                                        <%= hotel.state ? ', ' + hotel.state : '' %>
+                                </span>
+                                <h3 class="font-headline-md text-primary mb-2">
+                                    <%= hotel.name %>
+                                </h3>
+                                <p class="text-on-surface-variant font-body-sm mb-6">
+                                    A premium stay offering exceptional comfort and world-class hospitality in the heart
+                                    of <%= hotel.city %>.
+                                </p>
+                                <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
+                                    <div>
+                                        <span class="text-on-surface-variant text-xs block">Starting at</span>
+                                        <span class="font-title-sm text-primary text-xl">
+                                            ₹<%= Number(hotel.starting_price).toLocaleString('en-IN') %><span
+                                                    class="text-xs font-normal"> /night</span>
+                                        </span>
+                                    </div>
+                                   
+                                </div>
                             </div>
-                            <button
-                                class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps hover:bg-secondary transition-colors">Book
-                                Now</button>
                         </div>
-                    </div>
-                </div>
-                <!-- Card 3 -->
-                <div
-                    class="group border border-outline-variant rounded-xl overflow-hidden hover:border-primary transition-all duration-300">
-                    <div class="relative h-64 overflow-hidden">
-                        <img alt="Zenith Garden"
-                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            data-alt="A lush, tropical villa retreat in Bali surrounded by dense jungle greenery."
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAewLpyXc1rDk4QQIobjXmLEK7NQ7v6zyJG1OuOOTIKn-59QXt0o5He6sPLnLaWPJDk4g_HTy2fInzm2_Z__6hHSqbfyefMTzIYBAo6t0M8UV2htPIsr6YYdjoY4PvKAPIHDuh9XHagyxXzNRRMbvdKPNCz4oSh_T7EB5P1EZXSb0w2CAoCU-rftxoqDNSqBFt0H1GBnSJxXIxgDCnVFvc8-KJU9MhZAiJrcw7uyeY2tWwD0Onz54qULMdawBqfUgXORUydKAAHteyq" />
-                        <div
-                            class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full flex items-center gap-1">
-                            <span class="material-symbols-outlined text-secondary text-sm" data-icon="star"
-                                style="font-variation-settings: 'FILL' 1;">star</span>
-                            <span class="font-label-caps text-primary">5.0</span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <span class="font-label-caps text-secondary mb-2 block">UBUD, INDONESIA</span>
-                        <h3 class="font-headline-md text-primary mb-2">Zenith Garden Villas</h3>
-                        <p class="text-on-surface-variant font-body-sm mb-6">Reconnect with nature in our private garden
-                            sanctuaries. Award-winning spa treatments and organic dining.</p>
-                        <div class="flex justify-between items-center pt-6 border-t border-outline-variant">
-                            <div>
-                                <span class="text-on-surface-variant text-xs block">Starting at</span>
-                                <span class="font-title-sm text-primary text-xl">$640<span class="text-xs font-normal">
-                                        /night</span></span>
-                            </div>
-                            <button
-                                class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-caps hover:bg-secondary transition-colors">Book
-                                Now</button>
-                        </div>
-                    </div>
-                </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="col-span-full text-center py-16 text-on-surface-variant">
+                                    No featured hotels available right now.
+                                </div>
+                                <% } %>
+            </div>
             </div>
         </section>
         <!-- Popular Destinations (Asymmetric Layout) -->
@@ -627,13 +607,13 @@
             </div>
             <div class="flex flex-wrap justify-center gap-4 lg:gap-8 text-center">
                 <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
-                    href="#">Privacy Policy</a>
+                    href="/legal#privacy">Privacy Policy</a>
                 <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
-                    href="#">Terms of Service</a>
+                    href="/legal#terms">Terms of Service</a>
                 <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
-                    href="#">Cookie Policy</a>
+                    href="/legal#cookies">Cookie Policy</a>
                 <a class="text-on-surface-variant font-body-sm hover:text-primary transition-colors underline-offset-4 hover:underline cursor-pointer"
-                    href="#">Accessibility</a>
+                    href="/legal#accessibility">Accessibility</a>
             </div>
             <div class="flex gap-4">
                 <span
@@ -699,11 +679,84 @@
             }, 3000);
         }
     </script>
+
+
     <% if (welcome) { %>
         <script>
             showToast("<%= welcome %>");
         </script>
         <% } %>
+
+            <script>
+                let notifLoaded = false;
+
+                function toggleNotifications() {
+                    const dropdown = document.getElementById("notif-dropdown");
+                    const isHidden = dropdown.classList.contains("hidden");
+                    dropdown.classList.toggle("hidden");
+                    if (isHidden && !notifLoaded) loadNotifications();
+                }
+
+                // close when clicking outside
+                document.addEventListener("click", (e) => {
+                    const wrap = document.getElementById("notif-wrap");
+                    if (wrap && !wrap.contains(e.target)) {
+                        document.getElementById("notif-dropdown")?.classList.add("hidden");
+                    }
+                });
+
+                function fmtDate(d) {
+                    if (!d) return "";
+                    return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+                }
+
+                function statusColor(s) {
+                    return ({
+                        CONFIRMED: "text-green-700 bg-green-50",
+                        CHECKED_IN: "text-blue-700 bg-blue-50",
+                        CHECKED_OUT: "text-slate-600 bg-slate-100",
+                        CANCELLED: "text-red-700 bg-red-50",
+                        PENDING: "text-amber-700 bg-amber-50",
+                    }[s] || "text-slate-600 bg-slate-100");
+                }
+
+                async function loadNotifications() {
+                    const list = document.getElementById("notif-list");
+                    try {
+                        const res = await fetch("/bookings/notifications/data", { headers: { Accept: "application/json" } });
+                        const data = await res.json();
+                        const items = data.notifications || [];
+                        if (items.length === 0) {
+                            list.innerHTML = `<div class="px-4 py-8 text-center text-on-surface-variant text-sm">No bookings yet</div>`;
+                            notifLoaded = true;
+                            return;
+                        }
+
+                        list.innerHTML = items.map(n => {
+                            const init = (n.hotel_name || "H")[0].toUpperCase();
+                            const logo = (n.hotel_logo && n.hotel_logo.startsWith("http"))
+                                ? `<img src="${n.hotel_logo}" class="w-10 h-10 rounded-lg object-cover" onerror="this.outerHTML='<div class=\\'w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center font-bold\\'>${init}</div>'"/>`
+                                : `<div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center font-bold">${init}</div>`;
+                            return `
+          <a href="/bookings/${n.booking_id}"
+             class="flex items-start gap-3 px-4 py-3 hover:bg-surface-container-low transition border-b border-outline-variant last:border-0">
+            ${logo}
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-primary truncate">${n.hotel_name}</p>
+              <p class="text-xs text-on-surface-variant">📍 ${n.hotel_city} · ${fmtDate(n.checkin_date)}</p>
+              <span class="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${statusColor(n.status_name)}">
+                ${n.status_name}
+              </span>
+            </div>
+          </a>`;
+                        }).join("");
+
+                        notifLoaded = true;
+                    } catch (err) {
+                        list.innerHTML = `<div class="px-4 py-8 text-center text-red-600 text-sm">Failed to load</div>`;
+                    }
+                }
+            </script>
 
 </body>
 

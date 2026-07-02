@@ -3,10 +3,8 @@ import * as frontDeskServices from "../services/frontDeskServices";
 import { getJwtTokenValue } from "../../../common/utils/getRequestVariables";
 import { uploadToImageKit } from "../../../common/utils/uploadDocCloud";
 import { emitDashboardUpdate, emitRoomStatusUpdate } from "../../../socket/frontDesk/homePage";
-import type {
-    VerificationStatus,
-    StoreDocBody,
-} from "../types/frontDesk.types";
+import type { VerificationStatus, StoreDocBody, } from "../types/frontDesk.types";
+import * as frontDeskModel from "../models/frondDeskModel";
 import { RoomInventoryRow } from "../types/frontDesk.types";
 
 export type FloorMap = Record<number, RoomInventoryRow[]>;
@@ -15,6 +13,14 @@ type BookingParams = {
     bookingRef: string;
 };
 
+type incidentalParams = {
+    bookingId: string;
+}
+
+type delincidentalParams = {
+    incidentalid: string
+}
+
 // show dashboard homepage
 export const showHomePage = async (
     req: Request,
@@ -22,39 +28,39 @@ export const showHomePage = async (
 ): Promise<void> => {
     try {
         const hotelId = getJwtTokenValue("hotel_id", req) as number;
-        const userId  = getJwtTokenValue("userId", req) as number;
+        const userId = getJwtTokenValue("userId", req) as number;
 
         // cache hotel and user id in session
         (req.session as any).hotel_id = hotelId;
-        (req.session as any).user_id  = userId;
+        (req.session as any).user_id = userId;
 
         // read and clear flash messages
         const failureMessage: string | undefined = (req.session as any).failureMessage;
-        const success: string | undefined        = (req.session as any).success;
+        const success: string | undefined = (req.session as any).success;
         delete (req.session as any).failureMessage;
         delete (req.session as any).success;
 
-        const shift     = frontDeskServices.getCurrentShift();
+        const shift = frontDeskServices.getCurrentShift();
         const dashboard = await frontDeskServices.getDashBoardData(hotelId, userId);
 
         res.render("frontDesk/home", {
             hotelId,
-            hotelname:  dashboard.userData.name,
+            hotelname: dashboard.userData.name,
             first_name: dashboard.userData.first_name,
-            last_name:  dashboard.userData.last_name,
-            photo:      dashboard.userData.photo_url,
+            last_name: dashboard.userData.last_name,
+            photo: dashboard.userData.photo_url,
 
-            checkincount:  dashboard.checkins,
+            checkincount: dashboard.checkins,
             checkoutcount: dashboard.checkouts,
-            occupancy:     dashboard.occupancy,
+            occupancy: dashboard.occupancy,
 
-            arrivals:        dashboard.arrivals,
-            counts:          dashboard.counts,
-            floorOccupancy:  dashboard.floorOccupancy,
-            roomTypeStats:   dashboard.roomTypeStats,
+            arrivals: dashboard.arrivals,
+            counts: dashboard.counts,
+            floorOccupancy: dashboard.floorOccupancy,
+            roomTypeStats: dashboard.roomTypeStats,
             arrivalForecast: dashboard.arrivalForecast,
 
-            error:   failureMessage,
+            error: failureMessage,
             success: success,
             shift,
         });
@@ -71,9 +77,9 @@ export const showGuestVerification = async (
     res: Response
 ): Promise<void> => {
     try {
-        const bookingRef:  string = req.params.bookingRef;
-        const source               = req.query.source || "current";
-        const frontDeskId: number  = (req.session as any).user_id;
+        const bookingRef: string = req.params.bookingRef;
+        const source = req.query.source || "current";
+        const frontDeskId: number = (req.session as any).user_id;
 
         const data = await frontDeskServices.getBookingDetails(bookingRef);
 
@@ -123,7 +129,7 @@ export const storeDoc = async (
             remarks,
         } = req.body;
 
-        const hotelId:    number = getJwtTokenValue("hotel_id", req) as number;
+        const hotelId: number = getJwtTokenValue("hotel_id", req) as number;
         const verifiedBy: number = getJwtTokenValue("userId", req) as number;
 
         // upload document if provided
@@ -165,7 +171,7 @@ export const showRoomStatus = async (
     res: Response
 ): Promise<void> => {
     try {
-        const hotelId: number        = getJwtTokenValue("hotel_id", req) as number;
+        const hotelId: number = getJwtTokenValue("hotel_id", req) as number;
         const rooms: RoomInventoryRow[] = await frontDeskServices.getRoomStatuses(hotelId);
 
         const floors: FloorMap = rooms.reduce<FloorMap>((acc, room) => {
@@ -174,8 +180,8 @@ export const showRoomStatus = async (
             return acc;
         }, {});
 
-        const occupiedCount    = rooms.filter(r => r.room_status === "OCCUPIED").length;
-        const vacantCount      = rooms.filter(r => r.room_status === "VACANT").length;
+        const occupiedCount = rooms.filter(r => r.room_status === "OCCUPIED").length;
+        const vacantCount = rooms.filter(r => r.room_status === "VACANT").length;
         const maintenanceCount = rooms.filter(r => r.room_status === "MAINTENANCE").length;
 
         res.render("frontDesk/room_statuses", {
@@ -196,15 +202,15 @@ export const showRoomStatus = async (
 // get and render all bookings with filters + pagination
 export const getBookingsOfHotel = async (req: Request, res: Response) => {
     try {
-        const hotelId  = (req.session as any).hotel_id;
-        const page     = Number(req.query.page) || 1;
-        const limit    = 10;
-        const offset   = (page - 1) * limit;
+        const hotelId = (req.session as any).hotel_id;
+        const page = Number(req.query.page) || 1;
+        const limit = 10;
+        const offset = (page - 1) * limit;
 
-        const search   = req.query.search as string;
-        const status   = req.query.status as string;
+        const search = req.query.search as string;
+        const status = req.query.status as string;
         const dateFrom = req.query.from as string;
-        const dateTo   = req.query.to as string;
+        const dateTo = req.query.to as string;
 
         const filters = { hotelId, search, status, dateFrom, dateTo, limit, offset };
 
@@ -266,7 +272,7 @@ export const releaseRoom = async (req: Request, res: Response) => {
     try {
         const hotelId = getJwtTokenValue("hotel_id", req) as number;
         const { bookingReference } = req.body;
-        if(!bookingReference){
+        if (!bookingReference) {
             return res.status(500).send("Undefined Booking Ref");
         }
         // transaction: mark booking checked_out + mark rooms dirty in db
@@ -289,7 +295,7 @@ export const releaseRoom = async (req: Request, res: Response) => {
 export const cleanRoom = async (req: Request, res: Response) => {
     try {
         const hotelId = getJwtTokenValue("hotel_id", req) as number;
-        const roomId  = Number(req.body.roomId);
+        const roomId = Number(req.body.roomId);
 
         if (!roomId) {
             return res.status(400).json({ success: false, message: "roomId is required" });
@@ -306,10 +312,130 @@ export const cleanRoom = async (req: Request, res: Response) => {
     }
 };
 
+//show the eligibleGuests for incidentals
+export const showIncidentals = async (req: Request, res: Response) => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const eligibleBookings = await frontDeskServices.getEligbleGuests(hotelId)
+        res.render("frontDesk/eligible_for_incidentials", { eligibleBookings, hotelId });
+    } catch (err: any) {
+        console.log("Error at [showIncidentials]", err);
+    }
+}
+
+//show the existing incidentals and also add new ones
+export const manageIncidentals = async (
+    req: Request<incidentalParams>,
+    res: Response
+) => {
+    try {
+
+        const bookingId = parseInt(req.params.bookingId);
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+
+        const booking = await frontDeskModel.getBookingDetailsForIncidental(hotelId, bookingId);
+
+        const incidentals = await frontDeskServices.manageIncidentals(hotelId, bookingId);
+
+        //flash message
+        const success: string = (req.session as any).success
+        const failure: string = (req.session as any).failureMessage
+
+        delete (req.session as any).success;
+        delete (req.session as any).failureMessage;
+
+        const totalIncidentals = incidentals.reduce(
+            (sum, item) =>
+                sum +
+                Number(item.amount),
+            0
+        );
+
+        res.render("frontDesk/manageIncidential",
+            {
+                booking, incidentals, totalIncidentals, success, failure
+            }
+        );
+
+    } catch (err: any) {
+        console.log("[manageIncidentals]", err);
+    }
+}
+
+//add a incidental
+export const addIncidental = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const userId = getJwtTokenValue("userId", req) as number;
+        const { bookingId, description, amount } = req.body;
+        await frontDeskModel.addIncidental(hotelId, bookingId, userId, description, amount);
+        (req.session as any).success = `Incidental added to bookingId ${bookingId}`
+        return res.redirect(`/frontDesk/showIncidental/${bookingId}`);
+
+    } catch (err: any) {
+        (req.session as any).failure = `Incidental can't be added `
+        console.log("Error at [addIncidental]", err);
+        return res.redirect(`/frontDesk/showIncidental/${req.body.bookingId}`);
+    }
+}
+
+export const removeIncidental = async (req: Request<delincidentalParams>, res: Response): Promise<void> => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const incidentalId = parseInt(req.params.incidentalid);
+        const bookingId = Number(req.body.bookId);
+
+        await frontDeskModel.deleteIncidental(hotelId, incidentalId);
+
+        (req.session as any).success = `Incidental deleted from booking ${bookingId}`;
+
+        return res.redirect(`/frontDesk/showIncidental/${bookingId}`);
+
+    } catch (err) {
+        console.log("Error at [removeIncidental]", err);
+
+        (req.session as any).failure =
+            "Incidental can't be deleted";
+
+        return res.redirect("/frontDesk/showBookings");
+    }
+};
+
+// show the payements table
+export const getPayments = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const payments = await frontDeskServices.getPayments(hotelId);
+        res.render("frontDesk/payments", { payments });
+
+    } catch (err) {
+        console.log("Error at [getPayements]", err);
+        (req.session as any).failure = "Payements can't be fetched";
+        return res.redirect("/frontDesk/home");
+    }
+};
+
+// show the invoices from the db
+export const getInvoices = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const hotelId = getJwtTokenValue("hotel_id", req) as number;
+        const invoices = await frontDeskServices.getInvoices(hotelId);
+        res.render("frontDesk/invoices", { invoices }
+        );
+    } catch (err) {
+        console.log("Error at [getInvoices]", err);
+        (req.session as any).failure = "Invoices can't be fetched";
+        return res.redirect("/frontDesk/home");
+    }
+};
+
 // logout
 export const logout = async (req: Request, res: Response): Promise<void> => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token");   
         delete (req.session as any).hotel_id;
         delete (req.session as any).user_id;
         res.redirect("/login");

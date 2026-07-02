@@ -24,4 +24,13 @@ export class GuestBookingService {
     }
   }
 
+  async getRecentForNotifications(userId: number) {
+  try {
+    if (!userId) throw new Error("User ID is required.");
+    return await GuestBookingModel.getRecentForNotifications(userId, 5);
+  } catch (err) {
+    throw err;
+  }
+}
+
 }

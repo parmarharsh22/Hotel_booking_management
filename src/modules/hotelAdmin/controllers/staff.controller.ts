@@ -9,8 +9,9 @@ export class AdminStaffController{
   async listStaff(req: Request, res: Response) {
     try {
       const hotelId = (req as any).hotelId as number;
+      // const hotelId = 1;
       const staff   = await staffService.getAllStaff(hotelId);
-      return res.status(200).render("admin/staff", { staff });
+      return res.status(200).render("admin/staff", { staff , imagekitUrl:process.env.imagekitUrl });
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -49,7 +50,7 @@ export class AdminStaffController{
       };
 
       await staffService.createStaff(staff, req.body.password);
-      return res.redirect("/admin/staff");
+      return res.redirect("/hotelAdmin/staff");
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -59,7 +60,8 @@ export class AdminStaffController{
    // GET /admin/staff/:userId/edit
   async showEditStaff(req: Request, res: Response) {
     try {
-      const hotelId = (req as any).hotelId as number;
+     const hotelId = (req as any).hotelId as number;
+      // const hotelId = 1;
       const userId  = parseInt(req.params.userId as any);
       const staff   = await staffService.getStaffById(userId, hotelId);
       return res.status(200).render("admin/staff-edit", { staff });
@@ -69,11 +71,38 @@ export class AdminStaffController{
   }
 
    // PUT /admin/staff/:userId
-  async updateStaff(req: Request, res: Response) {
+  // async updateStaff(req: Request, res: Response) {
+  //   try {
+  //     const hotelId = (req as any).hotelId as number;
+  //     const userId  = parseInt(req.params.userId as any);
+  //     const files: any = req.files;
+  //     const photo_url = files?.staff_photo ? files.staff_photo[0].path : req.body.existing_photo || null;
+
+  //     const data = {
+  //       first_name: req.body.first_name,
+  //       last_name:  req.body.last_name,
+  //       email:      req.body.email,
+  //       phone:      req.body.phone || null,
+  //       address:    req.body.address,
+  //       photo_url,
+  //     };
+  //     await staffService.updateStaff(userId, hotelId, data);
+      
+  //     // return res.redirect("/admin/staff");
+  //   } catch (err: any) {
+  //     console.log(err);
+      
+  //     return res.status(400).json({ message: err.message });
+
+  //   }
+  // }
+async updateStaff(req: Request, res: Response) {
     try {
       const hotelId = (req as any).hotelId as number;
       const userId  = parseInt(req.params.userId as any);
       const files: any = req.files;
+      
+      // Handle photo upload or fallback to existing photo
       const photo_url = files?.staff_photo ? files.staff_photo[0].path : req.body.existing_photo || null;
 
       const data = {
@@ -84,12 +113,26 @@ export class AdminStaffController{
         address:    req.body.address,
         photo_url,
       };
+      
       await staffService.updateStaff(userId, hotelId, data);
-      return res.redirect("/admin/staff");
+      
+      // ✅ FIX: Send a success JSON response to the frontend
+      return res.status(200).json({ 
+        message: "Staff updated successfully", 
+        success: true 
+      });
+      
     } catch (err: any) {
-      return res.status(400).json({ message: err.message });
+      console.log(err);
+      
+      // ✅ FIX: Send a proper JSON error response
+      return res.status(400).json({ 
+        message: err.message || "An error occurred while updating staff", 
+        success: false 
+      });
     }
-  }
+}
+
 
 
   // DELETE /admin/staff/:userId  →  soft delete (is_active = 0)
@@ -98,7 +141,8 @@ export class AdminStaffController{
       const hotelId = (req as any).hotelId as number;
       const userId  = parseInt(req.params.userId as any);
       await staffService.deactivateStaff(userId, hotelId);
-      return res.redirect("/admin/staff");
+      res.status(200).json({ status:200, message:"Deletion Success "})
+      // return res.redirect("/admin/staff");
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

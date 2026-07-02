@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LuxeStay | Legal & Policies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#031632",
+                        secondary: "#775a19",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#44474d",
+                        "outline-variant": "#c5c6ce",
+                        surface: "#f7f9fc",
+                        "surface-container-low": "#f2f4f7",
+                        "surface-container-lowest": "#ffffff",
+                        background: "#f7f9fc",
+                    },
+                    fontFamily: { sans: ["Inter", "sans-serif"] },
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; }
+        /* offset anchor scroll so headings aren't hidden under sticky navbar */
+        section[id] { scroll-margin-top: 100px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+
+    <!-- Navbar -->
+    <header class="bg-surface sticky top-0 z-50 border-b border-outline-variant">
+        <div class="flex justify-between items-center w-full px-4 lg:px-8 h-20 max-w-[1440px] mx-auto">
+            <a href="/" class="text-2xl text-primary tracking-tight font-bold">LuxeStay</a>
+            <a href="/" class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+                <span class="font-medium">Back to Home</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Page header -->
+    <div class="bg-primary text-white py-16 px-4">
+        <div class="max-w-[1100px] mx-auto">
+            <h1 class="text-3xl lg:text-4xl font-bold mb-3">Legal & Policies</h1>
+            <p class="text-white/70 max-w-2xl">
+                Everything you need to know about how we handle your data, our booking terms, and your rights as a LuxeStay guest.
+            </p>
+            <p class="text-white/50 text-sm mt-4">Last updated: June 2026</p>
+        </div>
+    </div>
+
+    <!-- Content layout -->
+    <div class="max-w-[1100px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-10">
+
+        <!-- Sticky sidebar nav -->
+        <aside class="hidden lg:block">
+            <nav class="sticky top-28 space-y-1">
+                <p class="text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-3">On this page</p>
+                <a href="#privacy" class="block px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition">Privacy Policy</a>
+                <a href="#terms" class="block px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition">Terms of Service</a>
+                <a href="#cookies" class="block px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition">Cookie Policy</a>
+                <a href="#accessibility" class="block px-3 py-2 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-low hover:text-primary transition">Accessibility</a>
+            </nav>
+        </aside>
+
+        <!-- Sections -->
+        <main class="space-y-12">
+
+            <!-- PRIVACY -->
+            <section id="privacy" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-primary mb-4">Privacy Policy</h2>
+                <div class="space-y-4 text-on-surface-variant leading-relaxed text-[15px]">
+                    <p>At LuxeStay, we are committed to protecting your personal information. This policy explains what we collect, why we collect it, and how we keep it safe.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Information We Collect</h3>
+                    <p>When you create an account or make a booking, we collect details such as your name, email address, phone number, date of birth, and billing information. We also record booking-related data including your stay dates, room preferences, and special requests.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">How We Use Your Information</h3>
+                    <p>Your information is used to process reservations, communicate booking confirmations and updates, provide customer support, and improve our services. We do not sell your personal data to third parties.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Data Security</h3>
+                    <p>We use industry-standard encryption and secure servers to protect your data. Access to personal information is restricted to authorized personnel only. While we take every reasonable precaution, no method of transmission over the internet is fully secure.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Your Rights</h3>
+                    <p>You have the right to access, correct, or request deletion of your personal data at any time. To exercise these rights, contact our support team through your account settings.</p>
+                </div>
+            </section>
+
+            <!-- TERMS -->
+            <section id="terms" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-primary mb-4">Terms of Service</h2>
+                <div class="space-y-4 text-on-surface-variant leading-relaxed text-[15px]">
+                    <p>By accessing and using the LuxeStay platform, you agree to be bound by these Terms of Service. Please read them carefully before making a booking.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Bookings & Reservations</h3>
+                    <p>All bookings are subject to room availability and confirmation. Prices displayed are per night and may exclude applicable taxes and service charges unless stated otherwise. A booking is only confirmed once payment has been successfully processed.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Cancellations & Refunds</h3>
+                    <p>Cancellation terms vary by property and room type. The applicable cancellation policy and refund eligibility are shown at the time of booking. Refunds, where applicable, are processed to the original payment method within a reasonable period.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Guest Responsibilities</h3>
+                    <p>Guests are expected to provide accurate booking information and to comply with the policies of the property during their stay. LuxeStay is not liable for any disputes arising directly between guests and individual properties.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Account Usage</h3>
+                    <p>You are responsible for maintaining the confidentiality of your account credentials. Any activity carried out under your account is your responsibility. Notify us immediately of any unauthorized access.</p>
+                </div>
+            </section>
+
+            <!-- COOKIES -->
+            <section id="cookies" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-primary mb-4">Cookie Policy</h2>
+                <div class="space-y-4 text-on-surface-variant leading-relaxed text-[15px]">
+                    <p>LuxeStay uses cookies and similar technologies to provide, protect, and improve our platform. This policy explains how and why we use them.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">What Are Cookies?</h3>
+                    <p>Cookies are small text files stored on your device when you visit a website. They help us remember your preferences, keep you signed in, and understand how our platform is used.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Types of Cookies We Use</h3>
+                    <p><strong class="text-on-surface">Essential cookies</strong> are required for core functionality such as logging in and maintaining your session. <strong class="text-on-surface">Preference cookies</strong> remember your settings and choices. <strong class="text-on-surface">Analytics cookies</strong> help us understand usage patterns so we can improve the experience.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Managing Cookies</h3>
+                    <p>You can control or delete cookies through your browser settings. Please note that disabling essential cookies may affect the functionality of the platform, including your ability to sign in or complete a booking.</p>
+                </div>
+            </section>
+
+            <!-- ACCESSIBILITY -->
+            <section id="accessibility" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-primary mb-4">Accessibility</h2>
+                <div class="space-y-4 text-on-surface-variant leading-relaxed text-[15px]">
+                    <p>LuxeStay is committed to ensuring our platform is accessible to everyone, including people with disabilities. We continually work to improve the usability of our website for all guests.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Our Commitment</h3>
+                    <p>We aim to follow recognized accessibility guidelines, striving to provide clear navigation, readable text, sufficient color contrast, and keyboard-friendly interactions across the platform.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Ongoing Improvements</h3>
+                    <p>Accessibility is an ongoing effort. We regularly review and update our platform to address potential barriers and enhance the experience for users relying on assistive technologies.</p>
+
+                    <h3 class="text-lg font-semibold text-primary pt-2">Feedback</h3>
+                    <p>If you encounter any accessibility difficulties while using LuxeStay, we would like to hear from you. Your feedback helps us identify areas for improvement so we can serve all guests better.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-lowest border-t border-outline-variant">
+        <div class="max-w-[1440px] mx-auto py-8 px-4 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-on-surface-variant text-sm">© 2026 LuxeStay Hospitality Group. All rights reserved.</span>
+            <a href="/" class="text-secondary text-sm hover:underline">Return to Home</a>
+        </div>
+    </footer>
+
+</body>
+</html>

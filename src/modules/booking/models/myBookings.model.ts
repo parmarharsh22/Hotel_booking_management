@@ -67,6 +67,7 @@ export class GuestBookingModel {
         `SELECT
            b.booking_id,
            b.booking_reference,
+           b.booking_status_id,
            b.checkin_date,
            b.checkout_date,
            b.adults,
@@ -76,6 +77,7 @@ export class GuestBookingModel {
            b.created_at,
            bs.status_name,
            bsrc.source_name,
+           h.hotel_id AS hotel_id,
            h.name  AS hotel_name,
            h.city  AS hotel_city,
            h.address AS hotel_address,
@@ -109,5 +111,33 @@ export class GuestBookingModel {
       throw err;
     }
   }
+
+  // Last few bookings for the notification bell dropdown
+static async getRecentForNotifications(userId: number, limit = 5): Promise<any[]> {
+  try {
+    const [rows]: any = await db.query(
+      `SELECT
+         b.booking_id,
+         b.booking_reference,
+         b.checkin_date,
+         b.checkout_date,
+         b.created_at,
+         bs.status_name,
+         h.name     AS hotel_name,
+         h.city     AS hotel_city,
+         h.logo_url AS hotel_logo
+       FROM bookings b
+       INNER JOIN booking_statuses bs ON b.booking_status_id = bs.booking_status_id
+       INNER JOIN hotels            h  ON b.hotel_id         = h.hotel_id
+       WHERE b.user_id = ?
+       ORDER BY b.created_at DESC
+       LIMIT ?`,
+      [userId, limit]
+    );
+    return rows;
+  } catch (err: any) {
+    throw err;
+  }
+}
 
 }

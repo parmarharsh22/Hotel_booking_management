@@ -1075,14 +1075,43 @@ body{
     </div>
 
     <!-- actions -->
-    <div class="action-btns">
-      <a href="/invoices/<%= booking.booking_id %>" class="btn-primary">
-        🧾 View & Print Invoice
-      </a>
-      <a href="/bookings/all" class="btn-ghost">
-        ← Back to All Bookings
-      </a>
-    </div>
+   <div class="action-btns">
+
+  <%if(booking.booking_status_id==2){%> 
+
+        <a
+            href="/mybookings/<%= booking.booking_id %>/edit"
+            class="btn-primary">
+            ✏️ Modify Booking
+        </a>
+
+        <a
+            id="cancelBookingBtn"
+             href="/mybookings/<%= booking.booking_id %>/cancel"
+            class="btn-primary">
+            ❌ Cancel Booking
+        </a>
+
+    <%}%>   
+
+    <a
+        href="/invoices/<%= booking.booking_id %>/<%= booking.hotel_id %>/download"
+        class="btn-ghost">
+
+        🧾 Invoice
+
+    </a>
+
+    <a
+        href="/bookings/all"
+        class="btn-ghost">
+
+        ← Back
+
+    </a>
+
+</div>
+    
 
   </div>
 

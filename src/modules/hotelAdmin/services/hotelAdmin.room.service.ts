@@ -29,7 +29,7 @@ export class RoomService {
   }
 
   // createRoom — validate required fields before hitting DB
-  async createRoom(room: RoomInterface): Promise<RoomInterface> {
+  async   createRoom(room: RoomInterface): Promise<RoomInterface> {
     try {
       if (!room.hotel_id)       throw new Error("Hotel ID is required.");
       if (!room.room_type_id)   throw new Error("Room type is required.");
@@ -88,4 +88,33 @@ export class RoomService {
       throw err;
     }
   }
+  
+  async verifyRoomNumber(
+    room_number: number,
+    hotelId: number
+): Promise<boolean> {
+
+    return RoomModel.VerifyRoomExistence(
+        room_number,
+        hotelId
+    );
 }
+
+
+async getRoomStatuses() {
+        try {
+
+            const statuses =
+                await RoomModel.getRoomStatuses();
+
+            return statuses;
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+
+}
+

@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import { searchHotelReqBody } from "../interfaces/room.searchHotelReqBody.interface";
+import { searchHotelReqBody } from "../interfaces";
 import * as roomService from "../services/roomServices";
-import { BookigData } from "../interfaces/room.selectedRoomType.interface";
+import { BookigData } from "../interfaces";
 import { getJwtTokenValue } from "../../../common/utils/getRequestVariables";
 import NodeCache from 'node-cache';
-import { RoomTypeRow } from "../interfaces/room.RoomTypeRow.interface";
+import { RoomTypeRow } from "../interfaces";
 
 const roomCache=new NodeCache({stdTTL:86400});
 
 export const searchHotels = async (req: Request, res: Response) => {
     try {
-        const cacheKey = "unique_room_types";
+        const cacheKey = "unique_room_types"; 
         let roomTypes:RoomTypeRow[]|undefined = roomCache.get(cacheKey);
 
         if (!roomTypes) {
@@ -57,6 +57,7 @@ export const searchHotels = async (req: Request, res: Response) => {
 
 export const hotelDetails = async (req: Request, res: Response) => {
     try {
+       
         const hotelId = req.params["hotelId"] as string;
        
         const { location, checkIn, checkOut, hotelName, rooms, adults, children, priceFilter } =
@@ -104,8 +105,9 @@ export const hotelDetails = async (req: Request, res: Response) => {
         res.render("roomsFrontend/hotelDetails", {
             hotel,
             room_type,
-            query,
-        });
+            query,  
+            
+        }); 
     } catch (error) { console.error(error); }
 };
 
@@ -140,3 +142,18 @@ export const redirectPayment = (req: Request, res: Response) => {
 
     res.render('roomsFrontend/paymentPage')
 }
+
+export const renderHome = async (req: Request, res: Response) => {
+    try {
+        const featuredHotels = await roomService.getFeaturedHotels();
+
+        return res.render("home/index", {  // ← your actual home view path
+            user: (req as any).user || null,
+            welcome: /* your existing welcome var */ null,
+            featuredHotels,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Internal Server Error");
+    }
+};

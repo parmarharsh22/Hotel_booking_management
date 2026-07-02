@@ -202,9 +202,9 @@
                         <button
                             class="flex items-center gap-2 rounded-full border border-slate-200 px-2 py-1.5 bg-white hover:shadow-md transition-shadow">
 
-                            <img class="h-8 w-8 rounded-full object-cover ring-2 ring-amber-700 ring-offset-1"
-                                src="<%= user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80' %>"
-                                alt="User">
+                            <img id="user-profile-photo"
+                                class="h-8 w-8 rounded-full object-cover ring-2 ring-amber-700 ring-offset-1"
+                                src="/images/default-avatar.png" alt="User">
 
                             <i class="fa-solid fa-chevron-down text-xs text-slate-400 mr-1"></i>
 
@@ -218,11 +218,11 @@
                             <!-- User Info -->
                             <div class="px-4 py-3 bg-slate-50 border-b border-slate-100">
 
-                                <p class="font-semibold text-slate-900">
+                                <p id="user-name" class="font-semibold text-slate-900">
                                     <%= user.name || "Guest" %>
                                 </p>
 
-                                <p class="text-xs text-slate-500 truncate">
+                                <p id="user-email" class="text-xs text-slate-500 truncate">
                                     <%= user.email || "" %>
                                 </p>
 
@@ -346,7 +346,7 @@
 
                         <!-- Room image -->
                         <div class="relative h-52 overflow-hidden bg-slate-100">
-                            <img src="<%= room.image_url || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=80' %>"
+                            <img src="<%= room.photo_url || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=80' %>"
                                 alt="<%= room.type %>" class="room-img w-full h-full object-cover">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent">
@@ -479,7 +479,7 @@
                                 <span>Check-in</span>
                             </div>
                             <strong class="text-white text-sm">
-                                <%= query.check_in %>
+                                <%= query.checkIn %>
                             </strong>
                         </div>
                         <div class="flex items-center justify-between py-3 border-b border-slate-700/60">
@@ -488,7 +488,7 @@
                                 <span>Check-out</span>
                             </div>
                             <strong class="text-white text-sm">
-                                <%= query.check_out %>
+                                <%= query.checkOut %>
                             </strong>
                         </div>
                         <div class="flex items-center justify-between py-3 border-b border-slate-700/60">
@@ -546,14 +546,15 @@
     <script type="application/json" id="server-payload">
 <%- JSON.stringify({
     hotelId: hotel.hotel_id,
-    checkIn: query.check_in,
-    checkOut: query.check_out,
+    checkIn: query.checkIn,
+    checkOut: query.checkOut,
     adults: query.adults,
     children: query.children
 }) %>
 </script>
 
     <script>
+
         /* ── DOM ── */
         const roomSelects = document.querySelectorAll(".room-select");
         const totalPriceEl = document.getElementById("totalPrice");
@@ -564,9 +565,10 @@
 
         /* ── Server data ── */
         const serverData = JSON.parse(document.getElementById("server-payload").textContent);
-        const requestedAdults = parseInt(serverData.adults);
-        const requestedChildren = parseInt(serverData.children);
+        const requestedAdults = parseInt(serverData.adults) || 2;
+        const requestedChildren = parseInt(serverData.children) || 0;
         const checkIn = new Date(serverData.checkIn + "T00:00:00");
+
         const checkOut = new Date(serverData.checkOut + "T00:00:00");
         const millisecondsPerDay = 1000 * 60 * 60 * 24;
         const totalNights = Math.max(1, Math.round((checkOut - checkIn) / millisecondsPerDay));
@@ -581,6 +583,7 @@
             roomSelects.forEach(select => {
                 const quantity = parseInt(select.value);
                 const price = parseFloat(select.dataset.price);
+
                 if (quantity > 0) {
                     const roomCard = select.closest(".room-card");
                     const roomName = roomCard.querySelector("h3").innerText;
@@ -636,12 +639,10 @@
             return false;
         }
 
-        /* ── Events ── */
         roomSelects.forEach(select => {
             select.addEventListener("change", () => { updateSummary(); validateCapacity(); });
         });
 
-        /* ── createHold (preserved exactly) ── */
         async function createHold() {
             updateSummary();
             if (!validateCapacity()) return;
@@ -664,10 +665,48 @@
                         rooms,
                     }),
                 });
+                if (response.url.includes("/login")) {
+                    window.location.href = "/login";
+                    return;
+                }
+
                 const data = await response.json();
                 if (data.success) { window.location.href = `/bookings/payment-page?hold_id=${data.hold_id}`; }
                 else { alert(data.error || "Failed to hold rooms. Please try again."); }
             } catch (error) { console.error("Booking Hold Error:", error); alert("Network error. Please try again."); }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchUserDetails);
+
+        async function fetchUserDetails() {
+            try {
+
+                const response = await fetch("/authen/fetchUserDetails", {
+                    credentials: "include"
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+
+                const user = data.data || data.user || data;
+
+                if (!user) return;
+
+                const profilePhoto = document.getElementById("user-profile-photo");
+
+                if (profilePhoto) {
+                    profilePhoto.src = `/uploads/profile-photos/${user.photo_url}`;
+                }
+                document.getElementById("user-name").textContent =
+                    `${user.first_name} ${user.last_name}`;
+
+                document.getElementById("user-email").textContent =
+                    user.email;
+
+            } catch (err) {
+                console.error("Failed to fetch user:", err);
+            }
         }
 
         /* ── Init ── */

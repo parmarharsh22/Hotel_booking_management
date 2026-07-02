@@ -107,4 +107,17 @@ export class RoomTypeService {
       throw err;
     }
   }
+async updateRoomTypeAmenities(typeId: number, amenityIds: number[]): Promise<boolean> {
+    try {
+      if (!typeId) throw new Error("Room type ID is required.");
+      return await RoomTypeModel.updateAmenities(typeId, amenityIds);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+
+
+
+
 }

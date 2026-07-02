@@ -11,10 +11,9 @@ const router = Router();
 router.get("/:bookingId",validToken,allowRoles("FRONT_DESK", "ADMIN"),invoiceController.generateInvoice.bind(invoiceController));
 
 // Printable invoice
-router.get(
-  "/:bookingId/download",
+router.get("/:bookingId/:hotelId/download",
   validToken,
-  allowRoles("FRONT_DESK", "ADMIN"),
+  allowRoles("GUEST"),
   invoiceController.downloadInvoice.bind(invoiceController)
 );
 

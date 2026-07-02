@@ -7,9 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/themes/metroui.css">
+
+<!-- SweetAlert2 for beautiful alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        [class*="noty_layout"] {
+    z-index: 99999 !important;
+}
     </style>
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.css"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/noty@3.2.0-beta-deprecated/lib/noty.min.js"></script>
+
+
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
@@ -21,7 +41,7 @@
                 </div>
                 
                 <nav class="mt-4 space-y-1">
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/dashboard" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-table-columns w-5 text-slate-400"></i>
                         <span>Dashboard</span>
                     </a>
@@ -37,52 +57,26 @@
                         <i class="fa-solid fa-address-book w-5 text-slate-400"></i>
                         <span>Staff</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                    <a href="/hotelAdmin/policies/new" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-chart-simple w-5 text-slate-400"></i>
-                        <span>Analytics</span>
+                        <span>Cancellation Policy</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
-                        <i class="fa-solid fa-gear w-5 text-slate-400"></i>
-                        <span>Settings</span>
-                    </a>
+                    
                 </nav>
             </div>
 
             <div class="mt-8 pt-4 border-t border-slate-100 space-y-1">
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
-                    <i class="fa-regular fa-circle-question w-5 text-slate-400"></i>
-                    <span>Help Center</span>
-                </a>
-                <a href="#" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                
+                <a href="/frontdesk/logout" class="flex items-center space-x-3 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-slate-400"></i>
                     <span>Logout</span>
+
                 </a>
             </div>
         </aside>
 
         <main class="flex-1 flex flex-col">
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 md:px-8">
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900">Room Categories</h1>
-                    <p class="text-xs text-slate-500 hidden sm:block">Global Management System</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-slate-100 transition">
-                        <div class="w-7 h-7 bg-slate-800 rounded-md flex items-center justify-center text-white text-xs font-bold">LS</div>
-                        <div class="text-left hidden sm:block">
-                            <p class="text-xs font-semibold text-slate-800 leading-tight">LuxeStay Signature</p>
-                            <p class="text-[10px] text-slate-500 leading-none">London, UK</p>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
-                    </div>
-                    <button class="p-2 text-slate-400 hover:text-slate-600 relative">
-                        <i class="fa-regular fa-bell text-lg"></i>
-                    </button>
-                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-sm font-medium cursor-pointer">
-                        A
-                    </div>
-                </div>
-            </header>
+           <%- include('../partials/header') %>
 
             <div class="p-6 md:p-8 space-y-6 max-w-[1600px] w-full mx-auto">
                 
@@ -93,15 +87,9 @@
                     </div>
                     
                     <div class="flex items-center gap-3 relative self-end lg:self-auto">
-                        <button onclick="toggleFilterDropdown()" class="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium px-4 py-2 rounded-md border border-slate-300 transition">
-                            <i class="fa-solid fa-sliders text-xs"></i>
-                            <span>Filter</span>
-                        </button>
+                       
                         <a href="/hoteladmin/rooms/new">
-                        <button class="flex items-center space-x-2 bg-[#0f172a] hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-md shadow-sm transition">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                            <span>Add Rooms</span>
-                        </button>
+                       
                         </a>
                         <div id="filterDropdown" class="hidden absolute right-0 top-12 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-50 transition-all duration-200">
                             <h4 class="text-sm font-bold text-slate-900 mb-3 border-b pb-2">Filter Rooms</h4>
@@ -168,8 +156,8 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Base Rate Price (Per Night)</label>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">$</span>
-                            <input type="number" name="base_price" step="0.01" placeholder="0.00" required
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">₹</span>
+                            <input type="number"  name="base_price" step="0.01" placeholder="0.00" required
                                 class="w-full text-sm bg-slate-50 border border-slate-200 rounded-md p-2.5 pl-7 outline-none focus:bg-white focus:border-slate-400 font-medium text-slate-800 transition">
                         </div>
                     </div>
@@ -346,16 +334,35 @@
             });
 
             if (destinationResponse.ok) {
-                alert('New room type profile and matching feature records logged successfully.');
+                await Swal.fire({
+                        icon: 'success',
+                        title: 'Provision Sucessfull',
+                        text: 'Room Type Created Successfully',
+                        confirmButtonColor: '#0f172a',
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
                 clearCategoryForm();
                 window.location.reload();
             } else {
                 const errorReport = await destinationResponse.json();
-                alert(`Operational Category Failure: ${errorReport.message || 'Data rejection detected.'}`);
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'Provisioning Failed',
+                    text: error.message || 'An unexpected network error occurred. Please try again.',
+                    confirmButtonColor: '#0f172a'
+                });
+             
             }
         } catch (networkFault) {
             console.error('API execution interface tracking breakdown context: ', networkFault);
-            alert('A systemic transaction processing anomaly prevented configuration delivery.');
+             Swal.fire({
+                    icon: 'error',
+                    title: 'Provisioning Failed',
+                    text: error.message || 'A systemic transaction processing anomaly prevented configuration delivery..',
+                    confirmButtonColor: '#0f172a'
+                });
+            
         }
     }
 </script>
@@ -367,7 +374,7 @@
      */
     async function renderRoomTypes() {
         try {
-            const response = await fetch("http://localhost:7777/hotelAdmin/room-types");
+            const response = await fetch("/hotelAdmin/room-types",{method:'GET'});
             const roomTypes = await response.json();
             const roomTypeContainer = document.getElementById("roomContainerParent");
             console.log(roomTypes.roomTypes);
@@ -395,7 +402,7 @@
                             </div>
 
                             <div class="flex items-baseline space-x-1 mt-2">
-                                <span class="text-2xl font-bold text-slate-900">$${Number(type.base_price).toFixed(2)}</span>
+                                <span class="text-2xl font-bold text-slate-900">₹${Number(type.base_price).toFixed(2)}</span>
                                 <span class="text-[11px] text-slate-400 font-medium">/ night</span>
                             </div>
 
@@ -403,7 +410,7 @@
                                 <div class="flex items-center text-xs text-slate-600">
                                     <i class="fa-solid fa-users w-4 text-slate-400 text-[11px]"></i>
                                     <span class="font-medium">Max Occupancy:</span>
-                                    <span class="ml-1 text-slate-900 font-semibold">${type.max_occupancy} ${type.max_occupancy > 1 ? 'Guests' : 'Guest'}</span>
+                                    <span class="ml-1 text-slate-900 font-semibold">${type.max_adults} adults  ${type.max_children } childrens</span>
                                 </div>
                                 ${type.description ? `
                                     <p class="text-[11px] text-slate-500 line-clamp-2 italic leading-relaxed mt-1" title="${type.description}">
@@ -462,15 +469,33 @@
     /**
      * Executes asynchronous pipeline deletion request loops targeting your REST routes
      */
+
+
+const showNotification = (message , type="success")=>{
+
+new Noty({
+    text:message,
+    type,
+    theme:'metroui',
+     layout: 'topRight',
+        timeout: 3000,
+        progressBar: true,
+        closeWith: ['click','button']
+    }).show();
+
+
+}
+
     async function triggerCategoryDeletion(roomTypeId, categoryName) {
         // Safety validation gate protecting data relationships
-        const confirmExecution = confirm(`Warning: Are you sure you want to permanently delete the "${categoryName}" category?\nThis will disconnect all structural mappings.`);
-        
-        if (!confirmExecution) return;
+        // const confirmExecution = confirm(`Warning: Are you sure you want to permanently delete the "${categoryName}" category?\nThis will disconnect all structural mappings.`);
+    //    showNotification("confirm","fail");   z
+
+        // if (!confirmExecution) return;
 
         try {
             // Adjust this routing endpoint string to map onto your chosen deletion controller configuration
-            const actionResponse = await fetch(`/room-types/${roomTypeId}`, {
+            const actionResponse = await fetch(`/hotelAdmin/room-types/${roomTypeId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -478,21 +503,26 @@
             });
 
             if (actionResponse.ok) {
-                alert('Room category profile purged from live architecture matrix.');
+                // alert('Room category profile purged from live architecture matrix.');
+                 showNotification('Room category profile purged from live architecture matrix.',"success");
                 window.location.reload(); // Synchronize view matrix
             } else {
                 const faultDetails = await actionResponse.json();
                 
                 // Triggers clean warning feedback if foreign constraints block execution
                 if (faultDetails.message && faultDetails.message.includes('foreign key')) {
-                    alert('Purge Request Terminated: Cannot remove this profile category while operational physical rooms still link to it.');
+                    // alert('Purge Request Terminated: Cannot remove this profile category while operational physical rooms still link to it.');
+                   showNotification(faultDetails.message,"error")
                 } else {
-                    alert(`Purge Request Exception: ${faultDetails.message || 'Validation anomaly occurred.'}`);
+                    // alert(`Purge Request Exception: ${faultDetails.message || 'Validation anomaly occurred.'}`);
+                    showNotification(`Purge Request Exception: ${faultDetails.message || 'Validation anomaly occurred.'}`   ,"error")
+
                 }
             }
         } catch (networkFault) {
             console.error('purging asset routine network drop context: ', networkFault);
-            alert('A network communication loss failure interrupted target deletion synchronization.');
+            // alert('A network communication loss failure interrupted target deletion synchronization.');
+            showNotification("A network communication loss failure interrupted target deletion synchronization." , "error")
         }
     }
 </script>

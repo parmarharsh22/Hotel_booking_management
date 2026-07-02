@@ -1,4 +1,5 @@
-<aside class="fixed left-0 top-0 w-[260px] h-screen bg-gradient-to-b from-[#031632] to-[#1a2b48] text-white shadow-2xl flex flex-col z-50">
+<aside
+    class="fixed left-0 top-0 w-[260px] h-screen bg-gradient-to-b from-[#031632] to-[#1a2b48] text-white shadow-2xl flex flex-col z-50">
 
     <!-- brand -->
     <div class="px-6 py-6 border-b border-white/10">
@@ -64,6 +65,14 @@
                 </a>
             </li>
 
+            <li>
+                <a href="/frontDesk/incidentals"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+                    <span class="material-symbols-outlined">add_card</span>
+                    Incidentals
+                </a>
+            </li>
+
         </ul>
 
         <p class="text-[11px] uppercase tracking-widest text-blue-200 mt-8 mb-3 px-3">
@@ -71,14 +80,6 @@
         </p>
 
         <ul class="space-y-2">
-
-            <li>
-                <a href="/frontDesk/guests"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
-                    <span class="material-symbols-outlined">groups</span>
-                    Guests
-                </a>
-            </li>
 
             <li>
                 <a href="/frontDesk/payments"
@@ -107,11 +108,8 @@
 
             <!-- profile photo — falls back to initials background if photo is null -->
             <div class="w-10 h-10 rounded-full bg-[#775a19] flex items-center justify-center text-white font-semibold">
-                <img
-                    src="/uploads/profile-photos/<%= photo %>"
-                    alt="Profile"
-                    class="w-10 h-10 rounded-full object-cover border border-gray-300"
-                >
+                <img src="/uploads/profile-photos/<%= photo %>" alt="Profile"
+                    class="w-10 h-10 rounded-full object-cover border border-gray-300">
             </div>
 
             <div>

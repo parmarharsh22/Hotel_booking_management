@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Incidential</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <%- include("../partials/frontDesk/sidebar") %>
+
+        <main class="ml-[260px] min-h-screen bg-slate-100">
+
+            <%- include("../partials/frontDesk/header") %>
+
+                <!-- Hero -->
+                <div class="px-8 py-6">
+
+                    <div class="bg-gradient-to-r from-[#031632] via-[#0c234d] to-[#1a2b48]
+            rounded-3xl shadow-xl p-8">
+
+                        <h1 class="text-4xl font-bold text-white">
+                            Manage Incidentals
+                        </h1>
+
+                        <p class="text-yellow-300 mt-3 text-lg">
+                            Add and manage guest charges for this booking
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="p-8">
+
+                    <!-- Booking Information -->
+
+                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 mb-6">
+
+                        <div class="px-6 py-5 border-b">
+
+                            <h2 class="font-semibold text-lg">
+                                Booking Information
+                            </h2>
+
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Booking Reference
+                                </p>
+
+                                <p class="font-semibold">
+                                    <%= booking.booking_reference %>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Guest
+                                </p>
+
+                                <p class="font-semibold">
+                                    <%= booking.first_name %>
+                                        <%= booking.last_name %>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Room(s)
+                                </p>
+
+                                <p class="font-semibold">
+                                    <%= booking.room_numbers %>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Book_Status
+                                </p>
+
+                                <p class="font-semibold">
+                                    <%= booking.status_name %>
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <%- include("../partials/frontDesk/incidental_table.ejs") %>
+                        <%- include("../partials/frontDesk/incidental_form.ejs") %>
+
+                </div>
+
+        </main>
+</body>
+<script src="/JS/toastmessage.js"></script>
+<% if (success) { %>
+    <script>
+        showToast("<%= success %>");
+    </script>
+    <% } %>
+        <% if (failure) { %>
+            <script>
+                showToast("<%= failure %>", "error");
+            </script>
+            <% } %>
+
+</html>
