@@ -31,7 +31,7 @@ export const loginUser = async (role: string, email: string, password: string) =
         throw new Error("Invalid Credentials!");
     }
     const token = generateToken(result.user_id, result.role_name, result.hotel_id);
-    return { token: token }
+    return { token: token , user_id:result.user_id,role:result.role_name,hotel_id:result.hotel_id }
 }
 
 //Render all the locations
