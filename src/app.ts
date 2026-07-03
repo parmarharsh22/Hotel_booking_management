@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import authRouter from "./modules/auth/routes/authroute";
 import { sessionMiddleware } from "./config/sessionMiddleware";
-
+import cors from "cors"
 import superadminRoutes from "./modules/superAdmin/superadmin.routes";
 import { attachUser } from "./common/middlewares/globalMiddleware/optinalAuth";
 import authenRoute from "./modules/Authen_Guest/router/guestRoutes";
@@ -16,6 +16,14 @@ import { startDirtyRoomWorker } from "./modules/FrontDesk/workers/dirtyRoomWorke
 import BookingModificationRoutes from './modules/Booking_Cancellation_Modification/Routes/bookingRoutes.routes'
 import CancellationRoutes from './modules/Booking_Cancellation_Modification/Routes/bookingCancellation.routes'
 const app = express();
+
+app.use(
+    cors({
+        origin: process.env.CLIENT_ORIGIN?.split(",") ?? ["http://localhost:5173"],
+        credentials: true,
+    })
+);
+
 
 //cookie
 app.use(cookie());

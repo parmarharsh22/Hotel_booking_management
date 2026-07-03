@@ -48,7 +48,7 @@ export const showMainPage = async (req: Request, res: Response) => {
 
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 2);
-    const defaultCheckIn  = tomorrow.toISOString().slice(0, 10);
+    const defaultCheckIn = tomorrow.toISOString().slice(0, 10);
     const defaultCheckOut = dayAfter.toISOString().slice(0, 10);
 
     if (currentUser?.roleId === "GUEST") {
@@ -128,18 +128,9 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response) 
         const { role, email, password } = req.body;
         const result = await authServices.loginUser(role, email, password);
         storeToken(result.token, res);
-        if (role === "ADMIN") {
-            return res.redirect("/hotelAdmin/rooms")
-        }
-        else if (role === "FRONT_DESK") {
-            return res.redirect("/frontDesk/home");
-        }
-        else {
-            return res.redirect("/");
-        }
+        return res.status(200).json({ userId: result.user_id,role: result.role,hotelId: result.hotel_id,});
     } catch (err: any) {
-        (req.session as any).failureMessage = err.message;
-        return res.redirect("/login")
+        return res.status(401).json({ message: err.message });
     }
 
 }
@@ -199,15 +190,19 @@ export const validateOtp = async (req: Request, res: Response) => {
 }
 
 //Update the password 
-export const updatePassword = async (req:Request,res:Response)=>{
-    try{
-        const{email,password} = req.body;
+export const updatePassword = async (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
         delete (req.session as any).email;
-        await authServices.updatePassword(email,password);
+        await authServices.updatePassword(email, password);
         (req.session as any).successMessage = "Password Reset Successfull"
         res.redirect("/login");
-    }catch(err:any){
+    } catch (err: any) {
         (req.session as any).failureMessage = err.message;
         return res.redirect("/forgetPassword");
     }
+}
+
+export const sendValidResponse = (req:Request , res:Response) => {
+    return res.status(200).json({message:"Valid token exists"});
 }

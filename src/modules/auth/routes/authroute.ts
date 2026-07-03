@@ -3,6 +3,7 @@ import * as authController from "../controller/authController";
 import { uploadProfilePhoto } from "../../../common/middlewares/multer";
 import { verifyCaptchaMiddleware } from "../../../common/middlewares/verifyCaptcha";
 import { checkResetPasswordSession } from "../../../common/middlewares/checkPasswordSession";
+import { validToken } from "../../../common/middlewares/verifyJWTToken";
 const authRouter = express.Router();
 
 //Render the mainPage or indexPage
@@ -21,7 +22,7 @@ authRouter.post("/register",uploadProfilePhoto.single("photo"),verifyCaptchaMidd
 authRouter.post("/checkEmail",authController.checkEmailUniq)
 
 //login a user
-authRouter.post("/loginUser",verifyCaptchaMiddleware("/login"),authController.loginUser);
+authRouter.post("/loginUser",authController.loginUser);
 
 //getAlltheLocations
 authRouter.get("/getLocations",authController.getAllLocations);
@@ -40,6 +41,9 @@ authRouter.post("/checkOtp",checkResetPasswordSession,authController.validateOtp
 
 //resetPassword
 authRouter.post("/resetPassword",checkResetPasswordSession,authController.updatePassword);
+
+//checkMe
+authRouter.get("/me",validToken,authController.sendValidResponse)
 
 authRouter.get("/legal", (req, res) => {
   res.render("legal", { user: res.locals.user || null });
