@@ -7,20 +7,19 @@ export const allowRoles = (...allowedRoles: string[]) => {
         next: NextFunction
     ) => {
         const user = (req as any).user;
-        console.log(user);
         // check if user data exists
         if (!user) {
             (req.session as any).failureMessage = "Login first";
-            return res.redirect("/login");
+            return res.status(404).json({message: "Login First"});
         }
-
+        
         // check if user has required role
         if (!allowedRoles.includes(user.roleId)){
             res.clearCookie("token");
             console.log("called Update");
             
             (req.session as any).failureMessage ="You are not authorized to access this page";
-            return res.redirect("/login");
+            return res.status(404).json({message: "You are not authorized to access this page"});
         }
         
         next();

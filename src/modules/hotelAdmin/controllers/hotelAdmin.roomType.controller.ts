@@ -87,7 +87,6 @@ export class AdminRoomTypeController {
       const typeId = parseInt(req.params.typeId as any);
       const files: any = req.files;
 
-      // ✅ FIX 1: Use ImageKit for uploads (matching your create method)
       let photo_url = req.body.existing_photo || null;
       if (files?.type_photo?.[0]) {
         const file = files.type_photo[0];
@@ -109,7 +108,6 @@ export class AdminRoomTypeController {
 
       await roomTypeService.updateRoomType(typeId, hotelId, data);
 
-      // ✅ FIX 2: Process and update amenities
       let amenityIds: number[] = [];
       if (req.body.amenities) {
         amenityIds = Array.isArray(req.body.amenities) 
@@ -121,9 +119,7 @@ export class AdminRoomTypeController {
  
       console.log("Processed Amenity IDs to save:", amenityIds);
       console.log("Processed Amenity IDs to save:", data);
-      // ✅ FIX 3: Send a success response so the frontend doesn't hang
       return res.status(200).json({ message: "Room type updated successfully." });
-      // return res.redirect("/hotelAdmin/room-types");
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -134,7 +130,7 @@ export class AdminRoomTypeController {
       const hotelId = (req as any).hotelId as number;
       const typeId = parseInt(req.params.typeId as any);
       await roomTypeService.deleteRoomType(typeId, hotelId);
-      return res.redirect("/hotelAdmin/room-types");
+      return res.status(200).json({message: "Room deleted"});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
