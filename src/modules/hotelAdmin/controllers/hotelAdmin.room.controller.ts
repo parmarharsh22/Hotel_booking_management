@@ -16,7 +16,7 @@ export class AdminRoomController {
     //  const hotelId = 1;
       const rooms = await roomService.getAllRoomsByHotel(hotelId);
       // EJS: render the rooms list page
-      return res.status(200).render("admin/rooms", { rooms });
+      return res.status(200).json({rooms});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -29,7 +29,7 @@ export class AdminRoomController {
              const roomTypes = await roomTypeService.getAllRoomTypes(hotelId);
 
       // You can pass room_types here later so the form has a dropdown
-      return res.status(200).render("admin/room-new",{roomTypes});
+      return res.status(200).json({roomTypes});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }
@@ -74,7 +74,7 @@ export class AdminRoomController {
       
       
       const room = await roomService.getRoomById(roomId, hotelId);
-      return res.status(200).render("admin/room-edit", { room });
+      return res.status(200).json({ room });
     } catch (err: any) {
       return res.status(404).json({ message: err.message });
     }
@@ -136,7 +136,7 @@ export class AdminRoomController {
       const roomStatusId = parseInt(req.body.room_status_id);
 
       await roomService.updateRoomStatus(roomId, hotelId, roomStatusId);
-      return res.redirect("hotelAdmin/rooms");
+      return res.status(200).json({message : "Room updated"});
     } catch (err: any) {
       return res.status(400).json({ message: err.message });
     }

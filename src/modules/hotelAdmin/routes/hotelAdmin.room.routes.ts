@@ -15,11 +15,7 @@ router.get("/rooms",validToken,allowRoles("ADMIN"),adminController.listRooms.bin
 
 router.get("/rooms/new",validToken,allowRoles("ADMIN"),adminController.showNewRoom.bind(adminController));
 
-router.post(
-  "/rooms",validToken,allowRoles("ADMIN"),
-  uploadRoomPhoto.fields([{ name: "room_photo", maxCount: 1 }]),
-  adminController.createRoom.bind(adminController)
-);
+router.post( "/rooms",validToken,allowRoles("ADMIN"),uploadRoomPhoto.fields([{ name: "room_photo", maxCount: 1 }]),adminController.createRoom.bind(adminController));
 
 
 // Show edit form for a specific room

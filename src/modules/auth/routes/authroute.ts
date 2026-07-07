@@ -16,7 +16,7 @@ authRouter.get("/login",authController.showLoginPage);
 authRouter.get("/register",authController.showRegistrationPage);
 
 //Register New GUEST
-authRouter.post("/register",uploadProfilePhoto.single("photo"),verifyCaptchaMiddleware("/register"),authController.registerUser);
+authRouter.post("/register",uploadProfilePhoto.single("photo"),authController.registerUser);
 
 //check for EmailUniqueness
 authRouter.post("/checkEmail",authController.checkEmailUniq)
@@ -40,7 +40,7 @@ authRouter.get("/resetPassword",checkResetPasswordSession,authController.showPas
 authRouter.post("/checkOtp",checkResetPasswordSession,authController.validateOtp)
 
 //resetPassword
-authRouter.post("/resetPassword",checkResetPasswordSession,authController.updatePassword);
+authRouter.post("/resetPassword",checkResetPasswordSession,authController.resetPassword);
 
 //checkMe
 authRouter.get("/me",validToken,authController.sendValidResponse)

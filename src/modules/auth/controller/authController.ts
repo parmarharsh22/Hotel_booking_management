@@ -3,6 +3,7 @@ import * as authServices from "../services/authServices";
 import { storeToken } from "../../../common/utils/jwt_token";
 import { redisClient } from "../../../config/pass_redis";
 import * as roomService from "../../room/services/roomServices"; // ← adjust path to your roomServices
+import { json } from "stream/consumers";
 
 interface LoginBody {
     role: "ADMIN" | "FRONT_DESK" | "GUEST";
@@ -96,12 +97,17 @@ export const showRegistrationPage = (req: Request, res: Response) => {
 //Register a new user
 export const registerUser = async (req: Request<{}, {}, RegisterBody>, res: Response) => {
     try {
+        const { email } = req.body;
+        const exists = await authServices.checkEmail(email);
+        if (exists) {
+            return res.status(404).json({ message: "User Exists with same email" });
+        }
         await authServices.registerUser(req.body, req.file?.filename);
         (req.session as any).successMessage = "Registration successful";
         delete (req.session as any).successMessage;
-        return res.redirect("/login");
+        return res.status(200).send("User Registered!")
     } catch (err: any) {
-        console.log("error", err);
+        return res.status(401).json({ message: "Photo Size is to big keep it less than 5 MB" });
     }
 }
 
@@ -128,7 +134,7 @@ export const loginUser = async (req: Request<{}, {}, LoginBody>, res: Response) 
         const { role, email, password } = req.body;
         const result = await authServices.loginUser(role, email, password);
         storeToken(result.token, res);
-        return res.status(200).json({ userId: result.user_id,role: result.role,hotelId: result.hotel_id,});
+        return res.status(200).json({ userId: result.user_id, role: result.role, hotelId: result.hotel_id, });
     } catch (err: any) {
         return res.status(401).json({ message: err.message });
     }
@@ -142,7 +148,7 @@ export const getAllLocations = async (req: Request, res: Response) => {
         return res.status(200).send({ result });
     } catch (err: any) {
         (req.session as any).failureMessage = err.message;
-        return res.redirect("/");
+        return res.status(401).json({ message: err.message });
     }
 }
 
@@ -156,18 +162,45 @@ export const forgetPassword = (req: Request, res: Response) => {
 
 //set the reset password session and generate the otp
 export const setResetPassSession = async (req: Request, res: Response) => {
-    const email = req.body.email;
+    try {
+        const { email } = req.body;
+        // Check whether the email exists
+        const exists = await authServices.checkEmail(email);
 
-    //random 4 digit otp
-    const otp = Math.floor(1000 + Math.random() * 9000);
+        if (!exists) {
+            return res.status(404).json({
+                success: false,
+                message: "Email not found.",
+            });
+        }
 
-    //2 min valid otp
-    await redisClient.set(`reset-password:${email}`, otp.toString(), { EX: 120 });
+        // Generate OTP
+        const otp = Math.floor(1000 + Math.random() * 9000);
 
-    //sessionSet
-    (req.session as any).email = email;
+        await redisClient.set(
+            `reset-password:${email}`,
+            otp.toString(),
+            { EX: 120 }
+        );
 
-    res.render("authFronted/forgetPass/emailSimulation", { otp, currentemail: email });
+        const ttl = await redisClient.ttl(`reset-password:${email}`);
+
+        (req.session as any).email = email;
+        (req.session as any).otp = otp;
+        return res.status(200).json({
+            success: true,
+            message: "OTP generated successfully.",
+            otp,
+            email,
+            ttl
+        });
+
+    } catch (err: any) {
+        return res.status(500).json({
+            success: false,
+            message: err.message,
+        });
+    }
 };
 
 //render the password reset page
@@ -190,19 +223,33 @@ export const validateOtp = async (req: Request, res: Response) => {
 }
 
 //Update the password 
-export const updatePassword = async (req: Request, res: Response) => {
+export const resetPassword = async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
-        delete (req.session as any).email;
-        await authServices.updatePassword(email, password);
-        (req.session as any).successMessage = "Password Reset Successfull"
-        res.redirect("/login");
-    } catch (err: any) {
-        (req.session as any).failureMessage = err.message;
-        return res.redirect("/forgetPassword");
-    }
-}
+        const { email, otp, password } = req.body;
 
-export const sendValidResponse = (req:Request , res:Response) => {
-    return res.status(200).json({message:"Valid token exists"});
+        // 1. Verify OTP
+        await authServices.checkOtp(Number(otp), email);
+
+        // 2. Update password
+        await authServices.updatePassword(email, password);
+
+        // 3. Delete OTP from Redis so it can't be reused
+        await redisClient.del(`reset-password:${email}`);
+
+        return res.status(200).json({
+            success: true,
+            message: "Password reset successfully.",
+        });
+
+    } catch (err: any) {
+        return res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+export const sendValidResponse = (req: Request, res: Response) => {
+    res.status(200).json({
+        userId: (req as any).user.userId,
+        role: (req as any).user.roleId,  
+        hotelId: (req as any).hotelId,
+    });
 }
