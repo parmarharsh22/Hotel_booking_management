@@ -11,7 +11,7 @@ const frontDeskRouter = express.Router();
 frontDeskRouter.get("/home",validToken,allowRoles("FRONT_DESK"),frontDeskController.showHomePage);
 
 // guest confirmation page
-frontDeskRouter.get("/checkIn/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showGuestVerification);
+frontDeskRouter.get("/checkIn/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK","ADMIN"),frontDeskController.showGuestVerification);
 
 // identity capture page
 frontDeskRouter.get("/verifyIdentity/:bookingRef",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.showDocumentGathring);
@@ -23,7 +23,7 @@ frontDeskRouter.post("/uploadDocuments/:bookingRef",validToken,frontDeskContext,
 frontDeskRouter.get("/showRoomStatuses",validToken,allowRoles("FRONT_DESK"),frontDeskContext,frontDeskController.showRoomStatus);
 
 // get All bookings of the hotel
-frontDeskRouter.get("/bookings",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getBookingsOfHotel);
+frontDeskRouter.get("/bookings",validToken,frontDeskContext,allowRoles("FRONT_DESK","ADMIN"),frontDeskController.getBookingsOfHotel);
 
 //render all the guest that are currently checkedIN
 frontDeskRouter.get("/checkout",validToken,frontDeskContext,allowRoles("FRONT_DESK"),frontDeskController.getAllCheckInGuests);

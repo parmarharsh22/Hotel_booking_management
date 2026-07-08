@@ -72,26 +72,18 @@ export const showHomePage = async (
 };
 
 // render guest confirmation page
-export const showGuestVerification = async (
-    req: Request<BookingParams>,
-    res: Response
-): Promise<void> => {
+export const showGuestVerification = async (req: Request<BookingParams>,res: Response): Promise<void> => {
     try {
         const bookingRef: string = req.params.bookingRef;
         const source = req.query.source || "current";
-        const frontDeskId: number = (req.session as any).user_id;
+        // const frontDeskId: number = (req.session as any).user_id;
 
         const data = await frontDeskServices.getBookingDetails(bookingRef);
-
-        res.render("frontDesk/booking_details", {
-            booking: data,
-            user_id: frontDeskId,
-            source,
-        });
+        res.status(200).json({booking:data,source:source});
     } catch (err: any) {
         console.error("[showGuestVerification]", err);
         (req.session as any).failureMessage = err.message;
-        res.redirect("/frontDesk/home");
+        res.status(500).json({message:err.message});
     }
 };
 
@@ -202,7 +194,7 @@ export const showRoomStatus = async (
 // get and render all bookings with filters + pagination
 export const getBookingsOfHotel = async (req: Request, res: Response) => {
     try {
-        const hotelId = (req.session as any).hotel_id;
+        const hotelId: number = getJwtTokenValue("hotel_id", req) as number;
         const page = Number(req.query.page) || 1;
         const limit = 10;
         const offset = (page - 1) * limit;
@@ -220,16 +212,9 @@ export const getBookingsOfHotel = async (req: Request, res: Response) => {
         ]);
 
         const totalPages = Math.ceil(totalRecords / limit);
+        const hasMore = page < totalPages;
 
-        return res.render("frontDesk/whole_bookings", {
-            bookings,
-            currentPage: page,
-            totalPages,
-            totalRecords,
-            search,
-            statusFilter: status,
-            dateFilter: { dateFrom, dateTo },
-        });
+        return res.status(200).json({ bookings, currentPage: page, totalPages, totalRecords, hasMore, search, statusFilter: status, dateFilter: { dateFrom, dateTo }, });
     } catch (err) {
         console.error("[getBookingsOfHotel]:", err);
         return res.status(500).send("something went wrong");
@@ -435,7 +420,7 @@ export const getInvoices = async (req: Request, res: Response): Promise<void> =>
 // logout
 export const logout = async (req: Request, res: Response): Promise<void> => {
     try {
-        res.clearCookie("token");   
+        res.clearCookie("token");
         delete (req.session as any).hotel_id;
         delete (req.session as any).user_id;
         res.redirect("/login");

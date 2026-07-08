@@ -49,5 +49,5 @@ export const updateProfile = async(req: Request<{}, {}, UpdateProfileBody>,res:R
 //logout a user
 export const logoutUser = async(req:Request,res:Response)=>{
     res.clearCookie("token");
-    return res.redirect("/");
+    return res.status(200).json({message:"User logged out successfully!"});
 }

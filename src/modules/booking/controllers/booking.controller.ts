@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import * as bookingService from "../services/booking.service";
+import * as bookingModel from "../models/booking.model";
+import { db } from "../../../config/db";
 
 // ─── GET /bookings/payment-page ───────────────────────────────────────────────
 // Renders the payment page. Fetches hold data from Redis so the
@@ -122,5 +124,93 @@ export const paymentFailed = async (req: Request, res: Response) => {
 
     } catch (err: any) {
         res.status(500).json({ success: false, error: err.message });
+    }
+};
+
+// ─── POST /bookings/simple ─────────────────────────────────────────────────
+// Creates a booking directly — no Redis hold, no separate payment step.
+// Finds available rooms, books them, records payment as SUCCESS immediately.
+export const createSimpleBooking = async (req: Request, res: Response) => {
+    const connection = await db.getConnection();
+    try {
+        const user = (req as any).user;
+        if (!user) {
+            return res.status(401).json({ success: false, error: "Login required" });
+        }
+
+        const { hotel_id,room_type_id,checkin_date, checkout_date, adults, children, qty,
+            payment_method_id, special_requests, } = req.body;
+
+        if (!hotel_id || !room_type_id || !checkin_date || !checkout_date || !qty) {
+            return res.status(400).json({ success: false, error: "Missing required fields" });
+        }
+
+        const availableRooms = await bookingModel.getAvailableRooms(
+            Number(hotel_id),
+            Number(room_type_id),
+            checkin_date,
+            checkout_date,
+            Number(qty)
+        );
+
+        if (availableRooms.length < Number(qty)) {
+            return res.status(400).json({ success: false, error: "Not enough rooms available for these dates" });
+        }
+
+        const totalAmount = availableRooms.reduce(
+            (sum: number, r: any) => sum + Number(r.rate_per_night),
+            0
+        );
+        const bookingReference = `HBMS-${Date.now().toString(36).toUpperCase()}`;
+
+        await connection.beginTransaction();
+
+        const bookingId = await bookingModel.createBooking(connection, {
+            hotel_id: Number(hotel_id),
+            user_id: user.userId,
+            booking_status_id: 2, // adjust to your CONFIRMED status id
+            booking_source_id: 1, // adjust to your "website" source id
+            booking_reference: bookingReference,
+            checkin_date,
+            checkout_date,
+            adults: Number(adults) || 1,
+            children: Number(children) || 0,
+            total_amount: totalAmount,
+            special_requests,
+        });
+
+        await bookingModel.createBookingRooms(
+            connection,
+            bookingId,
+            availableRooms.map((r: any) => ({
+                room_id: r.room_id,
+                rate_per_night: r.rate_per_night,
+            }))
+        );
+
+        await bookingModel.createPayment(connection, {
+            hotel_id: Number(hotel_id),
+            booking_id: bookingId,
+            amount: totalAmount,
+            payment_method_id: Number(payment_method_id) || 2,
+        });
+
+        await connection.commit();
+
+        // mark payment SUCCESS immediately — no real gateway in this simple flow
+        await bookingModel.updatePaymentStatus(bookingId, 2);
+
+        return res.status(200).json({
+            success: true,
+            booking_id: bookingId,
+            booking_reference: bookingReference,
+            total_amount: totalAmount,
+        });
+    } catch (err: any) {
+        await connection.rollback();
+        console.error("SIMPLE BOOKING ERROR:", err.message);
+        return res.status(400).json({ success: false, error: err.message });
+    } finally {
+        connection.release();
     }
 };
