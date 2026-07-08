@@ -85,6 +85,13 @@ router.get(
   }
 );
 
+router.post(
+  "/simple",
+  validToken,
+  allowRoles("GUEST"),
+  bookingController.createSimpleBooking,
+);
+
 // Notifications
 router.get(
   "/notifications/data",
